@@ -1,5 +1,5 @@
 
-stm32.elf:     file format elf32-littlearm
+srtos.elf:     file format elf32-littlearm
 
 
 Disassembly of section .text:
@@ -331,16 +331,16 @@ int main()
   rtosInit(0);
  800023a:	2000      	movs	r0, #0
  800023c:	f000 f8a2 	bl	8000384 <rtosInit>
-  addTask(scanKey,20,20);
+  addTimer(scanKey,20,20);
  8000240:	2214      	movs	r2, #20
  8000242:	4611      	mov	r1, r2
  8000244:	4830      	ldr	r0, [pc, #192]	; (8000308 <main+0x12c>)
- 8000246:	f000 f881 	bl	800034c <addTask>
-  addTask(togleLed,1000,1000);
+ 8000246:	f000 f881 	bl	800034c <addTimer>
+  addTimer(togleLed,1000,1000);
  800024a:	f44f 727a 	mov.w	r2, #1000	; 0x3e8
  800024e:	4611      	mov	r1, r2
  8000250:	482e      	ldr	r0, [pc, #184]	; (800030c <main+0x130>)
- 8000252:	f000 f87b 	bl	800034c <addTask>
+ 8000252:	f000 f87b 	bl	800034c <addTimer>
   __set_PSP(0x20004F00);
  8000256:	482e      	ldr	r0, [pc, #184]	; (8000310 <main+0x134>)
  8000258:	f000 f9f9 	bl	800064e <__set_PSP>
@@ -426,21 +426,21 @@ int main()
  800031c:	2000000c 	.word	0x2000000c
  8000320:	080006d4 	.word	0x080006d4
 
-08000324 <taskStat>:
+08000324 <tmrStat>:
 static volatile uint32_t current_load;
 volatile uint8_t flag_delay;
 static void (*idle_callback)(void);
 
-static void taskStat() {
+static void tmrStat() {
   load_cpu=current_load;
- 8000324:	4b02      	ldr	r3, [pc, #8]	; (8000330 <taskStat+0xc>)
+ 8000324:	4b02      	ldr	r3, [pc, #8]	; (8000330 <tmrStat+0xc>)
   current_load=0;
  8000326:	2200      	movs	r2, #0
 static volatile uint32_t current_load;
 volatile uint8_t flag_delay;
 static void (*idle_callback)(void);
 
-static void taskStat() {
+static void tmrStat() {
   load_cpu=current_load;
  8000328:	6819      	ldr	r1, [r3, #0]
  800032a:	6059      	str	r1, [r3, #4]
@@ -449,14 +449,14 @@ static void taskStat() {
  800032e:	4770      	bx	lr
  8000330:	20000068 	.word	0x20000068
 
-08000334 <endDelayTask>:
+08000334 <endDelayTimer>:
   }
   current_load +=(TICKS-SysTick->VAL);
 }
 
-static void endDelayTask(void) {
+static void endDelayTimer(void) {
   flag_delay=0;
- 8000334:	4b01      	ldr	r3, [pc, #4]	; (800033c <endDelayTask+0x8>)
+ 8000334:	4b01      	ldr	r3, [pc, #4]	; (800033c <endDelayTimer+0x8>)
  8000336:	2200      	movs	r2, #0
  8000338:	701a      	strb	r2, [r3, #0]
  800033a:	4770      	bx	lr
@@ -476,27 +476,27 @@ uint32_t getLoadCPU() {
  8000346:	bf00      	nop
  8000348:	20000068 	.word	0x20000068
 
-0800034c <addTask>:
+0800034c <addTimer>:
 
-uint8_t addTask(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
+uint8_t addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
  800034c:	b430      	push	{r4, r5}
- 800034e:	4c0b      	ldr	r4, [pc, #44]	; (800037c <addTask+0x30>)
+ 800034e:	4c0b      	ldr	r4, [pc, #44]	; (800037c <addTimer+0x30>)
   int r = 0;
-  for(int i=0; i<TSK; i++) {
+  for(int i=0; i<TMR; i++) {
  8000350:	2300      	movs	r3, #0
-    if (task[i].callback == 0) {
+    if (tmr[i].callback == 0) {
  8000352:	68a5      	ldr	r5, [r4, #8]
  8000354:	340c      	adds	r4, #12
- 8000356:	b12d      	cbz	r5, 8000364 <addTask+0x18>
+ 8000356:	b12d      	cbz	r5, 8000364 <addTimer+0x18>
   return load_cpu;
 }
 
-uint8_t addTask(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
+uint8_t addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
   int r = 0;
-  for(int i=0; i<TSK; i++) {
+  for(int i=0; i<TMR; i++) {
  8000358:	3301      	adds	r3, #1
  800035a:	2b08      	cmp	r3, #8
- 800035c:	d1f9      	bne.n	8000352 <addTask+0x6>
+ 800035c:	d1f9      	bne.n	8000352 <addTimer+0x6>
       r = i;
       break;
     }
@@ -507,18 +507,18 @@ uint8_t addTask(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
  8000360:	2000      	movs	r0, #0
  8000362:	4770      	bx	lr
 
-uint8_t addTask(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
+uint8_t addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
   int r = 0;
-  for(int i=0; i<TSK; i++) {
-    if (task[i].callback == 0) {
-      task[i].callback=callback;
- 8000364:	4c06      	ldr	r4, [pc, #24]	; (8000380 <addTask+0x34>)
+  for(int i=0; i<TMR; i++) {
+    if (tmr[i].callback == 0) {
+      tmr[i].callback=callback;
+ 8000364:	4c06      	ldr	r4, [pc, #24]	; (8000380 <addTimer+0x34>)
  8000366:	eb03 0543 	add.w	r5, r3, r3, lsl #1
  800036a:	eb04 0485 	add.w	r4, r4, r5, lsl #2
  800036e:	6120      	str	r0, [r4, #16]
-      task[i].timer=timer;
+      tmr[i].timer=timer;
  8000370:	60a1      	str	r1, [r4, #8]
-      task[i].timer_auto=timer_auto;
+      tmr[i].timer_auto=timer_auto;
  8000372:	60e2      	str	r2, [r4, #12]
  8000374:	b2d8      	uxtb	r0, r3
       r = i;
@@ -588,9 +588,9 @@ static __INLINE void NVIC_SetPriority(IRQn_Type IRQn, uint32_t priority)
   return load_cpu;
 }
 
-uint8_t addTask(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
+uint8_t addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
   int r = 0;
-  for(int i=0; i<TSK; i++) {
+  for(int i=0; i<TMR; i++) {
  800039a:	4613      	mov	r3, r2
   }
   return r;
@@ -611,19 +611,19 @@ void rtosInit(void (*idle_func)()) {
  80003a4:	600d      	str	r5, [r1, #0]
 }
 
-uint8_t addTask(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
+uint8_t addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
   int r = 0;
-  for(int i=0; i<TSK; i++) {
-    if (task[i].callback == 0) {
+  for(int i=0; i<TMR; i++) {
+    if (tmr[i].callback == 0) {
  80003a6:	6891      	ldr	r1, [r2, #8]
  80003a8:	320c      	adds	r2, #12
  80003aa:	b129      	cbz	r1, 80003b8 <rtosInit+0x34>
   return load_cpu;
 }
 
-uint8_t addTask(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
+uint8_t addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
   int r = 0;
-  for(int i=0; i<TSK; i++) {
+  for(int i=0; i<TMR; i++) {
  80003ac:	3301      	adds	r3, #1
  80003ae:	2b08      	cmp	r3, #8
  80003b0:	d1f9      	bne.n	80003a6 <rtosInit+0x22>
@@ -637,38 +637,38 @@ static __INLINE void __enable_irq()               { __ASM volatile ("cpsie i"); 
 void rtosInit(void (*idle_func)()) {
   idle_callback=idle_func;
   SysTick_Config(TICKS);
-  addTask(taskStat,1000,1000);
+  addTimer(tmrStat,1000,1000);
   __enable_irq();
 }
  80003b4:	bcf0      	pop	{r4, r5, r6, r7}
  80003b6:	4770      	bx	lr
 
-uint8_t addTask(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
+uint8_t addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
   int r = 0;
-  for(int i=0; i<TSK; i++) {
-    if (task[i].callback == 0) {
-      task[i].callback=callback;
+  for(int i=0; i<TMR; i++) {
+    if (tmr[i].callback == 0) {
+      tmr[i].callback=callback;
  80003b8:	490a      	ldr	r1, [pc, #40]	; (80003e4 <rtosInit+0x60>)
  80003ba:	eb03 0343 	add.w	r3, r3, r3, lsl #1
  80003be:	eb04 0383 	add.w	r3, r4, r3, lsl #2
-      task[i].timer=timer;
+      tmr[i].timer=timer;
  80003c2:	f44f 727a 	mov.w	r2, #1000	; 0x3e8
 
-uint8_t addTask(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
+uint8_t addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
   int r = 0;
-  for(int i=0; i<TSK; i++) {
-    if (task[i].callback == 0) {
-      task[i].callback=callback;
+  for(int i=0; i<TMR; i++) {
+    if (tmr[i].callback == 0) {
+      tmr[i].callback=callback;
  80003c6:	6119      	str	r1, [r3, #16]
-      task[i].timer=timer;
+      tmr[i].timer=timer;
  80003c8:	609a      	str	r2, [r3, #8]
-      task[i].timer_auto=timer_auto;
+      tmr[i].timer_auto=timer_auto;
  80003ca:	60da      	str	r2, [r3, #12]
  80003cc:	b662      	cpsie	i
 void rtosInit(void (*idle_func)()) {
   idle_callback=idle_func;
   SysTick_Config(TICKS);
-  addTask(taskStat,1000,1000);
+  addTimer(tmrStat,1000,1000);
   __enable_irq();
 }
  80003ce:	bcf0      	pop	{r4, r5, r6, r7}
@@ -680,13 +680,13 @@ void rtosInit(void (*idle_func)()) {
  80003e0:	e000ed00 	.word	0xe000ed00
  80003e4:	08000325 	.word	0x08000325
 
-080003e8 <removeTask>:
+080003e8 <removeTimer>:
 
-void removeTask(uint8_t num_task) {
+void removeTimer(uint8_t num_tmr) {
  80003e8:	b538      	push	{r3, r4, r5, lr}
-  _memcpy(&task[num_task+1],&task[num_task],(sizeof(struct TASK)) * (TSK-1-num_task));
+  _memcpy(&tmr[num_tmr+1],&tmr[num_tmr],(sizeof(struct TIMER)) * (TMR-1-num_tmr));
  80003ea:	f1c0 0207 	rsb	r2, r0, #7
- 80003ee:	4c0d      	ldr	r4, [pc, #52]	; (8000424 <removeTask+0x3c>)
+ 80003ee:	4c0d      	ldr	r4, [pc, #52]	; (8000424 <removeTimer+0x3c>)
  80003f0:	1c43      	adds	r3, r0, #1
  80003f2:	eb02 0242 	add.w	r2, r2, r2, lsl #1
  80003f6:	eb03 0343 	add.w	r3, r3, r3, lsl #1
@@ -697,7 +697,7 @@ void removeTask(uint8_t num_task) {
  8000408:	eb05 0181 	add.w	r1, r5, r1, lsl #2
  800040c:	f002 02fc 	and.w	r2, r2, #252	; 0xfc
  8000410:	f000 f942 	bl	8000698 <_memcpy>
-  _bzero(&task[TSK-1],sizeof(struct TASK));
+  _bzero(&tmr[TMR-1],sizeof(struct TIMER));
  8000414:	f104 005c 	add.w	r0, r4, #92	; 0x5c
  8000418:	210c      	movs	r1, #12
 }
@@ -705,9 +705,9 @@ void removeTask(uint8_t num_task) {
   __enable_irq();
 }
 
-void removeTask(uint8_t num_task) {
-  _memcpy(&task[num_task+1],&task[num_task],(sizeof(struct TASK)) * (TSK-1-num_task));
-  _bzero(&task[TSK-1],sizeof(struct TASK));
+void removeTimer(uint8_t num_tmr) {
+  _memcpy(&tmr[num_tmr+1],&tmr[num_tmr],(sizeof(struct TIMER)) * (TMR-1-num_tmr));
+  _bzero(&tmr[TMR-1],sizeof(struct TIMER));
  800041e:	f000 b943 	b.w	80006a8 <_bzero>
  8000422:	bf00      	nop
  8000424:	20000068 	.word	0x20000068
@@ -718,55 +718,55 @@ void removeTask(uint8_t num_task) {
 void SysTick_Handler(void) {
  8000428:	4b14      	ldr	r3, [pc, #80]	; (800047c <SysTick_Handler+0x54>)
  800042a:	b570      	push	{r4, r5, r6, lr}
-  for(int i=0; i<TSK; i++) {
+  for(int i=0; i<TMR; i++) {
  800042c:	2400      	movs	r4, #0
-    if (task[i].callback == 0) break;
+    if (tmr[i].callback == 0) break;
  800042e:	6819      	ldr	r1, [r3, #0]
  8000430:	b151      	cbz	r1, 8000448 <SysTick_Handler+0x20>
 
-    if (!task[i].timer) {
+    if (!tmr[i].timer) {
  8000432:	f853 2c08 	ldr.w	r2, [r3, #-8]
-      task[i].timer=task[i].timer_auto;
-      task[i].callback();
-      if (!task[i].timer) removeTask(i);
+      tmr[i].timer=tmr[i].timer_auto;
+      tmr[i].callback();
+      if (!tmr[i].timer) removeTimer(i);
       break;
-    } else task[i].timer--;
+    } else tmr[i].timer--;
  8000436:	1e50      	subs	r0, r2, #1
 
 void SysTick_Handler(void) {
-  for(int i=0; i<TSK; i++) {
-    if (task[i].callback == 0) break;
+  for(int i=0; i<TMR; i++) {
+    if (tmr[i].callback == 0) break;
 
-    if (!task[i].timer) {
+    if (!tmr[i].timer) {
  8000438:	b18a      	cbz	r2, 800045e <SysTick_Handler+0x36>
-  _memcpy(&task[num_task+1],&task[num_task],(sizeof(struct TASK)) * (TSK-1-num_task));
-  _bzero(&task[TSK-1],sizeof(struct TASK));
+  _memcpy(&tmr[num_tmr+1],&tmr[num_tmr],(sizeof(struct TIMER)) * (TMR-1-num_tmr));
+  _bzero(&tmr[TMR-1],sizeof(struct TIMER));
 }
 
 void SysTick_Handler(void) {
-  for(int i=0; i<TSK; i++) {
+  for(int i=0; i<TMR; i++) {
  800043a:	3401      	adds	r4, #1
  800043c:	2c08      	cmp	r4, #8
-    if (!task[i].timer) {
-      task[i].timer=task[i].timer_auto;
-      task[i].callback();
-      if (!task[i].timer) removeTask(i);
+    if (!tmr[i].timer) {
+      tmr[i].timer=tmr[i].timer_auto;
+      tmr[i].callback();
+      if (!tmr[i].timer) removeTimer(i);
       break;
-    } else task[i].timer--;
+    } else tmr[i].timer--;
  800043e:	f843 0c08 	str.w	r0, [r3, #-8]
  8000442:	f103 030c 	add.w	r3, r3, #12
-  _memcpy(&task[num_task+1],&task[num_task],(sizeof(struct TASK)) * (TSK-1-num_task));
-  _bzero(&task[TSK-1],sizeof(struct TASK));
+  _memcpy(&tmr[num_tmr+1],&tmr[num_tmr],(sizeof(struct TIMER)) * (TMR-1-num_tmr));
+  _bzero(&tmr[TMR-1],sizeof(struct TIMER));
 }
 
 void SysTick_Handler(void) {
-  for(int i=0; i<TSK; i++) {
+  for(int i=0; i<TMR; i++) {
  8000446:	d1f2      	bne.n	800042e <SysTick_Handler+0x6>
  8000448:	4d0d      	ldr	r5, [pc, #52]	; (8000480 <SysTick_Handler+0x58>)
-      task[i].callback();
-      if (!task[i].timer) removeTask(i);
+      tmr[i].callback();
+      if (!tmr[i].timer) removeTimer(i);
       break;
-    } else task[i].timer--;
+    } else tmr[i].timer--;
   }
   current_load +=(TICKS-SysTick->VAL);
  800044a:	4b0e      	ldr	r3, [pc, #56]	; (8000484 <SysTick_Handler+0x5c>)
@@ -778,24 +778,24 @@ void SysTick_Handler(void) {
  800045a:	602b      	str	r3, [r5, #0]
  800045c:	bd70      	pop	{r4, r5, r6, pc}
 void SysTick_Handler(void) {
-  for(int i=0; i<TSK; i++) {
-    if (task[i].callback == 0) break;
+  for(int i=0; i<TMR; i++) {
+    if (tmr[i].callback == 0) break;
 
-    if (!task[i].timer) {
-      task[i].timer=task[i].timer_auto;
+    if (!tmr[i].timer) {
+      tmr[i].timer=tmr[i].timer_auto;
  800045e:	4d08      	ldr	r5, [pc, #32]	; (8000480 <SysTick_Handler+0x58>)
  8000460:	eb04 0644 	add.w	r6, r4, r4, lsl #1
  8000464:	eb05 0686 	add.w	r6, r5, r6, lsl #2
  8000468:	68f3      	ldr	r3, [r6, #12]
  800046a:	60b3      	str	r3, [r6, #8]
-      task[i].callback();
+      tmr[i].callback();
  800046c:	4788      	blx	r1
-      if (!task[i].timer) removeTask(i);
+      if (!tmr[i].timer) removeTimer(i);
  800046e:	68b3      	ldr	r3, [r6, #8]
  8000470:	2b00      	cmp	r3, #0
  8000472:	d1ea      	bne.n	800044a <SysTick_Handler+0x22>
  8000474:	b2e0      	uxtb	r0, r4
- 8000476:	f7ff ffb7 	bl	80003e8 <removeTask>
+ 8000476:	f7ff ffb7 	bl	80003e8 <removeTimer>
  800047a:	e7e6      	b.n	800044a <SysTick_Handler+0x22>
  800047c:	20000078 	.word	0x20000078
  8000480:	20000068 	.word	0x20000068
@@ -803,7 +803,7 @@ void SysTick_Handler(void) {
 
 08000488 <delay>:
 
-static void endDelayTask(void) {
+static void endDelayTimer(void) {
   flag_delay=0;
 }
 
@@ -813,20 +813,20 @@ void delay(uint32_t time_ms) {
   return load_cpu;
 }
 
-uint8_t addTask(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
+uint8_t addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
   int r = 0;
-  for(int i=0; i<TSK; i++) {
+  for(int i=0; i<TMR; i++) {
  800048c:	2300      	movs	r3, #0
-    if (task[i].callback == 0) {
+    if (tmr[i].callback == 0) {
  800048e:	6891      	ldr	r1, [r2, #8]
  8000490:	320c      	adds	r2, #12
  8000492:	b179      	cbz	r1, 80004b4 <delay+0x2c>
   return load_cpu;
 }
 
-uint8_t addTask(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
+uint8_t addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
   int r = 0;
-  for(int i=0; i<TSK; i++) {
+  for(int i=0; i<TMR; i++) {
  8000494:	3301      	adds	r3, #1
  8000496:	2b08      	cmp	r3, #8
  8000498:	d1f9      	bne.n	800048e <delay+0x6>
@@ -835,7 +835,7 @@ uint8_t addTask(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
 }
 
 void delay(uint32_t time_ms) {
-  addTask(endDelayTask,time_ms,0);
+  addTimer(endDelayTimer,time_ms,0);
   flag_delay=1;
  800049c:	4c0c      	ldr	r4, [pc, #48]	; (80004d0 <delay+0x48>)
  800049e:	2301      	movs	r3, #1
@@ -848,7 +848,7 @@ void delay(uint32_t time_ms) {
 }
 
 void delay(uint32_t time_ms) {
-  addTask(endDelayTask,time_ms,0);
+  addTimer(endDelayTimer,time_ms,0);
   flag_delay=1;
   while(flag_delay) {
  80004a8:	7823      	ldrb	r3, [r4, #0]
@@ -860,32 +860,32 @@ void delay(uint32_t time_ms) {
  80004ae:	bd38      	pop	{r3, r4, r5, pc}
 
 void delay(uint32_t time_ms) {
-  addTask(endDelayTask,time_ms,0);
+  addTimer(endDelayTimer,time_ms,0);
   flag_delay=1;
   while(flag_delay) {
     if (idle_callback) (*idle_callback)();
  80004b0:	4790      	blx	r2
  80004b2:	e7f6      	b.n	80004a2 <delay+0x1a>
 
-uint8_t addTask(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
+uint8_t addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
   int r = 0;
-  for(int i=0; i<TSK; i++) {
-    if (task[i].callback == 0) {
-      task[i].callback=callback;
+  for(int i=0; i<TMR; i++) {
+    if (tmr[i].callback == 0) {
+      tmr[i].callback=callback;
  80004b4:	4d05      	ldr	r5, [pc, #20]	; (80004cc <delay+0x44>)
  80004b6:	eb03 0343 	add.w	r3, r3, r3, lsl #1
  80004ba:	4a06      	ldr	r2, [pc, #24]	; (80004d4 <delay+0x4c>)
  80004bc:	eb05 0383 	add.w	r3, r5, r3, lsl #2
-      task[i].timer=timer;
+      tmr[i].timer=timer;
  80004c0:	6098      	str	r0, [r3, #8]
-      task[i].timer_auto=timer_auto;
+      tmr[i].timer_auto=timer_auto;
  80004c2:	60d9      	str	r1, [r3, #12]
 
-uint8_t addTask(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
+uint8_t addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
   int r = 0;
-  for(int i=0; i<TSK; i++) {
-    if (task[i].callback == 0) {
-      task[i].callback=callback;
+  for(int i=0; i<TMR; i++) {
+    if (tmr[i].callback == 0) {
+      tmr[i].callback=callback;
  80004c4:	611a      	str	r2, [r3, #16]
  80004c6:	e7e9      	b.n	800049c <delay+0x14>
  80004c8:	20000070 	.word	0x20000070
@@ -996,10 +996,10 @@ void SystemInit (void) {
  8000534:	40022000 	.word	0x40022000
 
 08000538 <usartWrite>:
+#include "usart1.h"
+#include "asmfunc.h"
+#include "sysinit.h"
 #include "srtos.h"
-
-//char usart_rx_bufer[USART_RX_BUFER_SIZE];
-//uint16_t usart_rx_index = USART_RX_BUFER_SIZE;
 
 void usartWrite(uint8_t c) {
  8000538:	b410      	push	{r4}
@@ -1049,18 +1049,15 @@ void usartInit(uint32_t baud) {
  8000588:	40013800 	.word	0x40013800
 
 0800058c <usartPrint>:
-  DMA1_Channel5->CCR = DMA_CCR1_MINC | DMA_CCR1_CIRC;
-  DMA1_Channel5->CCR |= DMA_CCR1_EN;
-*/
 }
 
 void usartPrint (char *s) {
  800058c:	b538      	push	{r3, r4, r5, lr}
   while (DMA1_Channel4->CNDTR || !(USART1->SR & USART_SR_TXE));
  800058e:	4a0c      	ldr	r2, [pc, #48]	; (80005c0 <usartPrint+0x34>)
-  DMA1_Channel5->CCR = DMA_CCR1_MINC | DMA_CCR1_CIRC;
-  DMA1_Channel5->CCR |= DMA_CCR1_EN;
-*/
+  USART1->BRR = SYSCLK / baud;
+  USART1->CR3 |= USART_CR3_DMAT | USART_CR3_DMAR;
+  USART1->CR1 |= USART_CR1_UE | USART_CR1_TE | USART_CR1_RE;
 }
 
 void usartPrint (char *s) {
@@ -1077,7 +1074,7 @@ void usartPrint (char *s) {
   DMA1_Channel4->CCR = 0;
   DMA1_Channel4->CPAR = (uint32_t)(&USART1->DR);
  80005a2:	4a09      	ldr	r2, [pc, #36]	; (80005c8 <usartPrint+0x3c>)
-*/
+  USART1->CR1 |= USART_CR1_UE | USART_CR1_TE | USART_CR1_RE;
 }
 
 void usartPrint (char *s) {
@@ -1120,10 +1117,7 @@ void usartPrint (char *s) {
  80005c8:	40013804 	.word	0x40013804
 
 080005cc <usartReceive>:
-  usart_rx_index--;
-  if (usart_rx_index == 0) usart_rx_index =  USART_RX_BUFER_SIZE;
-  return c;
-} */
+}
 
 uint16_t usartReceive(char *bufer, uint16_t bufer_size) {
  80005cc:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
@@ -1147,8 +1141,8 @@ uint16_t usartReceive(char *bufer, uint16_t bufer_size) {
   DMA1_Channel5->CNDTR = bufer_size;
   DMA1_Channel5->CCR = DMA_CCR1_MINC | DMA_CCR1_CIRC;
  80005d8:	21a0      	movs	r1, #160	; 0xa0
-  return c;
-} */
+  DMA1_Channel4->CCR |= DMA_CCR1_EN;
+}
 
 uint16_t usartReceive(char *bufer, uint16_t bufer_size) {
   int v;

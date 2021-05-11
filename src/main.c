@@ -48,8 +48,8 @@ int main()
 
   usartInit(115200);
   rtosInit(0);
-  addTask(scanKey,20,20);
-  addTask(togleLed,1000,1000);
+  addTimer(scanKey,20,20);
+  addTimer(togleLed,1000,1000);
   __set_PSP(0x20004F00);
   __set_CONTROL(3);
   usartPrint("Start\n");
