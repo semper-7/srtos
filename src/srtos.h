@@ -13,7 +13,9 @@ typedef struct TIMER {
 } TIMER;
 
 typedef struct TASK {
-  uint32_t context[16];
+  uint32_t stack_pointer;
+  uint32_t priority;
+  uint32_t counter;
 } TASK;
 
 uint32_t getLoadCPU();
@@ -21,7 +23,7 @@ void rtosInit(void(*idle_func)());
 uint8_t addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto);
 void removeTimer(uint8_t num_tmr);
 void delay(uint32_t time_ms);
-uint8_t addTask(void (*addr_task)());
+uint32_t addTask(void (*addr_task)());
 
 #endif  // __SRTOS_H__
 

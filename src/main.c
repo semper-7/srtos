@@ -2,23 +2,28 @@
 #include "usart1.h"
 #include "srtos.h"
 #include "func.h"
+#include "asmfunc.h"
 
 #define USART_BUFER_SIZE 80
 char usart_rx_bufer[USART_BUFER_SIZE];
 char usart_tx_bufer[USART_BUFER_SIZE];
 
-extern TASK task[TSK];
-static int ctx;
+void task0(void) {
+  usartPrint("Start task0\n");
+  while(1);
+}
+
 
 void togleLed(void) {
   GPIOC->ODR ^= GPIO_ODR_ODR13;
-  itoa(usart_tx_bufer,task[2].context[ctx + 8], 8, HEX);
-  usart_tx_bufer[8] = '\t';
-  itoa(&usart_tx_bufer[9], ctx++, 8, HEX);
-  usart_tx_bufer[17] = '\n';
-  usart_tx_bufer[18] = 0;
+  char *s = itoa(usart_tx_bufer, __get_MSP(), 8, HEX);
+  *(s++) = '\t';
+  s = itoa(s, __get_PSP(), 8, HEX);
+  *(s++) = '\t';
+  s = itoa(s, __get_CONTROL(), 1, HEX);
+  *(s++) = '\n';
+  *(s++) = 0;
   usartPrint(usart_tx_bufer);
-  if (ctx==8) ctx = 0;
 }
 
 void scanKey() {
@@ -61,32 +66,16 @@ int main()
   rtosInit(0);
   addTimer(scanKey,20,20);
   addTimer(togleLed,1000,1000);
-  __set_PSP((uint32_t)&task[3]);
-  __set_CONTROL(3);
   usartPrint("Start\n");
   usartPrint("Begin\n");
-  while(1) {
-extern void __set_reg(void);
-    __set_reg();
-/*
-    delay(1000);
+  char *s = itoa(usart_tx_bufer, __get_CONTROL(), 1, HEX);
+  *(s++) = '\n';
+  *(s++) = 0;
+  usartPrint(usart_tx_bufer);
+  addTask(task0);
+  __start_RTOS(task0);
 
-    usartReceive(usart_rx_bufer, USART_RX_BUFER_SIZE);
-    usartPrint(usart_rx_bufer);
-    usartPrint("Load cpu: ");
-    usartPrint(itoa(getLoadCPU(),DEC));
-    usartWrite('\t');
-    usartPrint(itoa(getLoadCPU(),HEX));
-    usartWrite('\t');
-    usartPrint(itoa(DMA1_Channel5->CNDTR,HEX8));
-    usartWrite('\t');
-    usartPrint(itoa(__get_MSP(),HEX));
-    usartWrite('\t');
-    usartPrint(itoa(__get_PSP(),HEX));
-    usartWrite('\t');
-    usartPrint(itoa(__get_CONTROL(),HEX));
-    usartWrite('\n');
-*/
-  }
+//    delay(1000);
+
 }
 

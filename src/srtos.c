@@ -9,6 +9,8 @@ static volatile uint32_t load_cpu;
 static volatile uint32_t current_load;
 volatile uint8_t flag_delay;
 static void (*idle_callback)(void);
+extern void *__stack_top__;
+
 
 static void timerStat() {
   load_cpu=current_load;
@@ -67,13 +69,13 @@ void delay(uint32_t time_ms) {
   }
 }
 
-uint8_t addTask(void (*addr_task)()) {
+uint32_t addTask(void (*addr_task)()) {
   __disable_irq();
-  uint8_t n = task_new++;
+  uint32_t n = task_new++;
   if (n<TSK) {
-
+    uint32_t* sp = (uint32_t*)&__stack_top__ - 1024 - (n<<8);
+    task[n].stack_pointer = (uint32_t)sp;
   }
   __enable_irq();
   return n;
 }
-

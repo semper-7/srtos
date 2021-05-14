@@ -21,12 +21,12 @@ _stp1:	bx	lr
 .global __get_MSP
 __get_MSP:
 	mrs	r0,msp
-	bx	lr 
+	bx	lr
 
 .global __get_PSP
 __get_PSP:
 	mrs	r0,psp
-	bx	lr 
+	bx	lr
 
 .global __get_CONTROL
 __get_CONTROL:
@@ -43,12 +43,13 @@ __set_CONTROL:
 	msr	control,r0
 	bx	lr
 
-.global __set_reg
-__set_reg:
-	movs	r0,#0
-	movs	r1,#1
-	movs	r2,#2
-	movs	r3,#3
-	movs	r12,#12
-	bx	lr
-
+.global __start_RTOS
+__start_RTOS:
+	cpsie	i
+	ldr	r1,=__stack_top__
+	sub	r1,r1,#1024
+	msr	psp,r1
+	movs	r1,#3
+	msr	control,r1
+	cpsid	i	
+	bx	r0
