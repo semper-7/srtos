@@ -2,20 +2,22 @@
 #include "usart1.h"
 #include "srtos.h"
 #include "func.h"
-#include "func.h"
 
-#define USART_RX_BUFER_SIZE 80
-char usart_rx_bufer[USART_RX_BUFER_SIZE];
+#define USART_BUFER_SIZE 80
+char usart_rx_bufer[USART_BUFER_SIZE];
+char usart_tx_bufer[USART_BUFER_SIZE];
 
 extern TASK task[TSK];
 static int ctx;
 
 void togleLed(void) {
   GPIOC->ODR ^= GPIO_ODR_ODR13;
-  usartPrint(itoa(task[2].context[ctx + 8],HEX8));
-  usartWrite('\t');
-  usartPrint(itoa(ctx++,HEX));
-  usartWrite('\n');
+  itoa(usart_tx_bufer,task[2].context[ctx + 8], 8, HEX);
+  usart_tx_bufer[8] = '\t';
+  itoa(&usart_tx_bufer[9], ctx++, 8, HEX);
+  usart_tx_bufer[17] = '\n';
+  usart_tx_bufer[18] = 0;
+  usartPrint(usart_tx_bufer);
   if (ctx==8) ctx = 0;
 }
 

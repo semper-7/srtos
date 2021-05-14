@@ -66,3 +66,14 @@ void delay(uint32_t time_ms) {
     if (idle_callback) (*idle_callback)();
   }
 }
+
+uint8_t addTask(void (*addr_task)()) {
+  __disable_irq();
+  uint8_t n = task_new++;
+  if (n<TSK) {
+
+  }
+  __enable_irq();
+  return n;
+}
+
