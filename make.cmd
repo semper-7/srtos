@@ -17,11 +17,11 @@ set LS=arm-none-eabi-objdump
 set OB=arm-none-eabi-objcopy
 set SZ=arm-none-eabi-size
 
-for /r %%I in (*.c) do set C=!C! %%I& echo Compile %%I ...
-%CC% %CF% %CI% -c !C!
+for /r %%I in (*.asm) do echo Compile %%~I ...& %AS% %AF% -o %%~nI.o %%~I
 if %errorlevel% NEQ 0 goto error
 
-for /r %%I in (*.asm) do echo Compile %%~I ...& %AS% %AF% -o %%~nI.o %%~I
+for /r %%I in (*.c) do set C=!C! %%I& echo Compile %%I ...
+%CC% %CF% %CI% -c !C!
 if %errorlevel% NEQ 0 goto error
 
 echo Linking ...

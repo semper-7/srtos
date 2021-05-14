@@ -2,12 +2,21 @@
 #include "usart1.h"
 #include "srtos.h"
 #include "func.h"
+#include "func.h"
 
 #define USART_RX_BUFER_SIZE 80
 char usart_rx_bufer[USART_RX_BUFER_SIZE];
 
+extern TASK task[TSK];
+static int ctx;
+
 void togleLed(void) {
   GPIOC->ODR ^= GPIO_ODR_ODR13;
+  usartPrint(itoa(task[2].context[ctx + 8],HEX8));
+  usartWrite('\t');
+  usartPrint(itoa(ctx++,HEX));
+  usartWrite('\n');
+  if (ctx==8) ctx = 0;
 }
 
 void scanKey() {
@@ -50,12 +59,16 @@ int main()
   rtosInit(0);
   addTimer(scanKey,20,20);
   addTimer(togleLed,1000,1000);
-  __set_PSP(0x20004F00);
+  __set_PSP((uint32_t)&task[3]);
   __set_CONTROL(3);
   usartPrint("Start\n");
   usartPrint("Begin\n");
-  for(;;){
-//    delay(1000);
+  while(1) {
+extern void __set_reg(void);
+    __set_reg();
+/*
+    delay(1000);
+
     usartReceive(usart_rx_bufer, USART_RX_BUFER_SIZE);
     usartPrint(usart_rx_bufer);
     usartPrint("Load cpu: ");
@@ -71,6 +84,7 @@ int main()
     usartWrite('\t');
     usartPrint(itoa(__get_CONTROL(),HEX));
     usartWrite('\n');
+*/
   }
 }
 

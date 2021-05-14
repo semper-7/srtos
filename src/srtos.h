@@ -2,14 +2,19 @@
 #define __SRTOS_H__
 #include "stm32f10x.h"
 
-#define TICKS 72000             // count ticks in 1ms
-#define TMR 8                   // count of task
+#define TICKS 72000                // count ticks in 1ms
+#define TMR 8                      // count of timer
+#define TSK 4                      // count of task
 
 typedef struct TIMER {
+  void (*callback)(void);
   uint32_t timer;
   uint32_t timer_auto;
-  void (*callback)(void);
 } TIMER;
+
+typedef struct TASK {
+  uint32_t context[16];
+} TASK;
 
 uint32_t getLoadCPU();
 void rtosInit(void(*idle_func)());

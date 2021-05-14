@@ -20,7 +20,7 @@ void usartPrint (char *s) {
   DMA1_Channel4->CCR = 0;
   DMA1_Channel4->CPAR = (uint32_t)(&USART1->DR);
   DMA1_Channel4->CMAR = (uint32_t)s;
-  DMA1_Channel4->CNDTR = _strlen(s);
+  DMA1_Channel4->CNDTR = __strlen(s);
   DMA1_Channel4->CCR = DMA_CCR1_MINC | DMA_CCR1_DIR;
   DMA1_Channel4->CCR |= DMA_CCR1_EN;
 }

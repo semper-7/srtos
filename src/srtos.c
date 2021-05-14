@@ -1,14 +1,16 @@
 #include "srtos.h"
 #include "asmfunc.h"
 
-
-static TIMER tmr[TMR];
+TASK task[TSK];
+TIMER tmr[TMR];
+static volatile uint8_t task_new;
+static volatile uint8_t timer_new;
 static volatile uint32_t load_cpu;
 static volatile uint32_t current_load;
 volatile uint8_t flag_delay;
 static void (*idle_callback)(void);
 
-static void tmrStat() {
+static void timerStat() {
   load_cpu=current_load;
   current_load=0;
 }
@@ -18,41 +20,37 @@ uint32_t getLoadCPU() {
 }
 
 uint8_t addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
-  int r = 0;
-  for(int i=0; i<TMR; i++) {
-    if (tmr[i].callback == 0) {
-      tmr[i].callback=callback;
-      tmr[i].timer=timer;
-      tmr[i].timer_auto=timer_auto;
-      r = i;
-      break;
-    }
+  __disable_irq();
+  uint8_t n = timer_new++;
+  if (n<TMR) {
+    tmr[n].callback=callback;
+    tmr[n].timer=timer;
+    tmr[n].timer_auto=timer_auto;
   }
-  return r;
+  __enable_irq();
+  return n;
 }
 
 void rtosInit(void (*idle_func)()) {
   idle_callback=idle_func;
   SysTick_Config(TICKS);
-  addTimer(tmrStat,1000,1000);
-  __enable_irq();
+  addTimer(timerStat,1000,1000);
 }
 
 void removeTimer(uint8_t num_tmr) {
-  _memcpy(&tmr[num_tmr+1],&tmr[num_tmr],(sizeof(struct TIMER)) * (TMR-1-num_tmr));
-  _bzero(&tmr[TMR-1],sizeof(struct TIMER));
+  __memcpy(&tmr[num_tmr+1],&tmr[num_tmr],(sizeof(struct TIMER)) * (timer_new-num_tmr-1));
+  timer_new--;
 }
 
 void SysTick_Handler(void) {
-  for(int i=0; i<TMR; i++) {
-    if (tmr[i].callback == 0) break;
-
-    if (!tmr[i].timer) {
+  for(int i=0; i<timer_new; i++) {
+    if (tmr[i].timer) {
+      tmr[i].timer--;
+    } else {
       tmr[i].timer=tmr[i].timer_auto;
-      tmr[i].callback();
+      if (tmr[i].callback) tmr[i].callback();
       if (!tmr[i].timer) removeTimer(i);
-      break;
-    } else tmr[i].timer--;
+    }
   }
   current_load +=(TICKS-SysTick->VAL);
 }
