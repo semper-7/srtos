@@ -45,1125 +45,1338 @@ Disassembly of section .text:
 
 0800016e <__start_RTOS>:
  800016e:	b662      	cpsie	i
- 8000170:	4904      	ldr	r1, [pc, #16]	; (8000184 <__start_RTOS+0x16>)
- 8000172:	f5a1 6180 	sub.w	r1, r1, #1024	; 0x400
- 8000176:	f381 8809 	msr	PSP, r1
- 800017a:	2103      	movs	r1, #3
- 800017c:	f381 8814 	msr	CONTROL, r1
- 8000180:	b672      	cpsid	i
- 8000182:	4700      	bx	r0
- 8000184:	20005000 	.word	0x20005000
+ 8000170:	4903      	ldr	r1, [pc, #12]	; (8000180 <__start_RTOS+0x12>)
+ 8000172:	f381 8809 	msr	PSP, r1
+ 8000176:	2103      	movs	r1, #3
+ 8000178:	f381 8814 	msr	CONTROL, r1
+ 800017c:	b672      	cpsid	i
+ 800017e:	4700      	bx	r0
+ 8000180:	20004c00 	.word	0x20004c00
 
-08000188 <Reset_Handler>:
- 8000188:	4807      	ldr	r0, [pc, #28]	; (80001a8 <Reset_Handler+0x20>)
- 800018a:	4685      	mov	sp, r0
- 800018c:	b672      	cpsid	i
- 800018e:	4807      	ldr	r0, [pc, #28]	; (80001ac <Reset_Handler+0x24>)
- 8000190:	4907      	ldr	r1, [pc, #28]	; (80001b0 <Reset_Handler+0x28>)
- 8000192:	4a08      	ldr	r2, [pc, #32]	; (80001b4 <Reset_Handler+0x2c>)
- 8000194:	f000 f816 	bl	80001c4 <__memcpy>
- 8000198:	4807      	ldr	r0, [pc, #28]	; (80001b8 <Reset_Handler+0x30>)
- 800019a:	4908      	ldr	r1, [pc, #32]	; (80001bc <Reset_Handler+0x34>)
- 800019c:	f000 f81a 	bl	80001d4 <__bzero>
- 80001a0:	4807      	ldr	r0, [pc, #28]	; (80001c0 <Reset_Handler+0x38>)
- 80001a2:	4780      	blx	r0
- 80001a4:	f000 b8b0 	b.w	8000308 <main>
- 80001a8:	20005000 	.word	0x20005000
- 80001ac:	0800065c 	.word	0x0800065c
- 80001b0:	20000150 	.word	0x20000150
- 80001b4:	00000000 	.word	0x00000000
- 80001b8:	20000134 	.word	0x20000134
- 80001bc:	00000019 	.word	0x00000019
- 80001c0:	08000565 	.word	0x08000565
+08000184 <Reset_Handler>:
+ 8000184:	4807      	ldr	r0, [pc, #28]	; (80001a4 <Reset_Handler+0x20>)
+ 8000186:	4685      	mov	sp, r0
+ 8000188:	b672      	cpsid	i
+ 800018a:	4807      	ldr	r0, [pc, #28]	; (80001a8 <Reset_Handler+0x24>)
+ 800018c:	4907      	ldr	r1, [pc, #28]	; (80001ac <Reset_Handler+0x28>)
+ 800018e:	4a08      	ldr	r2, [pc, #32]	; (80001b0 <Reset_Handler+0x2c>)
+ 8000190:	f000 f816 	bl	80001c0 <__memcpy>
+ 8000194:	4807      	ldr	r0, [pc, #28]	; (80001b4 <Reset_Handler+0x30>)
+ 8000196:	4908      	ldr	r1, [pc, #32]	; (80001b8 <Reset_Handler+0x34>)
+ 8000198:	f000 f81a 	bl	80001d0 <__bzero>
+ 800019c:	4807      	ldr	r0, [pc, #28]	; (80001bc <Reset_Handler+0x38>)
+ 800019e:	4780      	blx	r0
+ 80001a0:	f000 b8c6 	b.w	8000330 <main>
+ 80001a4:	20005000 	.word	0x20005000
+ 80001a8:	080006d0 	.word	0x080006d0
+ 80001ac:	200001c4 	.word	0x200001c4
+ 80001b0:	00000000 	.word	0x00000000
+ 80001b4:	200001b0 	.word	0x200001b0
+ 80001b8:	00000012 	.word	0x00000012
+ 80001bc:	080005d9 	.word	0x080005d9
 
-080001c4 <__memcpy>:
- 80001c4:	b12a      	cbz	r2, 80001d2 <_mcl1>
+080001c0 <__memcpy>:
+ 80001c0:	b12a      	cbz	r2, 80001ce <_mcl1>
 
-080001c6 <_mcl0>:
- 80001c6:	f810 3b01 	ldrb.w	r3, [r0], #1
- 80001ca:	f801 3b01 	strb.w	r3, [r1], #1
- 80001ce:	3a01      	subs	r2, #1
- 80001d0:	d1f9      	bne.n	80001c6 <_mcl0>
+080001c2 <_mcl0>:
+ 80001c2:	f810 3b01 	ldrb.w	r3, [r0], #1
+ 80001c6:	f801 3b01 	strb.w	r3, [r1], #1
+ 80001ca:	3a01      	subs	r2, #1
+ 80001cc:	d1f9      	bne.n	80001c2 <_mcl0>
 
-080001d2 <_mcl1>:
- 80001d2:	4770      	bx	lr
+080001ce <_mcl1>:
+ 80001ce:	4770      	bx	lr
 
-080001d4 <__bzero>:
- 80001d4:	b129      	cbz	r1, 80001e2 <_bzr1>
- 80001d6:	f04f 0200 	mov.w	r2, #0
+080001d0 <__bzero>:
+ 80001d0:	b129      	cbz	r1, 80001de <_bzr1>
+ 80001d2:	f04f 0200 	mov.w	r2, #0
 
-080001da <_bzr0>:
- 80001da:	f800 2b01 	strb.w	r2, [r0], #1
- 80001de:	3901      	subs	r1, #1
- 80001e0:	d1fb      	bne.n	80001da <_bzr0>
+080001d6 <_bzr0>:
+ 80001d6:	f800 2b01 	strb.w	r2, [r0], #1
+ 80001da:	3901      	subs	r1, #1
+ 80001dc:	d1fb      	bne.n	80001d6 <_bzr0>
 
-080001e2 <_bzr1>:
- 80001e2:	4770      	bx	lr
+080001de <_bzr1>:
+ 80001de:	4770      	bx	lr
 
-080001e4 <ADC1_2_IRQHandler>:
- 80001e4:	e7fe      	b.n	80001e4 <ADC1_2_IRQHandler>
+080001e0 <ADC1_2_IRQHandler>:
+ 80001e0:	e7fe      	b.n	80001e0 <ADC1_2_IRQHandler>
 	...
 
-080001e8 <itoa>:
+080001e4 <itoa>:
 #include "func.h"
 #include "asmfunc.h"
 
 char* itoa(char* bufer, uint32_t num, uint8_t num_dig, uint8_t type) {
- 80001e8:	b470      	push	{r4, r5, r6}
+ 80001e4:	b470      	push	{r4, r5, r6}
   char *s;
   if (num_dig) {
- 80001ea:	b38a      	cbz	r2, 8000250 <itoa+0x68>
+ 80001e6:	b38a      	cbz	r2, 800024c <itoa+0x68>
     s = &bufer[num_dig];
- 80001ec:	1884      	adds	r4, r0, r2
+ 80001e8:	1884      	adds	r4, r0, r2
   } else {
     s = &bufer[10];
   }
   *(s) = 0;
- 80001ee:	2500      	movs	r5, #0
- 80001f0:	7025      	strb	r5, [r4, #0]
+ 80001ea:	2500      	movs	r5, #0
+ 80001ec:	7025      	strb	r5, [r4, #0]
   if(type) {
- 80001f2:	b9ab      	cbnz	r3, 8000220 <itoa+0x38>
+ 80001ee:	b9ab      	cbnz	r3, 800021c <itoa+0x38>
       *(--s) = n;
       num >>= 4;
     } while(s!=bufer && (num_dig || num));
   } else {
     do {
       *(--s) = (uint8_t)(num%10 + 0x30);
- 80001f4:	4e18      	ldr	r6, [pc, #96]	; (8000258 <itoa+0x70>)
- 80001f6:	fba6 3501 	umull	r3, r5, r6, r1
- 80001fa:	08ed      	lsrs	r5, r5, #3
- 80001fc:	eb05 0385 	add.w	r3, r5, r5, lsl #2
- 8000200:	eba1 0343 	sub.w	r3, r1, r3, lsl #1
- 8000204:	3330      	adds	r3, #48	; 0x30
- 8000206:	f804 3d01 	strb.w	r3, [r4, #-1]!
+ 80001f0:	4e18      	ldr	r6, [pc, #96]	; (8000254 <itoa+0x70>)
+ 80001f2:	fba6 3501 	umull	r3, r5, r6, r1
+ 80001f6:	08ed      	lsrs	r5, r5, #3
+ 80001f8:	eb05 0385 	add.w	r3, r5, r5, lsl #2
+ 80001fc:	eba1 0343 	sub.w	r3, r1, r3, lsl #1
+ 8000200:	3330      	adds	r3, #48	; 0x30
+ 8000202:	f804 3d01 	strb.w	r3, [r4, #-1]!
       num /= 10;
     } while(s!=bufer && (num_dig || num));
- 800020a:	42a0      	cmp	r0, r4
+ 8000206:	42a0      	cmp	r0, r4
       num >>= 4;
     } while(s!=bufer && (num_dig || num));
   } else {
     do {
       *(--s) = (uint8_t)(num%10 + 0x30);
       num /= 10;
- 800020c:	4629      	mov	r1, r5
+ 8000208:	4629      	mov	r1, r5
     } while(s!=bufer && (num_dig || num));
- 800020e:	d01a      	beq.n	8000246 <itoa+0x5e>
- 8000210:	2a00      	cmp	r2, #0
- 8000212:	d1f0      	bne.n	80001f6 <itoa+0xe>
- 8000214:	2d00      	cmp	r5, #0
- 8000216:	d1ee      	bne.n	80001f6 <itoa+0xe>
+ 800020a:	d01a      	beq.n	8000242 <itoa+0x5e>
+ 800020c:	2a00      	cmp	r2, #0
+ 800020e:	d1f0      	bne.n	80001f2 <itoa+0xe>
+ 8000210:	2d00      	cmp	r5, #0
+ 8000212:	d1ee      	bne.n	80001f2 <itoa+0xe>
   }
   if (num_dig) {
     return bufer + num_dig;
   } else {
     return __stpcpy(bufer, s);
- 8000218:	4621      	mov	r1, r4
+ 8000214:	4621      	mov	r1, r4
   }
 }
- 800021a:	bc70      	pop	{r4, r5, r6}
+ 8000216:	bc70      	pop	{r4, r5, r6}
     } while(s!=bufer && (num_dig || num));
   }
   if (num_dig) {
     return bufer + num_dig;
   } else {
     return __stpcpy(bufer, s);
- 800021c:	f7ff bf91 	b.w	8000142 <__stpcpy>
+ 8000218:	f7ff bf93 	b.w	8000142 <__stpcpy>
     s = &bufer[10];
   }
   *(s) = 0;
   if(type) {
     do {
       int n = (num&0xf)+0x30;
- 8000220:	f001 050f 	and.w	r5, r1, #15
- 8000224:	f105 0330 	add.w	r3, r5, #48	; 0x30
+ 800021c:	f001 050f 	and.w	r5, r1, #15
+ 8000220:	f105 0330 	add.w	r3, r5, #48	; 0x30
       if (n>0x39) n += 7; 
- 8000228:	2b39      	cmp	r3, #57	; 0x39
- 800022a:	bf88      	it	hi
- 800022c:	f105 0337 	addhi.w	r3, r5, #55	; 0x37
+ 8000224:	2b39      	cmp	r3, #57	; 0x39
+ 8000226:	bf88      	it	hi
+ 8000228:	f105 0337 	addhi.w	r3, r5, #55	; 0x37
       *(--s) = n;
- 8000230:	f804 3d01 	strb.w	r3, [r4, #-1]!
+ 800022c:	f804 3d01 	strb.w	r3, [r4, #-1]!
       num >>= 4;
     } while(s!=bufer && (num_dig || num));
- 8000234:	42a0      	cmp	r0, r4
+ 8000230:	42a0      	cmp	r0, r4
   if(type) {
     do {
       int n = (num&0xf)+0x30;
       if (n>0x39) n += 7; 
       *(--s) = n;
       num >>= 4;
- 8000236:	ea4f 1111 	mov.w	r1, r1, lsr #4
+ 8000232:	ea4f 1111 	mov.w	r1, r1, lsr #4
     } while(s!=bufer && (num_dig || num));
- 800023a:	d004      	beq.n	8000246 <itoa+0x5e>
- 800023c:	2a00      	cmp	r2, #0
- 800023e:	d1ef      	bne.n	8000220 <itoa+0x38>
- 8000240:	2900      	cmp	r1, #0
- 8000242:	d1ed      	bne.n	8000220 <itoa+0x38>
- 8000244:	e7e8      	b.n	8000218 <itoa+0x30>
+ 8000236:	d004      	beq.n	8000242 <itoa+0x5e>
+ 8000238:	2a00      	cmp	r2, #0
+ 800023a:	d1ef      	bne.n	800021c <itoa+0x38>
+ 800023c:	2900      	cmp	r1, #0
+ 800023e:	d1ed      	bne.n	800021c <itoa+0x38>
+ 8000240:	e7e8      	b.n	8000214 <itoa+0x30>
     do {
       *(--s) = (uint8_t)(num%10 + 0x30);
       num /= 10;
     } while(s!=bufer && (num_dig || num));
   }
   if (num_dig) {
- 8000246:	2a00      	cmp	r2, #0
- 8000248:	d0e6      	beq.n	8000218 <itoa+0x30>
+ 8000242:	2a00      	cmp	r2, #0
+ 8000244:	d0e6      	beq.n	8000214 <itoa+0x30>
     return bufer + num_dig;
   } else {
     return __stpcpy(bufer, s);
   }
 }
- 800024a:	bc70      	pop	{r4, r5, r6}
+ 8000246:	bc70      	pop	{r4, r5, r6}
       *(--s) = (uint8_t)(num%10 + 0x30);
       num /= 10;
     } while(s!=bufer && (num_dig || num));
   }
   if (num_dig) {
     return bufer + num_dig;
- 800024c:	4410      	add	r0, r2
+ 8000248:	4410      	add	r0, r2
   } else {
     return __stpcpy(bufer, s);
   }
 }
- 800024e:	4770      	bx	lr
+ 800024a:	4770      	bx	lr
 char* itoa(char* bufer, uint32_t num, uint8_t num_dig, uint8_t type) {
   char *s;
   if (num_dig) {
     s = &bufer[num_dig];
   } else {
     s = &bufer[10];
- 8000250:	f100 040a 	add.w	r4, r0, #10
- 8000254:	e7cb      	b.n	80001ee <itoa+0x6>
- 8000256:	bf00      	nop
- 8000258:	cccccccd 	.word	0xcccccccd
+ 800024c:	f100 040a 	add.w	r4, r0, #10
+ 8000250:	e7cb      	b.n	80001ea <itoa+0x6>
+ 8000252:	bf00      	nop
+ 8000254:	cccccccd 	.word	0xcccccccd
 
-0800025c <task0>:
-
+08000258 <task0>:
 #define USART_BUFER_SIZE 80
 char usart_rx_bufer[USART_BUFER_SIZE];
 char usart_tx_bufer[USART_BUFER_SIZE];
+char usart_tx_bufer_task0[USART_BUFER_SIZE];
 
 void task0(void) {
- 800025c:	b508      	push	{r3, lr}
-  usartPrint("Start task0\n");
- 800025e:	4802      	ldr	r0, [pc, #8]	; (8000268 <task0+0xc>)
- 8000260:	f000 f9c8 	bl	80005f4 <usartPrint>
- 8000264:	e7fe      	b.n	8000264 <task0+0x8>
- 8000266:	bf00      	nop
- 8000268:	08000634 	.word	0x08000634
-
-0800026c <togleLed>:
-  while(1);
-}
-
-
-void togleLed(void) {
-  GPIOC->ODR ^= GPIO_ODR_ODR13;
- 800026c:	4a16      	ldr	r2, [pc, #88]	; (80002c8 <togleLed+0x5c>)
-  usartPrint("Start task0\n");
-  while(1);
-}
-
-
-void togleLed(void) {
- 800026e:	b570      	push	{r4, r5, r6, lr}
-  GPIOC->ODR ^= GPIO_ODR_ODR13;
- 8000270:	68d3      	ldr	r3, [r2, #12]
-  char *s = itoa(usart_tx_bufer, __get_MSP(), 8, HEX);
- 8000272:	4d16      	ldr	r5, [pc, #88]	; (80002cc <togleLed+0x60>)
-  while(1);
-}
-
-
-void togleLed(void) {
-  GPIOC->ODR ^= GPIO_ODR_ODR13;
- 8000274:	f483 5300 	eor.w	r3, r3, #8192	; 0x2000
- 8000278:	60d3      	str	r3, [r2, #12]
-  char *s = itoa(usart_tx_bufer, __get_MSP(), 8, HEX);
- 800027a:	f7ff ff69 	bl	8000150 <__get_MSP>
- 800027e:	2301      	movs	r3, #1
- 8000280:	4601      	mov	r1, r0
- 8000282:	2208      	movs	r2, #8
- 8000284:	4628      	mov	r0, r5
- 8000286:	f7ff ffaf 	bl	80001e8 <itoa>
-  *(s++) = '\t';
- 800028a:	2609      	movs	r6, #9
- 800028c:	7006      	strb	r6, [r0, #0]
- 800028e:	1c44      	adds	r4, r0, #1
-  s = itoa(s, __get_PSP(), 8, HEX);
- 8000290:	f7ff ff61 	bl	8000156 <__get_PSP>
- 8000294:	2301      	movs	r3, #1
- 8000296:	4601      	mov	r1, r0
- 8000298:	2208      	movs	r2, #8
- 800029a:	4620      	mov	r0, r4
- 800029c:	f7ff ffa4 	bl	80001e8 <itoa>
-  *(s++) = '\t';
- 80002a0:	7006      	strb	r6, [r0, #0]
- 80002a2:	1c44      	adds	r4, r0, #1
+ 8000258:	b510      	push	{r4, lr}
+  while(1) {
+  char *s = __stpcpy(usart_tx_bufer_task0, "Start task0\t");
+ 800025a:	490c      	ldr	r1, [pc, #48]	; (800028c <task0+0x34>)
+ 800025c:	480c      	ldr	r0, [pc, #48]	; (8000290 <task0+0x38>)
+ 800025e:	f7ff ff70 	bl	8000142 <__stpcpy>
+ 8000262:	4604      	mov	r4, r0
   s = itoa(s, __get_CONTROL(), 1, HEX);
- 80002a4:	f7ff ff5a 	bl	800015c <__get_CONTROL>
- 80002a8:	2301      	movs	r3, #1
- 80002aa:	4601      	mov	r1, r0
- 80002ac:	461a      	mov	r2, r3
- 80002ae:	4620      	mov	r0, r4
- 80002b0:	f7ff ff9a 	bl	80001e8 <itoa>
- 80002b4:	4603      	mov	r3, r0
+ 8000264:	f7ff ff7a 	bl	800015c <__get_CONTROL>
+ 8000268:	2301      	movs	r3, #1
+ 800026a:	4601      	mov	r1, r0
+ 800026c:	461a      	mov	r2, r3
+ 800026e:	4620      	mov	r0, r4
+ 8000270:	f7ff ffb8 	bl	80001e4 <itoa>
   *(s++) = '\n';
- 80002b6:	210a      	movs	r1, #10
+ 8000274:	220a      	movs	r2, #10
   *(s++) = 0;
- 80002b8:	2200      	movs	r2, #0
-  char *s = itoa(usart_tx_bufer, __get_MSP(), 8, HEX);
-  *(s++) = '\t';
-  s = itoa(s, __get_PSP(), 8, HEX);
-  *(s++) = '\t';
+ 8000276:	2300      	movs	r3, #0
+
+void task0(void) {
+  while(1) {
+  char *s = __stpcpy(usart_tx_bufer_task0, "Start task0\t");
   s = itoa(s, __get_CONTROL(), 1, HEX);
   *(s++) = '\n';
- 80002ba:	7019      	strb	r1, [r3, #0]
+ 8000278:	7002      	strb	r2, [r0, #0]
   *(s++) = 0;
- 80002bc:	705a      	strb	r2, [r3, #1]
+ 800027a:	7043      	strb	r3, [r0, #1]
+  usartPrint(usart_tx_bufer_task0);
+ 800027c:	4804      	ldr	r0, [pc, #16]	; (8000290 <task0+0x38>)
+ 800027e:	f000 f9f3 	bl	8000668 <usartPrint>
+    delay(2000);
+ 8000282:	f44f 60fa 	mov.w	r0, #2000	; 0x7d0
+ 8000286:	f000 f965 	bl	8000554 <delay>
+ 800028a:	e7e6      	b.n	800025a <task0+0x2>
+ 800028c:	080006a8 	.word	0x080006a8
+ 8000290:	200000a0 	.word	0x200000a0
+
+08000294 <togleLed>:
+  }
+}
+
+
+void togleLed(void) {
+  GPIOC->ODR ^= GPIO_ODR_ODR13;
+ 8000294:	4a16      	ldr	r2, [pc, #88]	; (80002f0 <togleLed+0x5c>)
+    delay(2000);
+  }
+}
+
+
+void togleLed(void) {
+ 8000296:	b570      	push	{r4, r5, r6, lr}
+  GPIOC->ODR ^= GPIO_ODR_ODR13;
+ 8000298:	68d3      	ldr	r3, [r2, #12]
+  char *s = itoa(usart_tx_bufer, __get_MSP(), 8, HEX);
+ 800029a:	4d16      	ldr	r5, [pc, #88]	; (80002f4 <togleLed+0x60>)
+  }
+}
+
+
+void togleLed(void) {
+  GPIOC->ODR ^= GPIO_ODR_ODR13;
+ 800029c:	f483 5300 	eor.w	r3, r3, #8192	; 0x2000
+ 80002a0:	60d3      	str	r3, [r2, #12]
+  char *s = itoa(usart_tx_bufer, __get_MSP(), 8, HEX);
+ 80002a2:	f7ff ff55 	bl	8000150 <__get_MSP>
+ 80002a6:	2301      	movs	r3, #1
+ 80002a8:	4601      	mov	r1, r0
+ 80002aa:	2208      	movs	r2, #8
+ 80002ac:	4628      	mov	r0, r5
+ 80002ae:	f7ff ff99 	bl	80001e4 <itoa>
+  *(s++) = '\t';
+ 80002b2:	2609      	movs	r6, #9
+ 80002b4:	7006      	strb	r6, [r0, #0]
+ 80002b6:	1c44      	adds	r4, r0, #1
+  s = itoa(s, __get_PSP(), 8, HEX);
+ 80002b8:	f7ff ff4d 	bl	8000156 <__get_PSP>
+ 80002bc:	2301      	movs	r3, #1
+ 80002be:	4601      	mov	r1, r0
+ 80002c0:	2208      	movs	r2, #8
+ 80002c2:	4620      	mov	r0, r4
+ 80002c4:	f7ff ff8e 	bl	80001e4 <itoa>
+  *(s++) = '\t';
+ 80002c8:	7006      	strb	r6, [r0, #0]
+ 80002ca:	1c44      	adds	r4, r0, #1
+  s = itoa(s, __get_CONTROL(), 1, HEX);
+ 80002cc:	f7ff ff46 	bl	800015c <__get_CONTROL>
+ 80002d0:	2301      	movs	r3, #1
+ 80002d2:	4601      	mov	r1, r0
+ 80002d4:	461a      	mov	r2, r3
+ 80002d6:	4620      	mov	r0, r4
+ 80002d8:	f7ff ff84 	bl	80001e4 <itoa>
+ 80002dc:	4603      	mov	r3, r0
+  *(s++) = '\n';
+ 80002de:	210a      	movs	r1, #10
+  *(s++) = 0;
+ 80002e0:	2200      	movs	r2, #0
+  char *s = itoa(usart_tx_bufer, __get_MSP(), 8, HEX);
+  *(s++) = '\t';
+  s = itoa(s, __get_PSP(), 8, HEX);
+  *(s++) = '\t';
+  s = itoa(s, __get_CONTROL(), 1, HEX);
+  *(s++) = '\n';
+ 80002e2:	7019      	strb	r1, [r3, #0]
+  *(s++) = 0;
+ 80002e4:	705a      	strb	r2, [r3, #1]
   usartPrint(usart_tx_bufer);
- 80002be:	4628      	mov	r0, r5
+ 80002e6:	4628      	mov	r0, r5
 }
- 80002c0:	e8bd 4070 	ldmia.w	sp!, {r4, r5, r6, lr}
+ 80002e8:	e8bd 4070 	ldmia.w	sp!, {r4, r5, r6, lr}
   s = itoa(s, __get_PSP(), 8, HEX);
   *(s++) = '\t';
   s = itoa(s, __get_CONTROL(), 1, HEX);
   *(s++) = '\n';
   *(s++) = 0;
   usartPrint(usart_tx_bufer);
- 80002c4:	f000 b996 	b.w	80005f4 <usartPrint>
- 80002c8:	40011000 	.word	0x40011000
- 80002cc:	20000050 	.word	0x20000050
+ 80002ec:	f000 b9bc 	b.w	8000668 <usartPrint>
+ 80002f0:	40011000 	.word	0x40011000
+ 80002f4:	20000050 	.word	0x20000050
 
-080002d0 <scanKey>:
+080002f8 <scanKey>:
 }
 
 void scanKey() {
- 80002d0:	b508      	push	{r3, lr}
+ 80002f8:	b508      	push	{r3, lr}
   volatile static uint32_t scan_old;
   volatile static uint32_t scan_changes;
   uint16_t scan = GPIOA->IDR & GPIO_IDR_IDR0;
- 80002d2:	4b0a      	ldr	r3, [pc, #40]	; (80002fc <scanKey+0x2c>)
+ 80002fa:	4b0a      	ldr	r3, [pc, #40]	; (8000324 <scanKey+0x2c>)
   scan_changes = scan_old ^ scan;
- 80002d4:	4a0a      	ldr	r2, [pc, #40]	; (8000300 <scanKey+0x30>)
-}
-
-void scanKey() {
-  volatile static uint32_t scan_old;
-  volatile static uint32_t scan_changes;
-  uint16_t scan = GPIOA->IDR & GPIO_IDR_IDR0;
- 80002d6:	689b      	ldr	r3, [r3, #8]
-  scan_changes = scan_old ^ scan;
- 80002d8:	6811      	ldr	r1, [r2, #0]
+ 80002fc:	4a0a      	ldr	r2, [pc, #40]	; (8000328 <scanKey+0x30>)
 }
 
 void scanKey() {
   volatile static uint32_t scan_old;
   volatile static uint32_t scan_changes;
   uint16_t scan = GPIOA->IDR & GPIO_IDR_IDR0;
- 80002da:	f003 0301 	and.w	r3, r3, #1
+ 80002fe:	689b      	ldr	r3, [r3, #8]
   scan_changes = scan_old ^ scan;
- 80002de:	4059      	eors	r1, r3
- 80002e0:	6051      	str	r1, [r2, #4]
+ 8000300:	6811      	ldr	r1, [r2, #0]
+}
+
+void scanKey() {
+  volatile static uint32_t scan_old;
+  volatile static uint32_t scan_changes;
+  uint16_t scan = GPIOA->IDR & GPIO_IDR_IDR0;
+ 8000302:	f003 0301 	and.w	r3, r3, #1
+  scan_changes = scan_old ^ scan;
+ 8000306:	4059      	eors	r1, r3
+ 8000308:	6051      	str	r1, [r2, #4]
   scan_old = scan;
- 80002e2:	6013      	str	r3, [r2, #0]
+ 800030a:	6013      	str	r3, [r2, #0]
   if (scan_changes & ~scan) {
- 80002e4:	6852      	ldr	r2, [r2, #4]
- 80002e6:	ea32 0303 	bics.w	r3, r2, r3
- 80002ea:	d100      	bne.n	80002ee <scanKey+0x1e>
- 80002ec:	bd08      	pop	{r3, pc}
+ 800030c:	6852      	ldr	r2, [r2, #4]
+ 800030e:	ea32 0303 	bics.w	r3, r2, r3
+ 8000312:	d100      	bne.n	8000316 <scanKey+0x1e>
+ 8000314:	bd08      	pop	{r3, pc}
     togleLed();
- 80002ee:	f7ff ffbd 	bl	800026c <togleLed>
+ 8000316:	f7ff ffbd 	bl	8000294 <togleLed>
     usartPrint("Key\n");
   }
 }
- 80002f2:	e8bd 4008 	ldmia.w	sp!, {r3, lr}
+ 800031a:	e8bd 4008 	ldmia.w	sp!, {r3, lr}
   uint16_t scan = GPIOA->IDR & GPIO_IDR_IDR0;
   scan_changes = scan_old ^ scan;
   scan_old = scan;
   if (scan_changes & ~scan) {
     togleLed();
     usartPrint("Key\n");
- 80002f6:	4803      	ldr	r0, [pc, #12]	; (8000304 <scanKey+0x34>)
- 80002f8:	f000 b97c 	b.w	80005f4 <usartPrint>
- 80002fc:	40010800 	.word	0x40010800
- 8000300:	20000134 	.word	0x20000134
- 8000304:	08000644 	.word	0x08000644
+ 800031e:	4803      	ldr	r0, [pc, #12]	; (800032c <scanKey+0x34>)
+ 8000320:	f000 b9a2 	b.w	8000668 <usartPrint>
+ 8000324:	40010800 	.word	0x40010800
+ 8000328:	200001b0 	.word	0x200001b0
+ 800032c:	080006b8 	.word	0x080006b8
 
-08000308 <main>:
+08000330 <main>:
   }
 }
 
 int main()
 {
- 8000308:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+ 8000330:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
   GPIOA->CRH &= ~(GPIO_CRH_CNF9   | GPIO_CRH_MODE9  |
                   GPIO_CRH_CNF10  | GPIO_CRH_MODE10);
   GPIOA->CRH |= (GPIO_CRH_CNF9    | GPIO_CRH_MODE9  |
                  GPIO_CRH_CNF10_1);
 //PA:0,10 = 1
   GPIOA->BSRR = GPIO_ODR_ODR0 | GPIO_ODR_ODR10;
- 800030a:	f240 4701 	movw	r7, #1025	; 0x401
+ 8000332:	f240 4701 	movw	r7, #1025	; 0x401
 }
 
 int main()
 {
 // enable PORT_A, PORT_C, USART1
   RCC->APB2ENR |= (RCC_APB2RSTR_IOPARST    | RCC_APB2RSTR_IOPCRST |
- 800030e:	4c2c      	ldr	r4, [pc, #176]	; (80003c0 <main+0xb8>)
+ 8000336:	4c2c      	ldr	r4, [pc, #176]	; (80003e8 <main+0xb8>)
 // enable DMA1
   RCC->AHBENR |= RCC_AHBENR_DMA1EN;
   
 // --- GPIO setup ---
 //PA:0 - KEY input pull-up
   GPIOA->CRL &= ~(GPIO_CRL_CNF0 | GPIO_CRL_MODE0);
- 8000310:	4b2c      	ldr	r3, [pc, #176]	; (80003c4 <main+0xbc>)
+ 8000338:	4b2c      	ldr	r3, [pc, #176]	; (80003ec <main+0xbc>)
 }
 
 int main()
 {
 // enable PORT_A, PORT_C, USART1
   RCC->APB2ENR |= (RCC_APB2RSTR_IOPARST    | RCC_APB2RSTR_IOPCRST |
- 8000312:	69a2      	ldr	r2, [r4, #24]
+ 800033a:	69a2      	ldr	r2, [r4, #24]
   GPIOA->CRH |= (GPIO_CRH_CNF9    | GPIO_CRH_MODE9  |
                  GPIO_CRH_CNF10_1);
 //PA:0,10 = 1
   GPIOA->BSRR = GPIO_ODR_ODR0 | GPIO_ODR_ODR10;
 //PC:13 - LED
   GPIOC->CRH &= ~(GPIO_CRH_CNF13 | GPIO_CRH_MODE13);
- 8000314:	492c      	ldr	r1, [pc, #176]	; (80003c8 <main+0xc0>)
+ 800033c:	492c      	ldr	r1, [pc, #176]	; (80003f0 <main+0xc0>)
 }
 
 int main()
 {
 // enable PORT_A, PORT_C, USART1
   RCC->APB2ENR |= (RCC_APB2RSTR_IOPARST    | RCC_APB2RSTR_IOPCRST |
- 8000316:	f442 4280 	orr.w	r2, r2, #16384	; 0x4000
- 800031a:	f042 0214 	orr.w	r2, r2, #20
- 800031e:	61a2      	str	r2, [r4, #24]
+ 800033e:	f442 4280 	orr.w	r2, r2, #16384	; 0x4000
+ 8000342:	f042 0214 	orr.w	r2, r2, #20
+ 8000346:	61a2      	str	r2, [r4, #24]
                    RCC_APB2RSTR_USART1RST) ;
 // enable DMA1
   RCC->AHBENR |= RCC_AHBENR_DMA1EN;
- 8000320:	6962      	ldr	r2, [r4, #20]
+ 8000348:	6962      	ldr	r2, [r4, #20]
   GPIOA->BSRR = GPIO_ODR_ODR0 | GPIO_ODR_ODR10;
 //PC:13 - LED
   GPIOC->CRH &= ~(GPIO_CRH_CNF13 | GPIO_CRH_MODE13);
   GPIOC->CRH |= GPIO_CRH_MODE13_1;
 
   usartInit(115200);
- 8000322:	f44f 30e1 	mov.w	r0, #115200	; 0x1c200
+ 800034a:	f44f 30e1 	mov.w	r0, #115200	; 0x1c200
 {
 // enable PORT_A, PORT_C, USART1
   RCC->APB2ENR |= (RCC_APB2RSTR_IOPARST    | RCC_APB2RSTR_IOPCRST |
                    RCC_APB2RSTR_USART1RST) ;
 // enable DMA1
   RCC->AHBENR |= RCC_AHBENR_DMA1EN;
- 8000326:	f042 0201 	orr.w	r2, r2, #1
- 800032a:	6162      	str	r2, [r4, #20]
+ 800034e:	f042 0201 	orr.w	r2, r2, #1
+ 8000352:	6162      	str	r2, [r4, #20]
   
 // --- GPIO setup ---
 //PA:0 - KEY input pull-up
   GPIOA->CRL &= ~(GPIO_CRL_CNF0 | GPIO_CRL_MODE0);
- 800032c:	681a      	ldr	r2, [r3, #0]
-  addTimer(togleLed,1000,1000);
+ 8000354:	681a      	ldr	r2, [r3, #0]
+  addTimer(togleLed,1000,1000,0);
   usartPrint("Start\n");
   usartPrint("Begin\n");
   char *s = itoa(usart_tx_bufer, __get_CONTROL(), 1, HEX);
   *(s++) = '\n';
   *(s++) = 0;
- 800032e:	2400      	movs	r4, #0
+ 8000356:	2400      	movs	r4, #0
 // enable DMA1
   RCC->AHBENR |= RCC_AHBENR_DMA1EN;
   
 // --- GPIO setup ---
 //PA:0 - KEY input pull-up
   GPIOA->CRL &= ~(GPIO_CRL_CNF0 | GPIO_CRL_MODE0);
- 8000330:	f022 020f 	bic.w	r2, r2, #15
- 8000334:	601a      	str	r2, [r3, #0]
+ 8000358:	f022 020f 	bic.w	r2, r2, #15
+ 800035c:	601a      	str	r2, [r3, #0]
   GPIOA->CRL |= GPIO_CRL_CNF0_1;
- 8000336:	681a      	ldr	r2, [r3, #0]
-  rtosInit(0);
-  addTimer(scanKey,20,20);
-  addTimer(togleLed,1000,1000);
+ 800035e:	681a      	ldr	r2, [r3, #0]
+  rtosInit();
+  addTimer(scanKey,20,20,0);
+  addTimer(togleLed,1000,1000,0);
   usartPrint("Start\n");
   usartPrint("Begin\n");
   char *s = itoa(usart_tx_bufer, __get_CONTROL(), 1, HEX);
- 8000338:	4e24      	ldr	r6, [pc, #144]	; (80003cc <main+0xc4>)
+ 8000360:	4e24      	ldr	r6, [pc, #144]	; (80003f4 <main+0xc4>)
   RCC->AHBENR |= RCC_AHBENR_DMA1EN;
   
 // --- GPIO setup ---
 //PA:0 - KEY input pull-up
   GPIOA->CRL &= ~(GPIO_CRL_CNF0 | GPIO_CRL_MODE0);
   GPIOA->CRL |= GPIO_CRL_CNF0_1;
- 800033a:	f042 0208 	orr.w	r2, r2, #8
- 800033e:	601a      	str	r2, [r3, #0]
+ 8000362:	f042 0208 	orr.w	r2, r2, #8
+ 8000366:	601a      	str	r2, [r3, #0]
 //PA:9  - Usart TX alternate output open drain 50MHz
 //PA:10 - Usart RX input pull-up
   GPIOA->CRH &= ~(GPIO_CRH_CNF9   | GPIO_CRH_MODE9  |
- 8000340:	685a      	ldr	r2, [r3, #4]
+ 8000368:	685a      	ldr	r2, [r3, #4]
   usartPrint("Begin\n");
   char *s = itoa(usart_tx_bufer, __get_CONTROL(), 1, HEX);
   *(s++) = '\n';
   *(s++) = 0;
   usartPrint(usart_tx_bufer);
   addTask(task0);
- 8000342:	4d23      	ldr	r5, [pc, #140]	; (80003d0 <main+0xc8>)
+ 800036a:	4d23      	ldr	r5, [pc, #140]	; (80003f8 <main+0xc8>)
 //PA:0 - KEY input pull-up
   GPIOA->CRL &= ~(GPIO_CRL_CNF0 | GPIO_CRL_MODE0);
   GPIOA->CRL |= GPIO_CRL_CNF0_1;
 //PA:9  - Usart TX alternate output open drain 50MHz
 //PA:10 - Usart RX input pull-up
   GPIOA->CRH &= ~(GPIO_CRH_CNF9   | GPIO_CRH_MODE9  |
- 8000344:	f422 627f 	bic.w	r2, r2, #4080	; 0xff0
- 8000348:	605a      	str	r2, [r3, #4]
+ 800036c:	f422 627f 	bic.w	r2, r2, #4080	; 0xff0
+ 8000370:	605a      	str	r2, [r3, #4]
                   GPIO_CRH_CNF10  | GPIO_CRH_MODE10);
   GPIOA->CRH |= (GPIO_CRH_CNF9    | GPIO_CRH_MODE9  |
- 800034a:	685a      	ldr	r2, [r3, #4]
- 800034c:	f442 620f 	orr.w	r2, r2, #2288	; 0x8f0
- 8000350:	605a      	str	r2, [r3, #4]
+ 8000372:	685a      	ldr	r2, [r3, #4]
+ 8000374:	f442 620f 	orr.w	r2, r2, #2288	; 0x8f0
+ 8000378:	605a      	str	r2, [r3, #4]
                  GPIO_CRH_CNF10_1);
 //PA:0,10 = 1
   GPIOA->BSRR = GPIO_ODR_ODR0 | GPIO_ODR_ODR10;
- 8000352:	611f      	str	r7, [r3, #16]
+ 800037a:	611f      	str	r7, [r3, #16]
 //PC:13 - LED
   GPIOC->CRH &= ~(GPIO_CRH_CNF13 | GPIO_CRH_MODE13);
- 8000354:	684b      	ldr	r3, [r1, #4]
- 8000356:	f423 0370 	bic.w	r3, r3, #15728640	; 0xf00000
- 800035a:	604b      	str	r3, [r1, #4]
+ 800037c:	684b      	ldr	r3, [r1, #4]
+ 800037e:	f423 0370 	bic.w	r3, r3, #15728640	; 0xf00000
+ 8000382:	604b      	str	r3, [r1, #4]
   GPIOC->CRH |= GPIO_CRH_MODE13_1;
- 800035c:	684b      	ldr	r3, [r1, #4]
- 800035e:	f443 1300 	orr.w	r3, r3, #2097152	; 0x200000
- 8000362:	604b      	str	r3, [r1, #4]
+ 8000384:	684b      	ldr	r3, [r1, #4]
+ 8000386:	f443 1300 	orr.w	r3, r3, #2097152	; 0x200000
+ 800038a:	604b      	str	r3, [r1, #4]
 
   usartInit(115200);
- 8000364:	f000 f92e 	bl	80005c4 <usartInit>
-  rtosInit(0);
- 8000368:	4620      	mov	r0, r4
- 800036a:	f000 f85d 	bl	8000428 <rtosInit>
-  addTimer(scanKey,20,20);
- 800036e:	2214      	movs	r2, #20
- 8000370:	4611      	mov	r1, r2
- 8000372:	4818      	ldr	r0, [pc, #96]	; (80003d4 <main+0xcc>)
- 8000374:	f000 f83e 	bl	80003f4 <addTimer>
-  addTimer(togleLed,1000,1000);
- 8000378:	f44f 727a 	mov.w	r2, #1000	; 0x3e8
- 800037c:	4611      	mov	r1, r2
- 800037e:	4816      	ldr	r0, [pc, #88]	; (80003d8 <main+0xd0>)
- 8000380:	f000 f838 	bl	80003f4 <addTimer>
+ 800038c:	f000 f954 	bl	8000638 <usartInit>
+  rtosInit();
+ 8000390:	f000 f85e 	bl	8000450 <rtosInit>
+  addTimer(scanKey,20,20,0);
+ 8000394:	2214      	movs	r2, #20
+ 8000396:	4611      	mov	r1, r2
+ 8000398:	4623      	mov	r3, r4
+ 800039a:	4818      	ldr	r0, [pc, #96]	; (80003fc <main+0xcc>)
+ 800039c:	f000 f83e 	bl	800041c <addTimer>
+  addTimer(togleLed,1000,1000,0);
+ 80003a0:	f44f 727a 	mov.w	r2, #1000	; 0x3e8
+ 80003a4:	4611      	mov	r1, r2
+ 80003a6:	4623      	mov	r3, r4
+ 80003a8:	4815      	ldr	r0, [pc, #84]	; (8000400 <main+0xd0>)
+ 80003aa:	f000 f837 	bl	800041c <addTimer>
   usartPrint("Start\n");
- 8000384:	4815      	ldr	r0, [pc, #84]	; (80003dc <main+0xd4>)
- 8000386:	f000 f935 	bl	80005f4 <usartPrint>
+ 80003ae:	4815      	ldr	r0, [pc, #84]	; (8000404 <main+0xd4>)
+ 80003b0:	f000 f95a 	bl	8000668 <usartPrint>
   usartPrint("Begin\n");
- 800038a:	4815      	ldr	r0, [pc, #84]	; (80003e0 <main+0xd8>)
- 800038c:	f000 f932 	bl	80005f4 <usartPrint>
+ 80003b4:	4814      	ldr	r0, [pc, #80]	; (8000408 <main+0xd8>)
+ 80003b6:	f000 f957 	bl	8000668 <usartPrint>
   char *s = itoa(usart_tx_bufer, __get_CONTROL(), 1, HEX);
- 8000390:	f7ff fee4 	bl	800015c <__get_CONTROL>
- 8000394:	2301      	movs	r3, #1
- 8000396:	4601      	mov	r1, r0
- 8000398:	461a      	mov	r2, r3
- 800039a:	4630      	mov	r0, r6
- 800039c:	f7ff ff24 	bl	80001e8 <itoa>
- 80003a0:	4603      	mov	r3, r0
+ 80003ba:	f7ff fecf 	bl	800015c <__get_CONTROL>
+ 80003be:	2301      	movs	r3, #1
+ 80003c0:	4601      	mov	r1, r0
+ 80003c2:	461a      	mov	r2, r3
+ 80003c4:	4630      	mov	r0, r6
+ 80003c6:	f7ff ff0d 	bl	80001e4 <itoa>
+ 80003ca:	4603      	mov	r3, r0
   *(s++) = '\n';
- 80003a2:	220a      	movs	r2, #10
- 80003a4:	701a      	strb	r2, [r3, #0]
+ 80003cc:	220a      	movs	r2, #10
+ 80003ce:	701a      	strb	r2, [r3, #0]
   *(s++) = 0;
- 80003a6:	705c      	strb	r4, [r3, #1]
+ 80003d0:	705c      	strb	r4, [r3, #1]
   usartPrint(usart_tx_bufer);
- 80003a8:	4630      	mov	r0, r6
- 80003aa:	f000 f923 	bl	80005f4 <usartPrint>
+ 80003d2:	4630      	mov	r0, r6
+ 80003d4:	f000 f948 	bl	8000668 <usartPrint>
   addTask(task0);
- 80003ae:	4628      	mov	r0, r5
- 80003b0:	f000 f8be 	bl	8000530 <addTask>
+ 80003d8:	4628      	mov	r0, r5
+ 80003da:	f000 f8df 	bl	800059c <addTask>
   __start_RTOS(task0);
- 80003b4:	4628      	mov	r0, r5
- 80003b6:	f7ff feda 	bl	800016e <__start_RTOS>
-
-//    delay(1000);
+ 80003de:	4628      	mov	r0, r5
+ 80003e0:	f7ff fec5 	bl	800016e <__start_RTOS>
 
 }
- 80003ba:	4620      	mov	r0, r4
- 80003bc:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
- 80003be:	bf00      	nop
- 80003c0:	40021000 	.word	0x40021000
- 80003c4:	40010800 	.word	0x40010800
- 80003c8:	40011000 	.word	0x40011000
- 80003cc:	20000050 	.word	0x20000050
- 80003d0:	0800025d 	.word	0x0800025d
- 80003d4:	080002d1 	.word	0x080002d1
- 80003d8:	0800026d 	.word	0x0800026d
- 80003dc:	0800064c 	.word	0x0800064c
- 80003e0:	08000654 	.word	0x08000654
+ 80003e4:	4620      	mov	r0, r4
+ 80003e6:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
+ 80003e8:	40021000 	.word	0x40021000
+ 80003ec:	40010800 	.word	0x40010800
+ 80003f0:	40011000 	.word	0x40011000
+ 80003f4:	20000050 	.word	0x20000050
+ 80003f8:	08000259 	.word	0x08000259
+ 80003fc:	080002f9 	.word	0x080002f9
+ 8000400:	08000295 	.word	0x08000295
+ 8000404:	080006c0 	.word	0x080006c0
+ 8000408:	080006c8 	.word	0x080006c8
 
-080003e4 <timerStat>:
-static void (*idle_callback)(void);
-extern void *__stack_top__;
+0800040c <timerStat>:
+static volatile uint32_t current_load;
 
-
-static void timerStat() {
-  load_cpu=current_load;
- 80003e4:	4b02      	ldr	r3, [pc, #8]	; (80003f0 <timerStat+0xc>)
-  current_load=0;
- 80003e6:	2200      	movs	r2, #0
-static void (*idle_callback)(void);
-extern void *__stack_top__;
-
+extern uint8_t *__stack_top__;
 
 static void timerStat() {
   load_cpu=current_load;
- 80003e8:	6819      	ldr	r1, [r3, #0]
- 80003ea:	6059      	str	r1, [r3, #4]
+ 800040c:	4b02      	ldr	r3, [pc, #8]	; (8000418 <timerStat+0xc>)
   current_load=0;
- 80003ec:	601a      	str	r2, [r3, #0]
- 80003ee:	4770      	bx	lr
- 80003f0:	2000013c 	.word	0x2000013c
+ 800040e:	2200      	movs	r2, #0
+static volatile uint32_t current_load;
 
-080003f4 <addTimer>:
+extern uint8_t *__stack_top__;
+
+static void timerStat() {
+  load_cpu=current_load;
+ 8000410:	6819      	ldr	r1, [r3, #0]
+ 8000412:	6059      	str	r1, [r3, #4]
+  current_load=0;
+ 8000414:	601a      	str	r2, [r3, #0]
+ 8000416:	4770      	bx	lr
+ 8000418:	200001b8 	.word	0x200001b8
+
+0800041c <addTimer>:
 
 uint32_t getLoadCPU() {
   return load_cpu;
 }
 
-uint8_t addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
- 80003f4:	b470      	push	{r4, r5, r6}
+void addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto, uint8_t *tick) {
+ 800041c:	b4f0      	push	{r4, r5, r6, r7}
 
 #elif (defined (__GNUC__)) /*------------------ GNU Compiler ---------------------*/
 /* GNU gcc specific functions */
 
 static __INLINE void __enable_irq()               { __ASM volatile ("cpsie i"); }
 static __INLINE void __disable_irq()              { __ASM volatile ("cpsid i"); }
- 80003f6:	b672      	cpsid	i
+ 800041e:	b672      	cpsid	i
   __disable_irq();
-  uint8_t n = timer_new++;
- 80003f8:	4d09      	ldr	r5, [pc, #36]	; (8000420 <addTimer+0x2c>)
- 80003fa:	7a2b      	ldrb	r3, [r5, #8]
- 80003fc:	b2db      	uxtb	r3, r3
- 80003fe:	1c5c      	adds	r4, r3, #1
- 8000400:	b2e4      	uxtb	r4, r4
+  uint8_t n = timer_new;
+ 8000420:	4e09      	ldr	r6, [pc, #36]	; (8000448 <addTimer+0x2c>)
+ 8000422:	7a34      	ldrb	r4, [r6, #8]
+ 8000424:	b2e4      	uxtb	r4, r4
   if (n<TMR) {
- 8000402:	2b07      	cmp	r3, #7
-  return load_cpu;
-}
+ 8000426:	2c07      	cmp	r4, #7
+ 8000428:	d80a      	bhi.n	8000440 <addTimer+0x24>
+    tmr[n].callback = callback;
+    tmr[n].timer = timer;
+    tmr[n].timer_auto = timer_auto;
+    tmr[n].tick = tick;
+    timer_new++;
+ 800042a:	7a35      	ldrb	r5, [r6, #8]
 
-uint8_t addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
+void addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto, uint8_t *tick) {
   __disable_irq();
-  uint8_t n = timer_new++;
- 8000404:	722c      	strb	r4, [r5, #8]
+  uint8_t n = timer_new;
   if (n<TMR) {
- 8000406:	d807      	bhi.n	8000418 <addTimer+0x24>
-    tmr[n].callback=callback;
- 8000408:	4e06      	ldr	r6, [pc, #24]	; (8000424 <addTimer+0x30>)
- 800040a:	eb03 0443 	add.w	r4, r3, r3, lsl #1
- 800040e:	00a4      	lsls	r4, r4, #2
- 8000410:	1935      	adds	r5, r6, r4
- 8000412:	5130      	str	r0, [r6, r4]
-    tmr[n].timer=timer;
- 8000414:	6069      	str	r1, [r5, #4]
-    tmr[n].timer_auto=timer_auto;
- 8000416:	60aa      	str	r2, [r5, #8]
+    tmr[n].callback = callback;
+ 800042c:	4f07      	ldr	r7, [pc, #28]	; (800044c <addTimer+0x30>)
+ 800042e:	0124      	lsls	r4, r4, #4
+    tmr[n].timer = timer;
+    tmr[n].timer_auto = timer_auto;
+    tmr[n].tick = tick;
+    timer_new++;
+ 8000430:	3501      	adds	r5, #1
+ 8000432:	b2ed      	uxtb	r5, r5
+
+void addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto, uint8_t *tick) {
+  __disable_irq();
+  uint8_t n = timer_new;
+  if (n<TMR) {
+    tmr[n].callback = callback;
+ 8000434:	5138      	str	r0, [r7, r4]
+ 8000436:	443c      	add	r4, r7
+    tmr[n].timer = timer;
+ 8000438:	6061      	str	r1, [r4, #4]
+    tmr[n].timer_auto = timer_auto;
+ 800043a:	60a2      	str	r2, [r4, #8]
+    tmr[n].tick = tick;
+ 800043c:	60e3      	str	r3, [r4, #12]
+    timer_new++;
+ 800043e:	7235      	strb	r5, [r6, #8]
 
 
 #elif (defined (__GNUC__)) /*------------------ GNU Compiler ---------------------*/
 /* GNU gcc specific functions */
 
 static __INLINE void __enable_irq()               { __ASM volatile ("cpsie i"); }
- 8000418:	b662      	cpsie	i
+ 8000440:	b662      	cpsie	i
   }
   __enable_irq();
-  return n;
 }
- 800041a:	4618      	mov	r0, r3
- 800041c:	bc70      	pop	{r4, r5, r6}
- 800041e:	4770      	bx	lr
- 8000420:	2000013c 	.word	0x2000013c
- 8000424:	200000d4 	.word	0x200000d4
+ 8000442:	bcf0      	pop	{r4, r5, r6, r7}
+ 8000444:	4770      	bx	lr
+ 8000446:	bf00      	nop
+ 8000448:	200001b8 	.word	0x200001b8
+ 800044c:	20000130 	.word	0x20000130
 
-08000428 <rtosInit>:
+08000450 <rtosInit>:
 
-void rtosInit(void (*idle_func)()) {
- 8000428:	b4f0      	push	{r4, r5, r6, r7}
+void rtosInit() {
+ 8000450:	b4f0      	push	{r4, r5, r6, r7}
  */
 static __INLINE uint32_t SysTick_Config(uint32_t ticks)
 { 
   if (ticks > SysTick_LOAD_RELOAD_Msk)  return (1);            /* Reload value impossible */
                                                                
   SysTick->LOAD  = (ticks & SysTick_LOAD_RELOAD_Msk) - 1;      /* set reload register */
- 800042a:	4b11      	ldr	r3, [pc, #68]	; (8000470 <rtosInit+0x48>)
- 800042c:	4f11      	ldr	r7, [pc, #68]	; (8000474 <rtosInit+0x4c>)
+ 8000452:	4b11      	ldr	r3, [pc, #68]	; (8000498 <rtosInit+0x48>)
+ 8000454:	4d11      	ldr	r5, [pc, #68]	; (800049c <rtosInit+0x4c>)
  * Note: The priority cannot be set for every core interrupt.
  */
 static __INLINE void NVIC_SetPriority(IRQn_Type IRQn, uint32_t priority)
 {
   if(IRQn < 0) {
     SCB->SHP[((uint32_t)(IRQn) & 0xF)-4] = ((priority << (8 - __NVIC_PRIO_BITS)) & 0xff); } /* set Priority for Cortex-M3 System Interrupts */
- 800042e:	4d12      	ldr	r5, [pc, #72]	; (8000478 <rtosInit+0x50>)
-  idle_callback=idle_func;
- 8000430:	4a12      	ldr	r2, [pc, #72]	; (800047c <rtosInit+0x54>)
- 8000432:	26f0      	movs	r6, #240	; 0xf0
+ 8000456:	4912      	ldr	r1, [pc, #72]	; (80004a0 <rtosInit+0x50>)
+ 8000458:	24f0      	movs	r4, #240	; 0xf0
 { 
   if (ticks > SysTick_LOAD_RELOAD_Msk)  return (1);            /* Reload value impossible */
                                                                
   SysTick->LOAD  = (ticks & SysTick_LOAD_RELOAD_Msk) - 1;      /* set reload register */
   NVIC_SetPriority (SysTick_IRQn, (1<<__NVIC_PRIO_BITS) - 1);  /* set Priority for Cortex-M0 System Interrupts */
   SysTick->VAL   = 0;                                          /* Load the SysTick Counter Value */
- 8000434:	2400      	movs	r4, #0
+ 800045a:	2000      	movs	r0, #0
   SysTick->CTRL  = SysTick_CTRL_CLKSOURCE_Msk | 
- 8000436:	2107      	movs	r1, #7
+ 800045c:	2207      	movs	r2, #7
  */
 static __INLINE uint32_t SysTick_Config(uint32_t ticks)
 { 
   if (ticks > SysTick_LOAD_RELOAD_Msk)  return (1);            /* Reload value impossible */
                                                                
   SysTick->LOAD  = (ticks & SysTick_LOAD_RELOAD_Msk) - 1;      /* set reload register */
- 8000438:	605f      	str	r7, [r3, #4]
- 800043a:	60d0      	str	r0, [r2, #12]
+ 800045e:	605d      	str	r5, [r3, #4]
  * Note: The priority cannot be set for every core interrupt.
  */
 static __INLINE void NVIC_SetPriority(IRQn_Type IRQn, uint32_t priority)
 {
   if(IRQn < 0) {
     SCB->SHP[((uint32_t)(IRQn) & 0xF)-4] = ((priority << (8 - __NVIC_PRIO_BITS)) & 0xff); } /* set Priority for Cortex-M3 System Interrupts */
- 800043c:	f885 6023 	strb.w	r6, [r5, #35]	; 0x23
+ 8000460:	f881 4023 	strb.w	r4, [r1, #35]	; 0x23
 { 
   if (ticks > SysTick_LOAD_RELOAD_Msk)  return (1);            /* Reload value impossible */
                                                                
   SysTick->LOAD  = (ticks & SysTick_LOAD_RELOAD_Msk) - 1;      /* set reload register */
   NVIC_SetPriority (SysTick_IRQn, (1<<__NVIC_PRIO_BITS) - 1);  /* set Priority for Cortex-M0 System Interrupts */
   SysTick->VAL   = 0;                                          /* Load the SysTick Counter Value */
- 8000440:	609c      	str	r4, [r3, #8]
+ 8000464:	6098      	str	r0, [r3, #8]
   SysTick->CTRL  = SysTick_CTRL_CLKSOURCE_Msk | 
- 8000442:	6019      	str	r1, [r3, #0]
+ 8000466:	601a      	str	r2, [r3, #0]
 
 #elif (defined (__GNUC__)) /*------------------ GNU Compiler ---------------------*/
 /* GNU gcc specific functions */
 
 static __INLINE void __enable_irq()               { __ASM volatile ("cpsie i"); }
 static __INLINE void __disable_irq()              { __ASM volatile ("cpsid i"); }
- 8000444:	b672      	cpsid	i
+ 8000468:	b672      	cpsid	i
   return load_cpu;
 }
 
-uint8_t addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
+void addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto, uint8_t *tick) {
   __disable_irq();
-  uint8_t n = timer_new++;
- 8000446:	7a13      	ldrb	r3, [r2, #8]
- 8000448:	b2db      	uxtb	r3, r3
- 800044a:	1c59      	adds	r1, r3, #1
- 800044c:	b2c9      	uxtb	r1, r1
+  uint8_t n = timer_new;
+ 800046a:	490e      	ldr	r1, [pc, #56]	; (80004a4 <rtosInit+0x54>)
+ 800046c:	7a0b      	ldrb	r3, [r1, #8]
+ 800046e:	b2db      	uxtb	r3, r3
   if (n<TMR) {
- 800044e:	2b07      	cmp	r3, #7
-  return load_cpu;
-}
+ 8000470:	4293      	cmp	r3, r2
+ 8000472:	d80d      	bhi.n	8000490 <rtosInit+0x40>
+    tmr[n].callback = callback;
+    tmr[n].timer = timer;
+    tmr[n].timer_auto = timer_auto;
+    tmr[n].tick = tick;
+    timer_new++;
+ 8000474:	7a0a      	ldrb	r2, [r1, #8]
 
-uint8_t addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
+void addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto, uint8_t *tick) {
   __disable_irq();
-  uint8_t n = timer_new++;
- 8000450:	7211      	strb	r1, [r2, #8]
+  uint8_t n = timer_new;
   if (n<TMR) {
- 8000452:	d80a      	bhi.n	800046a <rtosInit+0x42>
-    tmr[n].callback=callback;
- 8000454:	480a      	ldr	r0, [pc, #40]	; (8000480 <rtosInit+0x58>)
- 8000456:	eb03 0343 	add.w	r3, r3, r3, lsl #1
- 800045a:	009b      	lsls	r3, r3, #2
- 800045c:	4c09      	ldr	r4, [pc, #36]	; (8000484 <rtosInit+0x5c>)
- 800045e:	18c2      	adds	r2, r0, r3
-    tmr[n].timer=timer;
- 8000460:	f44f 717a 	mov.w	r1, #1000	; 0x3e8
+    tmr[n].callback = callback;
+ 8000476:	4e0c      	ldr	r6, [pc, #48]	; (80004a8 <rtosInit+0x58>)
+ 8000478:	011b      	lsls	r3, r3, #4
+ 800047a:	4f0c      	ldr	r7, [pc, #48]	; (80004ac <rtosInit+0x5c>)
+    tmr[n].timer = timer;
+    tmr[n].timer_auto = timer_auto;
+    tmr[n].tick = tick;
+    timer_new++;
+ 800047c:	3201      	adds	r2, #1
 
-uint8_t addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto) {
+void addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto, uint8_t *tick) {
   __disable_irq();
-  uint8_t n = timer_new++;
+  uint8_t n = timer_new;
   if (n<TMR) {
-    tmr[n].callback=callback;
- 8000464:	50c4      	str	r4, [r0, r3]
-    tmr[n].timer=timer;
- 8000466:	6051      	str	r1, [r2, #4]
-    tmr[n].timer_auto=timer_auto;
- 8000468:	6091      	str	r1, [r2, #8]
+    tmr[n].callback = callback;
+ 800047e:	18f4      	adds	r4, r6, r3
+    tmr[n].timer = timer;
+ 8000480:	f44f 757a 	mov.w	r5, #1000	; 0x3e8
+    tmr[n].timer_auto = timer_auto;
+    tmr[n].tick = tick;
+    timer_new++;
+ 8000484:	b2d2      	uxtb	r2, r2
+
+void addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto, uint8_t *tick) {
+  __disable_irq();
+  uint8_t n = timer_new;
+  if (n<TMR) {
+    tmr[n].callback = callback;
+ 8000486:	50f7      	str	r7, [r6, r3]
+    tmr[n].timer = timer;
+    tmr[n].timer_auto = timer_auto;
+    tmr[n].tick = tick;
+ 8000488:	60e0      	str	r0, [r4, #12]
+    timer_new++;
+ 800048a:	720a      	strb	r2, [r1, #8]
+void addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto, uint8_t *tick) {
+  __disable_irq();
+  uint8_t n = timer_new;
+  if (n<TMR) {
+    tmr[n].callback = callback;
+    tmr[n].timer = timer;
+ 800048c:	6065      	str	r5, [r4, #4]
+    tmr[n].timer_auto = timer_auto;
+ 800048e:	60a5      	str	r5, [r4, #8]
 
 
 #elif (defined (__GNUC__)) /*------------------ GNU Compiler ---------------------*/
 /* GNU gcc specific functions */
 
 static __INLINE void __enable_irq()               { __ASM volatile ("cpsie i"); }
- 800046a:	b662      	cpsie	i
+ 8000490:	b662      	cpsie	i
+}
 
-void rtosInit(void (*idle_func)()) {
-  idle_callback=idle_func;
+void rtosInit() {
   SysTick_Config(TICKS);
-  addTimer(timerStat,1000,1000);
+  addTimer(timerStat,1000,1000,0);
 }
- 800046c:	bcf0      	pop	{r4, r5, r6, r7}
- 800046e:	4770      	bx	lr
- 8000470:	e000e010 	.word	0xe000e010
- 8000474:	0001193f 	.word	0x0001193f
- 8000478:	e000ed00 	.word	0xe000ed00
- 800047c:	2000013c 	.word	0x2000013c
- 8000480:	200000d4 	.word	0x200000d4
- 8000484:	080003e5 	.word	0x080003e5
+ 8000492:	bcf0      	pop	{r4, r5, r6, r7}
+ 8000494:	4770      	bx	lr
+ 8000496:	bf00      	nop
+ 8000498:	e000e010 	.word	0xe000e010
+ 800049c:	0001193f 	.word	0x0001193f
+ 80004a0:	e000ed00 	.word	0xe000ed00
+ 80004a4:	200001b8 	.word	0x200001b8
+ 80004a8:	20000130 	.word	0x20000130
+ 80004ac:	0800040d 	.word	0x0800040d
 
-08000488 <removeTimer>:
-
-void removeTimer(uint8_t num_tmr) {
- 8000488:	b538      	push	{r3, r4, r5, lr}
+080004b0 <SysTick_Handler>:
+static void removeTimer(uint8_t num_tmr) {
   __memcpy(&tmr[num_tmr+1],&tmr[num_tmr],(sizeof(struct TIMER)) * (timer_new-num_tmr-1));
- 800048a:	4c0d      	ldr	r4, [pc, #52]	; (80004c0 <removeTimer+0x38>)
- 800048c:	1c43      	adds	r3, r0, #1
- 800048e:	7a22      	ldrb	r2, [r4, #8]
- 8000490:	4d0c      	ldr	r5, [pc, #48]	; (80004c4 <removeTimer+0x3c>)
- 8000492:	1a12      	subs	r2, r2, r0
- 8000494:	3a01      	subs	r2, #1
- 8000496:	eb02 0242 	add.w	r2, r2, r2, lsl #1
- 800049a:	eb03 0343 	add.w	r3, r3, r3, lsl #1
- 800049e:	eb00 0140 	add.w	r1, r0, r0, lsl #1
- 80004a2:	0092      	lsls	r2, r2, #2
- 80004a4:	eb05 0083 	add.w	r0, r5, r3, lsl #2
- 80004a8:	f002 02fc 	and.w	r2, r2, #252	; 0xfc
- 80004ac:	eb05 0181 	add.w	r1, r5, r1, lsl #2
- 80004b0:	f7ff fe88 	bl	80001c4 <__memcpy>
   timer_new--;
- 80004b4:	7a23      	ldrb	r3, [r4, #8]
- 80004b6:	3b01      	subs	r3, #1
- 80004b8:	b2db      	uxtb	r3, r3
- 80004ba:	7223      	strb	r3, [r4, #8]
- 80004bc:	bd38      	pop	{r3, r4, r5, pc}
- 80004be:	bf00      	nop
- 80004c0:	2000013c 	.word	0x2000013c
- 80004c4:	200000d4 	.word	0x200000d4
-
-080004c8 <SysTick_Handler>:
 }
 
 void SysTick_Handler(void) {
- 80004c8:	b570      	push	{r4, r5, r6, lr}
+ 80004b0:	e92d 41f0 	stmdb	sp!, {r4, r5, r6, r7, r8, lr}
   for(int i=0; i<timer_new; i++) {
- 80004ca:	4e16      	ldr	r6, [pc, #88]	; (8000524 <SysTick_Handler+0x5c>)
- 80004cc:	7a33      	ldrb	r3, [r6, #8]
- 80004ce:	b1f3      	cbz	r3, 800050e <SysTick_Handler+0x46>
- 80004d0:	4c15      	ldr	r4, [pc, #84]	; (8000528 <SysTick_Handler+0x60>)
- 80004d2:	2500      	movs	r5, #0
- 80004d4:	e006      	b.n	80004e4 <SysTick_Handler+0x1c>
+ 80004b4:	4f24      	ldr	r7, [pc, #144]	; (8000548 <SysTick_Handler+0x98>)
+ 80004b6:	7a3b      	ldrb	r3, [r7, #8]
+ 80004b8:	2b00      	cmp	r3, #0
+ 80004ba:	d03a      	beq.n	8000532 <SysTick_Handler+0x82>
+ 80004bc:	4c23      	ldr	r4, [pc, #140]	; (800054c <SysTick_Handler+0x9c>)
+ 80004be:	2501      	movs	r5, #1
+ 80004c0:	e008      	b.n	80004d4 <SysTick_Handler+0x24>
+ 80004c2:	462e      	mov	r6, r5
     if (tmr[i].timer) {
       tmr[i].timer--;
- 80004d6:	6062      	str	r2, [r4, #4]
+ 80004c4:	f844 2c0c 	str.w	r2, [r4, #-12]
   __memcpy(&tmr[num_tmr+1],&tmr[num_tmr],(sizeof(struct TIMER)) * (timer_new-num_tmr-1));
   timer_new--;
 }
 
 void SysTick_Handler(void) {
   for(int i=0; i<timer_new; i++) {
- 80004d8:	7a33      	ldrb	r3, [r6, #8]
- 80004da:	3501      	adds	r5, #1
- 80004dc:	42ab      	cmp	r3, r5
- 80004de:	f104 040c 	add.w	r4, r4, #12
- 80004e2:	dd14      	ble.n	800050e <SysTick_Handler+0x46>
+ 80004c8:	7a3b      	ldrb	r3, [r7, #8]
+ 80004ca:	3501      	adds	r5, #1
+ 80004cc:	42b3      	cmp	r3, r6
+ 80004ce:	f104 0410 	add.w	r4, r4, #16
+ 80004d2:	dd2e      	ble.n	8000532 <SysTick_Handler+0x82>
     if (tmr[i].timer) {
- 80004e4:	6863      	ldr	r3, [r4, #4]
+ 80004d4:	f854 3c0c 	ldr.w	r3, [r4, #-12]
+ 80004d8:	f105 38ff 	add.w	r8, r5, #4294967295
       tmr[i].timer--;
- 80004e6:	1e5a      	subs	r2, r3, #1
+ 80004dc:	1e5a      	subs	r2, r3, #1
   timer_new--;
 }
 
 void SysTick_Handler(void) {
   for(int i=0; i<timer_new; i++) {
     if (tmr[i].timer) {
- 80004e8:	2b00      	cmp	r3, #0
- 80004ea:	d1f4      	bne.n	80004d6 <SysTick_Handler+0xe>
+ 80004de:	2b00      	cmp	r3, #0
+ 80004e0:	d1ef      	bne.n	80004c2 <SysTick_Handler+0x12>
       tmr[i].timer--;
     } else {
       tmr[i].timer=tmr[i].timer_auto;
- 80004ec:	68a3      	ldr	r3, [r4, #8]
+ 80004e2:	f854 2c08 	ldr.w	r2, [r4, #-8]
       if (tmr[i].callback) tmr[i].callback();
- 80004ee:	6822      	ldr	r2, [r4, #0]
+ 80004e6:	f854 3c10 	ldr.w	r3, [r4, #-16]
 void SysTick_Handler(void) {
   for(int i=0; i<timer_new; i++) {
     if (tmr[i].timer) {
       tmr[i].timer--;
     } else {
       tmr[i].timer=tmr[i].timer_auto;
- 80004f0:	6063      	str	r3, [r4, #4]
+ 80004ea:	f844 2c0c 	str.w	r2, [r4, #-12]
       if (tmr[i].callback) tmr[i].callback();
- 80004f2:	b10a      	cbz	r2, 80004f8 <SysTick_Handler+0x30>
- 80004f4:	4790      	blx	r2
- 80004f6:	6863      	ldr	r3, [r4, #4]
+ 80004ee:	b103      	cbz	r3, 80004f2 <SysTick_Handler+0x42>
+ 80004f0:	4798      	blx	r3
+      if (tmr[i].tick) (*(tmr[i].tick))++;
+ 80004f2:	f854 3c04 	ldr.w	r3, [r4, #-4]
+ 80004f6:	b113      	cbz	r3, 80004fe <SysTick_Handler+0x4e>
+ 80004f8:	781a      	ldrb	r2, [r3, #0]
+ 80004fa:	3201      	adds	r2, #1
+ 80004fc:	701a      	strb	r2, [r3, #0]
       if (!tmr[i].timer) removeTimer(i);
- 80004f8:	2b00      	cmp	r3, #0
- 80004fa:	d1ed      	bne.n	80004d8 <SysTick_Handler+0x10>
- 80004fc:	b2e8      	uxtb	r0, r5
- 80004fe:	f7ff ffc3 	bl	8000488 <removeTimer>
+ 80004fe:	f854 3c0c 	ldr.w	r3, [r4, #-12]
+  SysTick_Config(TICKS);
+  addTimer(timerStat,1000,1000,0);
+}
+
+static void removeTimer(uint8_t num_tmr) {
   __memcpy(&tmr[num_tmr+1],&tmr[num_tmr],(sizeof(struct TIMER)) * (timer_new-num_tmr-1));
+ 8000502:	462e      	mov	r6, r5
+      tmr[i].timer--;
+    } else {
+      tmr[i].timer=tmr[i].timer_auto;
+      if (tmr[i].callback) tmr[i].callback();
+      if (tmr[i].tick) (*(tmr[i].tick))++;
+      if (!tmr[i].timer) removeTimer(i);
+ 8000504:	2b00      	cmp	r3, #0
+ 8000506:	d1df      	bne.n	80004c8 <SysTick_Handler+0x18>
+  SysTick_Config(TICKS);
+  addTimer(timerStat,1000,1000,0);
+}
+
+static void removeTimer(uint8_t num_tmr) {
+  __memcpy(&tmr[num_tmr+1],&tmr[num_tmr],(sizeof(struct TIMER)) * (timer_new-num_tmr-1));
+ 8000508:	7a3a      	ldrb	r2, [r7, #8]
+ 800050a:	f1a4 0110 	sub.w	r1, r4, #16
+ 800050e:	ebc8 0202 	rsb	r2, r8, r2
+ 8000512:	3a01      	subs	r2, #1
+ 8000514:	0112      	lsls	r2, r2, #4
+ 8000516:	4620      	mov	r0, r4
+ 8000518:	f002 02f0 	and.w	r2, r2, #240	; 0xf0
+ 800051c:	f7ff fe50 	bl	80001c0 <__memcpy>
   timer_new--;
+ 8000520:	7a3b      	ldrb	r3, [r7, #8]
+ 8000522:	3501      	adds	r5, #1
+ 8000524:	3b01      	subs	r3, #1
+ 8000526:	b2db      	uxtb	r3, r3
+ 8000528:	723b      	strb	r3, [r7, #8]
 }
 
 void SysTick_Handler(void) {
   for(int i=0; i<timer_new; i++) {
- 8000502:	7a33      	ldrb	r3, [r6, #8]
- 8000504:	3501      	adds	r5, #1
- 8000506:	42ab      	cmp	r3, r5
- 8000508:	f104 040c 	add.w	r4, r4, #12
- 800050c:	dcea      	bgt.n	80004e4 <SysTick_Handler+0x1c>
-      tmr[i].timer=tmr[i].timer_auto;
+ 800052a:	7a3b      	ldrb	r3, [r7, #8]
+ 800052c:	3410      	adds	r4, #16
+ 800052e:	42b3      	cmp	r3, r6
+ 8000530:	dcd0      	bgt.n	80004d4 <SysTick_Handler+0x24>
       if (tmr[i].callback) tmr[i].callback();
+      if (tmr[i].tick) (*(tmr[i].tick))++;
       if (!tmr[i].timer) removeTimer(i);
     }
   }
   current_load +=(TICKS-SysTick->VAL);
- 800050e:	4b07      	ldr	r3, [pc, #28]	; (800052c <SysTick_Handler+0x64>)
- 8000510:	6899      	ldr	r1, [r3, #8]
- 8000512:	6832      	ldr	r2, [r6, #0]
- 8000514:	f502 338c 	add.w	r3, r2, #71680	; 0x11800
- 8000518:	f503 73a0 	add.w	r3, r3, #320	; 0x140
- 800051c:	1a5b      	subs	r3, r3, r1
- 800051e:	6033      	str	r3, [r6, #0]
+ 8000532:	4b07      	ldr	r3, [pc, #28]	; (8000550 <SysTick_Handler+0xa0>)
+ 8000534:	6899      	ldr	r1, [r3, #8]
+ 8000536:	683a      	ldr	r2, [r7, #0]
+ 8000538:	f502 338c 	add.w	r3, r2, #71680	; 0x11800
+ 800053c:	f503 73a0 	add.w	r3, r3, #320	; 0x140
+ 8000540:	1a5b      	subs	r3, r3, r1
+ 8000542:	603b      	str	r3, [r7, #0]
 }
- 8000520:	bd70      	pop	{r4, r5, r6, pc}
- 8000522:	bf00      	nop
- 8000524:	2000013c 	.word	0x2000013c
- 8000528:	200000d4 	.word	0x200000d4
- 800052c:	e000e010 	.word	0xe000e010
+ 8000544:	e8bd 81f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, pc}
+ 8000548:	200001b8 	.word	0x200001b8
+ 800054c:	20000140 	.word	0x20000140
+ 8000550:	e000e010 	.word	0xe000e010
 
-08000530 <addTask>:
+08000554 <delay>:
+  return 0; 
+}
+
+void delay(uint32_t time_ms) {
+  uint32_t n = getNumberTask();
+  task[n].delay = 0;
+ 8000554:	4a0e      	ldr	r2, [pc, #56]	; (8000590 <delay+0x3c>)
+ 8000556:	2100      	movs	r1, #0
+
+uint32_t getNumberTask(void) {
+  return 0; 
+}
+
+void delay(uint32_t time_ms) {
+ 8000558:	b4f0      	push	{r4, r5, r6, r7}
+  uint32_t n = getNumberTask();
+  task[n].delay = 0;
+ 800055a:	60d1      	str	r1, [r2, #12]
 static __INLINE void __disable_irq()              { __ASM volatile ("cpsid i"); }
- 8000530:	b672      	cpsid	i
-  }
+ 800055c:	b672      	cpsid	i
+  return load_cpu;
 }
 
-uint32_t addTask(void (*addr_task)()) {
+void addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto, uint8_t *tick) {
   __disable_irq();
-  uint32_t n = task_new++;
- 8000532:	4a09      	ldr	r2, [pc, #36]	; (8000558 <addTask+0x28>)
- 8000534:	7c10      	ldrb	r0, [r2, #16]
- 8000536:	b2c0      	uxtb	r0, r0
- 8000538:	1c43      	adds	r3, r0, #1
- 800053a:	b2db      	uxtb	r3, r3
-  if (n<TSK) {
- 800053c:	2803      	cmp	r0, #3
-  }
-}
+  uint8_t n = timer_new;
+ 800055e:	4c0d      	ldr	r4, [pc, #52]	; (8000594 <delay+0x40>)
+ 8000560:	7a23      	ldrb	r3, [r4, #8]
+ 8000562:	b2db      	uxtb	r3, r3
+  if (n<TMR) {
+ 8000564:	2b07      	cmp	r3, #7
+ 8000566:	d80c      	bhi.n	8000582 <delay+0x2e>
+    tmr[n].callback = callback;
+    tmr[n].timer = timer;
+    tmr[n].timer_auto = timer_auto;
+    tmr[n].tick = tick;
+    timer_new++;
+ 8000568:	7a25      	ldrb	r5, [r4, #8]
 
-uint32_t addTask(void (*addr_task)()) {
+void addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto, uint8_t *tick) {
   __disable_irq();
-  uint32_t n = task_new++;
- 800053e:	7413      	strb	r3, [r2, #16]
-  if (n<TSK) {
- 8000540:	d807      	bhi.n	8000552 <addTask+0x22>
-    uint32_t* sp = (uint32_t*)&__stack_top__ - 1024 - (n<<8);
-    task[n].stack_pointer = (uint32_t)sp;
- 8000542:	4b06      	ldr	r3, [pc, #24]	; (800055c <addTask+0x2c>)
- 8000544:	4a06      	ldr	r2, [pc, #24]	; (8000560 <addTask+0x30>)
- 8000546:	eba3 2380 	sub.w	r3, r3, r0, lsl #10
- 800054a:	eb00 0140 	add.w	r1, r0, r0, lsl #1
- 800054e:	f842 3021 	str.w	r3, [r2, r1, lsl #2]
+  uint8_t n = timer_new;
+  if (n<TMR) {
+    tmr[n].callback = callback;
+ 800056a:	4f0b      	ldr	r7, [pc, #44]	; (8000598 <delay+0x44>)
+    tmr[n].timer = timer;
+    tmr[n].timer_auto = timer_auto;
+    tmr[n].tick = tick;
+    timer_new++;
+ 800056c:	3501      	adds	r5, #1
+
+void addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto, uint8_t *tick) {
+  __disable_irq();
+  uint8_t n = timer_new;
+  if (n<TMR) {
+    tmr[n].callback = callback;
+ 800056e:	011b      	lsls	r3, r3, #4
+    tmr[n].timer = timer;
+    tmr[n].timer_auto = timer_auto;
+    tmr[n].tick = tick;
+    timer_new++;
+ 8000570:	b2ed      	uxtb	r5, r5
+
+void addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto, uint8_t *tick) {
+  __disable_irq();
+  uint8_t n = timer_new;
+  if (n<TMR) {
+    tmr[n].callback = callback;
+ 8000572:	18fe      	adds	r6, r7, r3
+    tmr[n].timer = timer;
+    tmr[n].timer_auto = timer_auto;
+    tmr[n].tick = tick;
+    timer_new++;
+ 8000574:	7225      	strb	r5, [r4, #8]
+  uint8_t n = timer_new;
+  if (n<TMR) {
+    tmr[n].callback = callback;
+    tmr[n].timer = timer;
+    tmr[n].timer_auto = timer_auto;
+    tmr[n].tick = tick;
+ 8000576:	f102 040c 	add.w	r4, r2, #12
+
+void addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto, uint8_t *tick) {
+  __disable_irq();
+  uint8_t n = timer_new;
+  if (n<TMR) {
+    tmr[n].callback = callback;
+ 800057a:	50f9      	str	r1, [r7, r3]
+    tmr[n].timer = timer;
+ 800057c:	6070      	str	r0, [r6, #4]
+    tmr[n].timer_auto = timer_auto;
+ 800057e:	60b1      	str	r1, [r6, #8]
+    tmr[n].tick = tick;
+ 8000580:	60f4      	str	r4, [r6, #12]
 
 
 #elif (defined (__GNUC__)) /*------------------ GNU Compiler ---------------------*/
 /* GNU gcc specific functions */
 
 static __INLINE void __enable_irq()               { __ASM volatile ("cpsie i"); }
- 8000552:	b662      	cpsie	i
+ 8000582:	b662      	cpsie	i
+
+void delay(uint32_t time_ms) {
+  uint32_t n = getNumberTask();
+  task[n].delay = 0;
+  addTimer(0,time_ms,0,(uint8_t*)&task[n].delay);
+  while(!task[n].delay);
+ 8000584:	68d3      	ldr	r3, [r2, #12]
+ 8000586:	2b00      	cmp	r3, #0
+ 8000588:	d0fc      	beq.n	8000584 <delay+0x30>
+}
+ 800058a:	bcf0      	pop	{r4, r5, r6, r7}
+ 800058c:	4770      	bx	lr
+ 800058e:	bf00      	nop
+ 8000590:	200000f0 	.word	0x200000f0
+ 8000594:	200001b8 	.word	0x200001b8
+ 8000598:	20000130 	.word	0x20000130
+
+0800059c <addTask>:
+
+uint32_t addTask(void (*addr_task)()) {
+ 800059c:	b538      	push	{r3, r4, r5, lr}
+static __INLINE void __disable_irq()              { __ASM volatile ("cpsid i"); }
+ 800059e:	b672      	cpsid	i
+  __disable_irq();
+  uint32_t n = task_new++;
+ 80005a0:	4a0b      	ldr	r2, [pc, #44]	; (80005d0 <addTask+0x34>)
+ 80005a2:	7a54      	ldrb	r4, [r2, #9]
+ 80005a4:	b2e4      	uxtb	r4, r4
+ 80005a6:	1c63      	adds	r3, r4, #1
+ 80005a8:	b2db      	uxtb	r3, r3
+  if (n<TSK) {
+ 80005aa:	2c03      	cmp	r4, #3
+  while(!task[n].delay);
+}
+
+uint32_t addTask(void (*addr_task)()) {
+  __disable_irq();
+  uint32_t n = task_new++;
+ 80005ac:	7253      	strb	r3, [r2, #9]
+  if (n<TSK) {
+ 80005ae:	d80c      	bhi.n	80005ca <addTask+0x2e>
+ 80005b0:	4602      	mov	r2, r0
+     uint32_t sp = (uint32_t)&__stack_top__ - (1<<POW_MSP) - (n<<POW_PSP);
+ 80005b2:	4b08      	ldr	r3, [pc, #32]	; (80005d4 <addTask+0x38>)
+     *((uint32_t*)sp - 1) = 0x01000000;
+ 80005b4:	f04f 7580 	mov.w	r5, #16777216	; 0x1000000
+
+uint32_t addTask(void (*addr_task)()) {
+  __disable_irq();
+  uint32_t n = task_new++;
+  if (n<TSK) {
+     uint32_t sp = (uint32_t)&__stack_top__ - (1<<POW_MSP) - (n<<POW_PSP);
+ 80005b8:	eba3 2304 	sub.w	r3, r3, r4, lsl #8
+     *((uint32_t*)sp - 1) = 0x01000000;
+     *((uint32_t*)sp - 2) = (uint32_t)addr_task;
+     __bzero((uint32_t*)sp - 8, 24);
+ 80005bc:	f1a3 0020 	sub.w	r0, r3, #32
+ 80005c0:	2118      	movs	r1, #24
+uint32_t addTask(void (*addr_task)()) {
+  __disable_irq();
+  uint32_t n = task_new++;
+  if (n<TSK) {
+     uint32_t sp = (uint32_t)&__stack_top__ - (1<<POW_MSP) - (n<<POW_PSP);
+     *((uint32_t*)sp - 1) = 0x01000000;
+ 80005c2:	e903 0024 	stmdb	r3, {r2, r5}
+     *((uint32_t*)sp - 2) = (uint32_t)addr_task;
+     __bzero((uint32_t*)sp - 8, 24);
+ 80005c6:	f7ff fe03 	bl	80001d0 <__bzero>
+
+
+#elif (defined (__GNUC__)) /*------------------ GNU Compiler ---------------------*/
+/* GNU gcc specific functions */
+
+static __INLINE void __enable_irq()               { __ASM volatile ("cpsie i"); }
+ 80005ca:	b662      	cpsie	i
   }
   __enable_irq();
   return n;
 }
- 8000554:	4770      	bx	lr
- 8000556:	bf00      	nop
- 8000558:	2000013c 	.word	0x2000013c
- 800055c:	20004000 	.word	0x20004000
- 8000560:	200000a4 	.word	0x200000a4
+ 80005cc:	4620      	mov	r0, r4
+ 80005ce:	bd38      	pop	{r3, r4, r5, pc}
+ 80005d0:	200001b8 	.word	0x200001b8
+ 80005d4:	20004c00 	.word	0x20004c00
 
-08000564 <SystemInit>:
+080005d8 <SystemInit>:
 #include "stm32f10x.h"
 #include "sysinit.h"
 
 void SystemInit (void) {
   /* Set RCC initial state */
   RCC->CR   = RCC_CR_RESET_STATE;
- 8000564:	4b15      	ldr	r3, [pc, #84]	; (80005bc <SystemInit+0x58>)
+ 80005d8:	4b15      	ldr	r3, [pc, #84]	; (8000630 <SystemInit+0x58>)
   RCC->CFGR = 0;
- 8000566:	2200      	movs	r2, #0
+ 80005da:	2200      	movs	r2, #0
   RCC->CIR  = 0;
   /* Enable HSE */
   RCC->CR |= RCC_CR_HSEON;
   /* Wait till HSE is ready */
   while (!(RCC->CR & RCC_CR_HSERDY));
- 8000568:	4619      	mov	r1, r3
+ 80005dc:	4619      	mov	r1, r3
 #include "stm32f10x.h"
 #include "sysinit.h"
 
 void SystemInit (void) {
   /* Set RCC initial state */
   RCC->CR   = RCC_CR_RESET_STATE;
- 800056a:	2083      	movs	r0, #131	; 0x83
- 800056c:	6018      	str	r0, [r3, #0]
+ 80005de:	2083      	movs	r0, #131	; 0x83
+ 80005e0:	6018      	str	r0, [r3, #0]
   RCC->CFGR = 0;
- 800056e:	605a      	str	r2, [r3, #4]
+ 80005e2:	605a      	str	r2, [r3, #4]
   RCC->CIR  = 0;
- 8000570:	609a      	str	r2, [r3, #8]
+ 80005e4:	609a      	str	r2, [r3, #8]
   /* Enable HSE */
   RCC->CR |= RCC_CR_HSEON;
- 8000572:	681a      	ldr	r2, [r3, #0]
- 8000574:	f442 3280 	orr.w	r2, r2, #65536	; 0x10000
- 8000578:	601a      	str	r2, [r3, #0]
+ 80005e6:	681a      	ldr	r2, [r3, #0]
+ 80005e8:	f442 3280 	orr.w	r2, r2, #65536	; 0x10000
+ 80005ec:	601a      	str	r2, [r3, #0]
   /* Wait till HSE is ready */
   while (!(RCC->CR & RCC_CR_HSERDY));
- 800057a:	680b      	ldr	r3, [r1, #0]
- 800057c:	4a0f      	ldr	r2, [pc, #60]	; (80005bc <SystemInit+0x58>)
- 800057e:	0398      	lsls	r0, r3, #14
- 8000580:	d5fb      	bpl.n	800057a <SystemInit+0x16>
+ 80005ee:	680b      	ldr	r3, [r1, #0]
+ 80005f0:	4a0f      	ldr	r2, [pc, #60]	; (8000630 <SystemInit+0x58>)
+ 80005f2:	0398      	lsls	r0, r3, #14
+ 80005f4:	d5fb      	bpl.n	80005ee <SystemInit+0x16>
   RCC->CFGR |= RCC_CFGR_HPRE_DIV1  | RCC_CFGR_PPRE2_DIV1 | RCC_CFGR_PPRE1_DIV2 |
                RCC_CFGR_PLLSRC_HSE | PLL_MUL;
   /* Enable PLL */
   RCC->CR |= RCC_CR_PLLON;
   /* Wait till PLL is ready */
   while(!(RCC->CR & RCC_CR_PLLRDY));
- 8000582:	4611      	mov	r1, r2
+ 80005f6:	4611      	mov	r1, r2
   RCC->CR |= RCC_CR_HSEON;
   /* Wait till HSE is ready */
   while (!(RCC->CR & RCC_CR_HSERDY));
   /* Enable Prefetch Buffer, set Flash memory wait state */
 #if SYSCLK > 48000000
   FLASH->ACR = FLASH_ACR_PRFTBE | FLASH_ACR_LATENCY_2;
- 8000584:	4b0e      	ldr	r3, [pc, #56]	; (80005c0 <SystemInit+0x5c>)
- 8000586:	2012      	movs	r0, #18
- 8000588:	6018      	str	r0, [r3, #0]
+ 80005f8:	4b0e      	ldr	r3, [pc, #56]	; (8000634 <SystemInit+0x5c>)
+ 80005fa:	2012      	movs	r0, #18
+ 80005fc:	6018      	str	r0, [r3, #0]
   FLASH->ACR = FLASH_ACR_PRFTBE | FLASH_ACR_LATENCY_1;
 #else
   FLASH->ACR = FLASH_ACR_PRFTBE;
 #endif
   /* HCLK = PCLK1 = PCLK2 = SYSCLK = HSE * PLL_MUL*/
   RCC->CFGR |= RCC_CFGR_HPRE_DIV1  | RCC_CFGR_PPRE2_DIV1 | RCC_CFGR_PPRE1_DIV2 |
- 800058a:	6853      	ldr	r3, [r2, #4]
- 800058c:	f443 13e8 	orr.w	r3, r3, #1900544	; 0x1d0000
- 8000590:	f443 6380 	orr.w	r3, r3, #1024	; 0x400
- 8000594:	6053      	str	r3, [r2, #4]
+ 80005fe:	6853      	ldr	r3, [r2, #4]
+ 8000600:	f443 13e8 	orr.w	r3, r3, #1900544	; 0x1d0000
+ 8000604:	f443 6380 	orr.w	r3, r3, #1024	; 0x400
+ 8000608:	6053      	str	r3, [r2, #4]
                RCC_CFGR_PLLSRC_HSE | PLL_MUL;
   /* Enable PLL */
   RCC->CR |= RCC_CR_PLLON;
- 8000596:	6813      	ldr	r3, [r2, #0]
- 8000598:	f043 7380 	orr.w	r3, r3, #16777216	; 0x1000000
- 800059c:	6013      	str	r3, [r2, #0]
+ 800060a:	6813      	ldr	r3, [r2, #0]
+ 800060c:	f043 7380 	orr.w	r3, r3, #16777216	; 0x1000000
+ 8000610:	6013      	str	r3, [r2, #0]
   /* Wait till PLL is ready */
   while(!(RCC->CR & RCC_CR_PLLRDY));
- 800059e:	680b      	ldr	r3, [r1, #0]
- 80005a0:	4a06      	ldr	r2, [pc, #24]	; (80005bc <SystemInit+0x58>)
- 80005a2:	019b      	lsls	r3, r3, #6
- 80005a4:	d5fb      	bpl.n	800059e <SystemInit+0x3a>
+ 8000612:	680b      	ldr	r3, [r1, #0]
+ 8000614:	4a06      	ldr	r2, [pc, #24]	; (8000630 <SystemInit+0x58>)
+ 8000616:	019b      	lsls	r3, r3, #6
+ 8000618:	d5fb      	bpl.n	8000612 <SystemInit+0x3a>
   /* Select PLL as system clock source */
   RCC->CFGR |= (uint32_t)RCC_CFGR_SW_PLL;
   /* Wait till PLL is used as system clock source */
   while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_1);
- 80005a6:	4611      	mov	r1, r2
+ 800061a:	4611      	mov	r1, r2
   /* Enable PLL */
   RCC->CR |= RCC_CR_PLLON;
   /* Wait till PLL is ready */
   while(!(RCC->CR & RCC_CR_PLLRDY));
   /* Select PLL as system clock source */
   RCC->CFGR |= (uint32_t)RCC_CFGR_SW_PLL;
- 80005a8:	6853      	ldr	r3, [r2, #4]
- 80005aa:	f043 0302 	orr.w	r3, r3, #2
- 80005ae:	6053      	str	r3, [r2, #4]
+ 800061c:	6853      	ldr	r3, [r2, #4]
+ 800061e:	f043 0302 	orr.w	r3, r3, #2
+ 8000622:	6053      	str	r3, [r2, #4]
   /* Wait till PLL is used as system clock source */
   while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_1);
- 80005b0:	684b      	ldr	r3, [r1, #4]
- 80005b2:	f003 030c 	and.w	r3, r3, #12
- 80005b6:	2b08      	cmp	r3, #8
- 80005b8:	d1fa      	bne.n	80005b0 <SystemInit+0x4c>
+ 8000624:	684b      	ldr	r3, [r1, #4]
+ 8000626:	f003 030c 	and.w	r3, r3, #12
+ 800062a:	2b08      	cmp	r3, #8
+ 800062c:	d1fa      	bne.n	8000624 <SystemInit+0x4c>
 }
- 80005ba:	4770      	bx	lr
- 80005bc:	40021000 	.word	0x40021000
- 80005c0:	40022000 	.word	0x40022000
+ 800062e:	4770      	bx	lr
+ 8000630:	40021000 	.word	0x40021000
+ 8000634:	40022000 	.word	0x40022000
 
-080005c4 <usartInit>:
+08000638 <usartInit>:
   USART1->DR = c;
 }
 
   // --- UART setup ----
 void usartInit(uint32_t baud) {
   USART1->BRR = SYSCLK / baud;
- 80005c4:	4b09      	ldr	r3, [pc, #36]	; (80005ec <usartInit+0x28>)
- 80005c6:	4a0a      	ldr	r2, [pc, #40]	; (80005f0 <usartInit+0x2c>)
- 80005c8:	fbb3 f0f0 	udiv	r0, r3, r0
- 80005cc:	b280      	uxth	r0, r0
- 80005ce:	8110      	strh	r0, [r2, #8]
+ 8000638:	4b09      	ldr	r3, [pc, #36]	; (8000660 <usartInit+0x28>)
+ 800063a:	4a0a      	ldr	r2, [pc, #40]	; (8000664 <usartInit+0x2c>)
+ 800063c:	fbb3 f0f0 	udiv	r0, r3, r0
+ 8000640:	b280      	uxth	r0, r0
+ 8000642:	8110      	strh	r0, [r2, #8]
   USART1->CR3 |= USART_CR3_DMAT | USART_CR3_DMAR;
- 80005d0:	8a93      	ldrh	r3, [r2, #20]
- 80005d2:	b29b      	uxth	r3, r3
- 80005d4:	f043 03c0 	orr.w	r3, r3, #192	; 0xc0
- 80005d8:	8293      	strh	r3, [r2, #20]
+ 8000644:	8a93      	ldrh	r3, [r2, #20]
+ 8000646:	b29b      	uxth	r3, r3
+ 8000648:	f043 03c0 	orr.w	r3, r3, #192	; 0xc0
+ 800064c:	8293      	strh	r3, [r2, #20]
   USART1->CR1 |= USART_CR1_UE | USART_CR1_TE | USART_CR1_RE;
- 80005da:	8993      	ldrh	r3, [r2, #12]
- 80005dc:	b29b      	uxth	r3, r3
- 80005de:	f443 5300 	orr.w	r3, r3, #8192	; 0x2000
- 80005e2:	f043 030c 	orr.w	r3, r3, #12
- 80005e6:	8193      	strh	r3, [r2, #12]
- 80005e8:	4770      	bx	lr
- 80005ea:	bf00      	nop
- 80005ec:	044aa200 	.word	0x044aa200
- 80005f0:	40013800 	.word	0x40013800
+ 800064e:	8993      	ldrh	r3, [r2, #12]
+ 8000650:	b29b      	uxth	r3, r3
+ 8000652:	f443 5300 	orr.w	r3, r3, #8192	; 0x2000
+ 8000656:	f043 030c 	orr.w	r3, r3, #12
+ 800065a:	8193      	strh	r3, [r2, #12]
+ 800065c:	4770      	bx	lr
+ 800065e:	bf00      	nop
+ 8000660:	044aa200 	.word	0x044aa200
+ 8000664:	40013800 	.word	0x40013800
 
-080005f4 <usartPrint>:
+08000668 <usartPrint>:
 }
 
 void usartPrint (char *s) {
- 80005f4:	b538      	push	{r3, r4, r5, lr}
+ 8000668:	b538      	push	{r3, r4, r5, lr}
   while (DMA1_Channel4->CNDTR || !(USART1->SR & USART_SR_TXE));
- 80005f6:	4a0c      	ldr	r2, [pc, #48]	; (8000628 <usartPrint+0x34>)
+ 800066a:	4a0c      	ldr	r2, [pc, #48]	; (800069c <usartPrint+0x34>)
   USART1->BRR = SYSCLK / baud;
   USART1->CR3 |= USART_CR3_DMAT | USART_CR3_DMAR;
   USART1->CR1 |= USART_CR1_UE | USART_CR1_TE | USART_CR1_RE;
 }
 
 void usartPrint (char *s) {
- 80005f8:	4605      	mov	r5, r0
+ 800066c:	4605      	mov	r5, r0
   while (DMA1_Channel4->CNDTR || !(USART1->SR & USART_SR_TXE));
- 80005fa:	480c      	ldr	r0, [pc, #48]	; (800062c <usartPrint+0x38>)
- 80005fc:	6853      	ldr	r3, [r2, #4]
- 80005fe:	4c0a      	ldr	r4, [pc, #40]	; (8000628 <usartPrint+0x34>)
- 8000600:	2b00      	cmp	r3, #0
- 8000602:	d1fb      	bne.n	80005fc <usartPrint+0x8>
- 8000604:	8801      	ldrh	r1, [r0, #0]
- 8000606:	0609      	lsls	r1, r1, #24
- 8000608:	d5f8      	bpl.n	80005fc <usartPrint+0x8>
+ 800066e:	480c      	ldr	r0, [pc, #48]	; (80006a0 <usartPrint+0x38>)
+ 8000670:	6853      	ldr	r3, [r2, #4]
+ 8000672:	4c0a      	ldr	r4, [pc, #40]	; (800069c <usartPrint+0x34>)
+ 8000674:	2b00      	cmp	r3, #0
+ 8000676:	d1fb      	bne.n	8000670 <usartPrint+0x8>
+ 8000678:	8801      	ldrh	r1, [r0, #0]
+ 800067a:	0609      	lsls	r1, r1, #24
+ 800067c:	d5f8      	bpl.n	8000670 <usartPrint+0x8>
   DMA1_Channel4->CCR = 0;
   DMA1_Channel4->CPAR = (uint32_t)(&USART1->DR);
- 800060a:	4a09      	ldr	r2, [pc, #36]	; (8000630 <usartPrint+0x3c>)
+ 800067e:	4a09      	ldr	r2, [pc, #36]	; (80006a4 <usartPrint+0x3c>)
   USART1->CR1 |= USART_CR1_UE | USART_CR1_TE | USART_CR1_RE;
 }
 
 void usartPrint (char *s) {
   while (DMA1_Channel4->CNDTR || !(USART1->SR & USART_SR_TXE));
   DMA1_Channel4->CCR = 0;
- 800060c:	6023      	str	r3, [r4, #0]
+ 8000680:	6023      	str	r3, [r4, #0]
   DMA1_Channel4->CPAR = (uint32_t)(&USART1->DR);
   DMA1_Channel4->CMAR = (uint32_t)s;
   DMA1_Channel4->CNDTR = __strlen(s);
- 800060e:	4628      	mov	r0, r5
+ 8000682:	4628      	mov	r0, r5
 }
 
 void usartPrint (char *s) {
   while (DMA1_Channel4->CNDTR || !(USART1->SR & USART_SR_TXE));
   DMA1_Channel4->CCR = 0;
   DMA1_Channel4->CPAR = (uint32_t)(&USART1->DR);
- 8000610:	60a2      	str	r2, [r4, #8]
+ 8000684:	60a2      	str	r2, [r4, #8]
   DMA1_Channel4->CMAR = (uint32_t)s;
- 8000612:	60e5      	str	r5, [r4, #12]
+ 8000686:	60e5      	str	r5, [r4, #12]
   DMA1_Channel4->CNDTR = __strlen(s);
- 8000614:	f7ff fd8c 	bl	8000130 <__strlen>
+ 8000688:	f7ff fd52 	bl	8000130 <__strlen>
   DMA1_Channel4->CCR = DMA_CCR1_MINC | DMA_CCR1_DIR;
- 8000618:	2390      	movs	r3, #144	; 0x90
+ 800068c:	2390      	movs	r3, #144	; 0x90
 void usartPrint (char *s) {
   while (DMA1_Channel4->CNDTR || !(USART1->SR & USART_SR_TXE));
   DMA1_Channel4->CCR = 0;
   DMA1_Channel4->CPAR = (uint32_t)(&USART1->DR);
   DMA1_Channel4->CMAR = (uint32_t)s;
   DMA1_Channel4->CNDTR = __strlen(s);
- 800061a:	6060      	str	r0, [r4, #4]
+ 800068e:	6060      	str	r0, [r4, #4]
   DMA1_Channel4->CCR = DMA_CCR1_MINC | DMA_CCR1_DIR;
- 800061c:	6023      	str	r3, [r4, #0]
+ 8000690:	6023      	str	r3, [r4, #0]
   DMA1_Channel4->CCR |= DMA_CCR1_EN;
- 800061e:	6823      	ldr	r3, [r4, #0]
- 8000620:	f043 0301 	orr.w	r3, r3, #1
- 8000624:	6023      	str	r3, [r4, #0]
- 8000626:	bd38      	pop	{r3, r4, r5, pc}
- 8000628:	40020044 	.word	0x40020044
- 800062c:	40013800 	.word	0x40013800
- 8000630:	40013804 	.word	0x40013804
+ 8000692:	6823      	ldr	r3, [r4, #0]
+ 8000694:	f043 0301 	orr.w	r3, r3, #1
+ 8000698:	6023      	str	r3, [r4, #0]
+ 800069a:	bd38      	pop	{r3, r4, r5, pc}
+ 800069c:	40020044 	.word	0x40020044
+ 80006a0:	40013800 	.word	0x40013800
+ 80006a4:	40013804 	.word	0x40013804

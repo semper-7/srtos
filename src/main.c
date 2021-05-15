@@ -7,10 +7,17 @@
 #define USART_BUFER_SIZE 80
 char usart_rx_bufer[USART_BUFER_SIZE];
 char usart_tx_bufer[USART_BUFER_SIZE];
+char usart_tx_bufer_task0[USART_BUFER_SIZE];
 
 void task0(void) {
-  usartPrint("Start task0\n");
-  while(1);
+  while(1) {
+  char *s = __stpcpy(usart_tx_bufer_task0, "Start task0\t");
+  s = itoa(s, __get_CONTROL(), 1, HEX);
+  *(s++) = '\n';
+  *(s++) = 0;
+  usartPrint(usart_tx_bufer_task0);
+    delay(2000);
+  }
 }
 
 
@@ -63,9 +70,9 @@ int main()
   GPIOC->CRH |= GPIO_CRH_MODE13_1;
 
   usartInit(115200);
-  rtosInit(0);
-  addTimer(scanKey,20,20);
-  addTimer(togleLed,1000,1000);
+  rtosInit();
+  addTimer(scanKey,20,20,0);
+  addTimer(togleLed,1000,1000,0);
   usartPrint("Start\n");
   usartPrint("Begin\n");
   char *s = itoa(usart_tx_bufer, __get_CONTROL(), 1, HEX);
@@ -74,8 +81,6 @@ int main()
   usartPrint(usart_tx_bufer);
   addTask(task0);
   __start_RTOS(task0);
-
-//    delay(1000);
 
 }
 

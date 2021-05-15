@@ -46,8 +46,7 @@ __set_CONTROL:
 .global __start_RTOS
 __start_RTOS:
 	cpsie	i
-	ldr	r1,=__stack_top__
-	sub	r1,r1,#1024
+	ldr	r1,=__stack_top__ - 1024
 	msr	psp,r1
 	movs	r1,#3
 	msr	control,r1
