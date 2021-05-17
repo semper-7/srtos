@@ -1224,7 +1224,7 @@ static __INLINE void __CLREX()                    { __ASM volatile ("clrex"); }
  *
  * Return the actual process stack pointer
  */
-extern uint32_t __get_PSP(void);
+//extern uint32_t __get_PSP(void);
 
 /**
  * @brief  Set the Process Stack Pointer
@@ -1234,7 +1234,7 @@ extern uint32_t __get_PSP(void);
  * Assign the value ProcessStackPointer to the MSP 
  * (process stack pointer) Cortex processor register
  */
-extern void __set_PSP(uint32_t topOfProcStack);
+//extern void __set_PSP(uint32_t topOfProcStack);
 
 /**
  * @brief  Return the Main Stack Pointer
@@ -1244,7 +1244,7 @@ extern void __set_PSP(uint32_t topOfProcStack);
  * Return the current value of the MSP (main stack pointer)
  * Cortex processor register
  */
-extern uint32_t __get_MSP(void);
+//extern uint32_t __get_MSP(void);
 
 /**
  * @brief  Set the Main Stack Pointer
@@ -1254,7 +1254,7 @@ extern uint32_t __get_MSP(void);
  * Assign the value mainStackPointer to the MSP 
  * (main stack pointer) Cortex processor register
  */
-extern void __set_MSP(uint32_t topOfMainStack);
+//extern void __set_MSP(uint32_t topOfMainStack);
 
 /**
  * @brief  Return the Base Priority value
@@ -1263,7 +1263,7 @@ extern void __set_MSP(uint32_t topOfMainStack);
  *
  * Return the content of the base priority register
  */
-extern uint32_t __get_BASEPRI(void);
+//extern uint32_t __get_BASEPRI(void);
 
 /**
  * @brief  Set the Base Priority value
@@ -1272,7 +1272,7 @@ extern uint32_t __get_BASEPRI(void);
  *
  * Set the base priority register
  */
-extern void __set_BASEPRI(uint32_t basePri);
+//extern void __set_BASEPRI(uint32_t basePri);
 
 /**
  * @brief  Return the Priority Mask value
@@ -1281,7 +1281,7 @@ extern void __set_BASEPRI(uint32_t basePri);
  *
  * Return state of the priority mask bit from the priority mask register
  */
-extern uint32_t  __get_PRIMASK(void);
+//extern uint32_t  __get_PRIMASK(void);
 
 /**
  * @brief  Set the Priority Mask value
@@ -1290,7 +1290,7 @@ extern uint32_t  __get_PRIMASK(void);
  *
  * Set the priority mask bit in the priority mask register
  */
-extern void __set_PRIMASK(uint32_t priMask);
+//extern void __set_PRIMASK(uint32_t priMask);
 
 /**
  * @brief  Return the Fault Mask value
@@ -1299,7 +1299,7 @@ extern void __set_PRIMASK(uint32_t priMask);
  *
  * Return the content of the fault mask register
  */
-extern uint32_t __get_FAULTMASK(void);
+//extern uint32_t __get_FAULTMASK(void);
 
 /**
  * @brief  Set the Fault Mask value
@@ -1308,7 +1308,7 @@ extern uint32_t __get_FAULTMASK(void);
  *
  * Set the fault mask register
  */
-extern void __set_FAULTMASK(uint32_t faultMask);
+//extern void __set_FAULTMASK(uint32_t faultMask);
 
 /**
  * @brief  Return the Control Register value
@@ -1317,7 +1317,7 @@ extern void __set_FAULTMASK(uint32_t faultMask);
  *
  * Return the content of the control register
  */
-extern uint32_t __get_CONTROL(void);
+//extern uint32_t __get_CONTROL(void);
 
 /**
  * @brief  Set the Control Register value
@@ -1326,7 +1326,7 @@ extern uint32_t __get_CONTROL(void);
  *
  * Set the control register
  */
-extern void __set_CONTROL(uint32_t control);
+//extern void __set_CONTROL(uint32_t control);
 
 /**
  * @brief  Reverse byte order in integer value
@@ -1336,7 +1336,7 @@ extern void __set_CONTROL(uint32_t control);
  *
  * Reverse byte order in integer value
  */
-extern uint32_t __REV(uint32_t value);
+//extern uint32_t __REV(uint32_t value);
 
 /**
  * @brief  Reverse byte order in unsigned short value
@@ -1346,7 +1346,7 @@ extern uint32_t __REV(uint32_t value);
  *
  * Reverse byte order in unsigned short value
  */
-extern uint32_t __REV16(uint16_t value);
+//extern uint32_t __REV16(uint16_t value);
 
 /**
  * @brief  Reverse byte order in signed short value with sign extension to integer
@@ -1356,7 +1356,7 @@ extern uint32_t __REV16(uint16_t value);
  *
  * Reverse byte order in signed short value with sign extension to integer
  */
-extern int32_t __REVSH(int16_t value);
+//extern int32_t __REVSH(int16_t value);
 
 /**
  * @brief  Reverse bit order of value
@@ -1366,7 +1366,7 @@ extern int32_t __REVSH(int16_t value);
  *
  * Reverse bit order of value
  */
-extern uint32_t __RBIT(uint32_t value);
+//extern uint32_t __RBIT(uint32_t value);
 
 /**
  * @brief  LDR Exclusive (8 bit)
@@ -1376,7 +1376,7 @@ extern uint32_t __RBIT(uint32_t value);
  *
  * Exclusive LDR command for 8 bit value
  */
-extern uint8_t __LDREXB(uint8_t *addr);
+//extern uint8_t __LDREXB(uint8_t *addr);
 
 /**
  * @brief  LDR Exclusive (16 bit)
@@ -1386,7 +1386,7 @@ extern uint8_t __LDREXB(uint8_t *addr);
  *
  * Exclusive LDR command for 16 bit values
  */
-extern uint16_t __LDREXH(uint16_t *addr);
+//extern uint16_t __LDREXH(uint16_t *addr);
 
 /**
  * @brief  LDR Exclusive (32 bit)
@@ -1396,7 +1396,7 @@ extern uint16_t __LDREXH(uint16_t *addr);
  *
  * Exclusive LDR command for 32 bit values
  */
-extern uint32_t __LDREXW(uint32_t *addr);
+//extern uint32_t __LDREXW(uint32_t *addr);
 
 /**
  * @brief  STR Exclusive (8 bit)
@@ -1407,7 +1407,7 @@ extern uint32_t __LDREXW(uint32_t *addr);
  *
  * Exclusive STR command for 8 bit values
  */
-extern uint32_t __STREXB(uint8_t value, uint8_t *addr);
+//extern uint32_t __STREXB(uint8_t value, uint8_t *addr);
 
 /**
  * @brief  STR Exclusive (16 bit)
@@ -1418,7 +1418,7 @@ extern uint32_t __STREXB(uint8_t value, uint8_t *addr);
  *
  * Exclusive STR command for 16 bit values
  */
-extern uint32_t __STREXH(uint16_t value, uint16_t *addr);
+//extern uint32_t __STREXH(uint16_t value, uint16_t *addr);
 
 /**
  * @brief  STR Exclusive (32 bit)
@@ -1429,7 +1429,8 @@ extern uint32_t __STREXH(uint16_t value, uint16_t *addr);
  *
  * Exclusive STR command for 32 bit values
  */
-extern uint32_t __STREXW(uint32_t value, uint32_t *addr);
+//extern uint32_t __STREXW(uint32_t value, uint32_t *addr);
+
 
 
 #elif (defined (__TASKING__)) /*------------------ TASKING Compiler ---------------------*/

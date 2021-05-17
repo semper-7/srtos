@@ -33,5 +33,5 @@ if %errorlevel% NEQ 0 goto error
 %OB% -O binary !NP!.elf !NP!.bin
 %SZ% !NP!.elf
 :error
-del *.o >nul
+rem del *.o >nul
 pause

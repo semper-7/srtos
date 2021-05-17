@@ -41,6 +41,7 @@ _bzr0:	strb	r2,[r0],#1
 _bzr1:	bx	lr
 
 .section .text.Default_Handler,"ax",%progbits
+.global Default_Handler
 Default_Handler:
 	b	Default_Handler
 .size	Default_Handler, .-Default_Handler
