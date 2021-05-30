@@ -1,7 +1,8 @@
-#include "stm32f10x.h"
+#include "stm32f103xb.h"
 #include "sysinit.h"
 
-void SystemInit (void) {
+void SystemInit (void)
+{
   /* Set RCC initial state */
   RCC->CR   = RCC_CR_RESET_STATE;
   RCC->CFGR = 0;
@@ -19,8 +20,8 @@ void SystemInit (void) {
   FLASH->ACR = FLASH_ACR_PRFTBE;
 #endif
   /* HCLK = PCLK1 = PCLK2 = SYSCLK = HSE * PLL_MUL*/
-  RCC->CFGR |= RCC_CFGR_HPRE_DIV1  | RCC_CFGR_PPRE2_DIV1 | RCC_CFGR_PPRE1_DIV2 |
-               RCC_CFGR_PLLSRC_HSE | PLL_MUL;
+  RCC->CFGR = RCC_CFGR_HPRE_DIV1 | RCC_CFGR_PPRE2_DIV1 | RCC_CFGR_PPRE1_DIV2 |
+              RCC_CFGR_PLLSRC    | RCC_PLL(NUM_MUL);
   /* Enable PLL */
   RCC->CR |= RCC_CR_PLLON;
   /* Wait till PLL is ready */

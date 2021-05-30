@@ -49,9 +49,9 @@ void rtosInit()
   NVIC_SetPriority (PendSV_IRQn, (1<<__NVIC_PRIO_BITS) - 1);
   SysTick->LOAD  = TICKS - 1;  
   SysTick->VAL   = 0;
-  SysTick->CTRL  = SysTick_CTRL_CLKSOURCE | 
-                   SysTick_CTRL_TICKINT   | 
-                   SysTick_CTRL_ENABLE;    
+  SysTick->CTRL  = SysTick_CTRL_CLKSOURCE_Msk | 
+                   SysTick_CTRL_TICKINT_Msk   | 
+                   SysTick_CTRL_ENABLE_Msk;    
   addTimer(timerStat,1000,1000,0);
 }
 
@@ -111,7 +111,6 @@ uint32_t addTask(void (*addr_task)())
 
 void PendSV_Handler(void)
 {
-//  SCB->ICSR  = SCB_ICSR_PENDSVCLR;
 }
 
 void SVC_Handler(void)
@@ -119,32 +118,19 @@ void SVC_Handler(void)
   __set_PSP(current_PSP);
   __ISB();
   __set_BASEPRI(0);
-  __asm volatile
-  (
-    "	orr	lr,0xd	\n\t"
-    "	bx	lr	\n\t"
-  );
+  __set_LR(0xFFFFFFFD);
 }
 
 void rtosStart(void)
 {
+  __disable_irq();
+//  __set_CONTROL(3);
   current_PSP = (uint32_t)&__stack_top__ - (1<<POW_MSP) - 32;
-  __asm volatile
-  (
-     "	ldr	r0, =0xE000ED08 \n\t"
-     "	ldr	r0, [r0] 	\n\t"
-     "	ldr	r0, [r0] 	\n\t"
-     "	msr	 msp, r0	\n\t"
-     "	cpsie	i		\n\t"
-     "	cpsie	f		\n\t"
-     "	dsb			\n\t"
-     "	isb			\n\t"
-     "	svc	0		\n\t"
-     "	nop			\n\t"
-     "	.ltorg			\n\t"
-  );
-
-//  SCB->ICSR  = SCB_ICSR_PENDSVSET;
-  while(1);
+  __enable_irq();
+  __enable_fault_irq();
+  __DSB();
+  __ISB();
+  __SVC0();
+  __NOP();
 }
  

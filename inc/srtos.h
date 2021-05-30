@@ -1,6 +1,6 @@
 #ifndef __SRTOS_H__
 #define __SRTOS_H__
-#include "stm32f10x.h"
+#include "stm32f103xb.h"
 
 #define TICKS 72000     // count ticks in 1ms
 #define TMR 8           // count of timer

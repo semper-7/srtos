@@ -1,37 +1,44 @@
 @echo off
 setlocal enabledelayedexpansion
-set NP=%cd%& cd ..
-set NP=!NP:%cd%\=!& cd !NP!
-echo ******* Make proekt !NP! *******
+set PN=%cd%& cd ..
+set PN=!PN:%cd%\=!& cd !PN!
 set PATH=%PATH%;D:\ARM-GCC\bin\
 set MCU=cortex-m3
 set DEF=-DSTM32F10X_MD -DSYSCLK_FREQ_72MHz
-set CC=arm-none-eabi-gcc
+set SF=stm32f10x.ld
 set AS=arm-none-eabi-as
-set CF=-mthumb -mcpu=%MCU% -O2 -c -g %DEF% -Wall -std=gnu99 -ffunction-sections
-set AF=-mthumb -mcpu=%MCU%
-set LF=--gc-sections
-for /r inc /d %%I in (*) do set I=%%I& set CI=!CI! -I !I:%~dp0=!
+set CC=arm-none-eabi-gcc
 set LD=arm-none-eabi-ld
 set LS=arm-none-eabi-objdump
 set OB=arm-none-eabi-objcopy
 set SZ=arm-none-eabi-size
+set AF=-mthumb -mcpu=%MCU%
+set CF=-mthumb -mcpu=%MCU% -O2 -c -g %DEF% -Wall -std=gnu99 -ffunction-sections
+set CI= -I inc
+for /r inc /d %%I in (*) do set I=%%I& set CI=!CI! -I !I:%~dp0=!
+set LF=--gc-sections
 
-for /r %%I in (*.asm) do echo Compile %%~I ...& %AS% %AF% -o %%~nI.o %%~I
-if %errorlevel% NEQ 0 goto error
+echo ******* Make proekt !PN! *******
 
-for /r %%I in (*.c) do set C=!C! %%I& echo Compile %%I ...
-%CC% %CF% %CI% -c !C!
-if %errorlevel% NEQ 0 goto error
+for /r %%I in (*.asm) do (
+  echo Assembling %%~I ...
+  %AS% %AF% -o obj\%%~nI.o %%~I
+  if !errorlevel! NEQ 0 goto error
+)
+
+for /r %%I in (*.c) do (
+  echo Compiling %%I ...
+  %CC% %CF% %CI% -c %%I -o obj\%%~nI.o
+  if !errorlevel! NEQ 0 goto error
+)
 
 echo Linking ...
-for %%I in (*.o) do set O=!O! %%I
-%LD% %LF% -Map=!NP!.map -Tstm32f10x.ld !O! -o !NP!.elf
+for /r obj %%I in (*.o) do set O=!O! %%I
+%LD% %LF% -Map=lst\!PN!.map -T%SF% !O! -o obj\!PN!.elf
 if %errorlevel% NEQ 0 goto error
 
-%LS% -S !NP!.elf > !NP!.lst
-%OB% -O binary !NP!.elf !NP!.bin
-%SZ% !NP!.elf
+%LS% -S obj\!PN!.elf > lst\!PN!.lst
+%OB% -O binary obj\!PN!.elf obj\!PN!.bin
+%SZ% obj\!PN!.elf
 :error
-rem del *.o >nul
 pause
