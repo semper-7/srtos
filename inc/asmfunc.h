@@ -1,11 +1,6 @@
 #ifndef __ASMFUNC_H__
 #define __ASMFUNC_H__
 
-void __bzero(void *dest, uint8_t count);
-void __memcpy(void *sour, void *dest, uint8_t count);
-uint32_t __strlen(void *sour);
-char *__stpcpy(char *dest, const char *sour);
-
 inline uint32_t __get_MEM(uint32_t addr)
 {
   uint32_t value;
@@ -40,7 +35,7 @@ inline void __set_LR(uint32_t value)
 {
   __asm volatile
   (
-    "	mov	lr,%0	" : : "r" (value) : "memory"
+    "	mov	lr,%0	" : : "J" (value) : "memory"
   );
 }
 
@@ -52,5 +47,22 @@ inline void __SVC0(void)
   );
 }
 
+inline uint32_t __push_r4_11(uint32_t value)
+{
+  __asm volatile
+  (
+    "	stmdb	%0!,{r4-r11}	" : "=r" (value) : "0" (value) : "memory"
+  );
+  return value;
+}
+
+inline uint32_t __pop_r4_11(uint32_t value)
+{
+  __asm volatile
+  (
+    "	ldmia	%0!,{r4-r11}	" : "=r" (value) : "0" (value) : "memory"
+  );
+  return value;
+}
 
 #endif  // __ASMFUNC_H__

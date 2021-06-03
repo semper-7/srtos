@@ -3,29 +3,58 @@
 #include "srtos.h"
 #include "func.h"
 #include "asmfunc.h"
+#include <string.h>
 
-#define USART_BUFER_SIZE 80
-char usart_rx_bufer[USART_BUFER_SIZE];
-char usart_tx_bufer[USART_BUFER_SIZE];
+#define USART_BUFFER_SIZE 80
+char usart_rx_buffer[USART_BUFFER_SIZE];
+char usart_tx_buffer[USART_BUFFER_SIZE];
 
-void task0(void)
+void printReg(void)
 {
-  while(1)
-  {
-    usartPrint("task0\n");
-    char *s = itoa(usart_tx_bufer, __get_CONTROL(), 1, HEX);
-    *(s++) = ' ';
-    s = itoa(s, __get_SP(), 8, HEX);
-    *(s++) = '\n';
-    *(s++) = 0;
-    usartPrint(usart_tx_bufer);
-    delay(2000);
-  }
+  utoa(__get_CONTROL(), usart_tx_buffer, 1, HEX);
+  usart_tx_buffer[1] = ' ';
+  utoa(__get_SP(), usart_tx_buffer + 2, 8, HEX);
+  usart_tx_buffer[10] = ' ';
+  utoa(__get_LR(), usart_tx_buffer + 11, 8, HEX);
+  usart_tx_buffer[19] = '\n';
+  usart_tx_buffer[20] = 0;
+  usartPrint(usart_tx_buffer);
 }
 
 void togleLed(void)
 {
   GPIOC->ODR ^= GPIO_ODR_ODR13;
+}
+
+void task0(void)
+{
+  while(1)
+  {
+    togleLed();
+    delay(1000);
+  }
+}
+
+void task1(void)
+{
+  while(1)
+  {
+    usartPrint("\n> ");
+    /* Waiting receive command from Usart */ 
+    usartReceive(usart_rx_buffer,USART_BUFFER_SIZE);
+    /* Excluding \r and characters after */ 
+    char* cr = strchr(usart_rx_buffer,'\r');
+    if (cr) *(cr) = 0;
+    void printReg();
+
+    /* Parsing and command execution
+    if      (!strcmp(usart_rx_buffer, "on led1" )) onLed1();
+    else if (!strcmp(usart_rx_buffer, "off led1")) offLed1(); 
+    else if (!strcmp(usart_rx_buffer, "on led2" )) led2 = 1;
+    else if (!strcmp(usart_rx_buffer, "off led2")) led2 = 0;
+    else if (!strcmp(usart_rx_buffer, "read i2c")) readI2c();
+    else if (!strcmp(usart_rx_buffer, "write i2c")) writeI2c(); */
+  }
 }
 
 void scanKey()
@@ -45,7 +74,7 @@ void scanKey()
 void gpioInit()
 {
   // enable PORT_A, PORT_C
-  RCC->APB2ENR |= (RCC_APB2RSTR_IOPARST | RCC_APB2RSTR_IOPCRST);
+  RCC->APB2ENR |= (RCC_APB2ENR_IOPAEN | RCC_APB2ENR_IOPCEN);
   // --- GPIO setup ---
   //PA:0 - KEY input pull-up
   GPIOA->CRL &= ~(GPIO_CRL_CNF0 | GPIO_CRL_MODE0);
@@ -63,8 +92,8 @@ int main()
   usartInit(115200);
   rtosInit();
   addTimer(scanKey,20,20,0);
-  addTimer(togleLed,1000,1000,0);
   usartPrint("Start\n");
   addTask(task0);
+  addTask(task1);
   rtosStart();
 }

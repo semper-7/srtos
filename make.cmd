@@ -20,6 +20,8 @@ set LF=--gc-sections
 
 echo ******* Make proekt !PN! *******
 
+del /q obj
+
 for /r %%I in (*.asm) do (
   echo Assembling %%~I ...
   %AS% %AF% -o obj\%%~nI.o %%~I
@@ -34,7 +36,8 @@ for /r %%I in (*.c) do (
 
 echo Linking ...
 for /r obj %%I in (*.o) do set O=!O! %%I
-%LD% %LF% -Map=lst\!PN!.map -T%SF% !O! -o obj\!PN!.elf
+for /r lib %%I in (*.a) do set A=!A! %%I
+%LD% %LF% -Map=lst\!PN!.map -T%SF% !O! !A! -o obj\!PN!.elf
 if %errorlevel% NEQ 0 goto error
 
 %LS% -S obj\!PN!.elf > lst\!PN!.lst

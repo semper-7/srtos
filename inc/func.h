@@ -5,8 +5,8 @@
 typedef enum {
   DEC = ((uint8_t) 0), // Decimal output string
   HEX = ((uint8_t) 1), // Hexadecimal output string
-}itoa_type_TypeDef;
+} utoa_base_TypeDef;
 
-char* itoa(char* bufer, uint32_t num, uint8_t num_dig, itoa_type_TypeDef);
+char* utoa(uint32_t num, char *buffer, uint8_t num_dig, utoa_base_TypeDef base);
 
 #endif //__FUNC_H__

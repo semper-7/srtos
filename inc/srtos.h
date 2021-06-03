@@ -14,20 +14,20 @@ typedef struct TIMER {
   void (*callback)(void);
   uint32_t timer;
   uint32_t timer_auto;
-  uint8_t *tick;
+  uint8_t *flag;
 } TIMER;
 
 typedef struct TASK {
   uint32_t stack_pointer;
   uint32_t priority;
   uint32_t counter;
-  uint32_t delay;
+  uint8_t idle;
 } TASK;
 
 uint32_t getLoadCPU();
 void rtosInit(void);
 void rtosStart(void);
-void addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto, uint8_t* tick);
+void addTimer(void (*callback)(), uint32_t timer, uint32_t timer_auto, uint8_t* flag);
 void delay(uint32_t time_ms);
 uint32_t addTask(void (*addr_task)());
 

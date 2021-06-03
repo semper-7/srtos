@@ -11,19 +11,19 @@ Reset_Handler:
 	ldr	r0,=__data_rom__
 	ldr	r1,=__data_ram__
 	ldr	r2,=__data_len__
-	bl	__memcpy
+	bl	memcpy
 
 	ldr	r0,=__bss_ram__
 	ldr	r1,=__bss_len__
-	bl	__bzero
+	bl	bzero
 
 	ldr	r0,=SystemInit
 	blx	r0
 	b	main
 
-.section .text.asm_function,"ax",%progbits
-.global __memcpy
-__memcpy:
+.section .text.memcpy,"ax",%progbits
+.global memcpy
+memcpy:
 	cbz	r2,_mcl1
 _mcl0:	ldrb	r3,[r0],#1
 	strb	r3,[r1],#1
@@ -31,8 +31,9 @@ _mcl0:	ldrb	r3,[r0],#1
 	bne	_mcl0
 _mcl1:	bx	lr
 
-.global __bzero
-__bzero:	
+.section .text.bzero,"ax",%progbits
+.global bzero
+bzero:	
 	cbz	r1,_bzr1
 	mov	r2,#0
 _bzr0:	strb	r2,[r0],#1

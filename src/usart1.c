@@ -1,7 +1,6 @@
 #include "usart1.h"
 #include "sysinit.h"
-#include "asmfunc.h"
-//#include <string.h>
+#include <string.h>
 
 extern void system_delay(uint32_t time_ms);
 
@@ -14,7 +13,7 @@ void usartWrite(uint8_t c)
 void usartInit(uint32_t baud)
 {
 // enable PORT_A, USART1
-  RCC->APB2ENR |= (RCC_APB2RSTR_IOPARST | RCC_APB2RSTR_USART1RST);
+  RCC->APB2ENR |= (RCC_APB2ENR_IOPAEN | RCC_APB2ENR_USART1EN);
 // enable DMA1
   RCC->AHBENR |= RCC_AHBENR_DMA1EN;
 // --- GPIO setup ---
@@ -34,7 +33,7 @@ void usartInit(uint32_t baud)
 
 void usartPrint(char *s)
 {
-  usartTransmit(s, __strlen(s));
+  usartTransmit(s, strlen(s));
 }
 
 void usartTransmit(char *buffer, uint16_t buffer_size)
