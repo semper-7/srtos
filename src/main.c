@@ -2,7 +2,6 @@
 #include "usart1.h"
 #include "srtos.h"
 #include "func.h"
-#include "asmfunc.h"
 #include <string.h>
 
 #define USART_BUFFER_SIZE 80
@@ -19,6 +18,11 @@ void printReg(void)
   usart_tx_buffer[19] = '\n';
   usart_tx_buffer[20] = 0;
   usartPrint(usart_tx_buffer);
+}
+
+void printRegp(void)
+{
+  usartPrint("regp\n");
 }
 
 void togleLed(void)
@@ -46,14 +50,9 @@ void task1(void)
     char* cr = strchr(usart_rx_buffer,'\r');
     if (cr) *(cr) = 0;
     void printReg();
-
-    /* Parsing and command execution
-    if      (!strcmp(usart_rx_buffer, "on led1" )) onLed1();
-    else if (!strcmp(usart_rx_buffer, "off led1")) offLed1(); 
-    else if (!strcmp(usart_rx_buffer, "on led2" )) led2 = 1;
-    else if (!strcmp(usart_rx_buffer, "off led2")) led2 = 0;
-    else if (!strcmp(usart_rx_buffer, "read i2c")) readI2c();
-    else if (!strcmp(usart_rx_buffer, "write i2c")) writeI2c(); */
+    /* Parsing and command execution */
+    if      (!strcmp(usart_rx_buffer, "reg" )) printReg();
+    else if (!strcmp(usart_rx_buffer, "regp" )) printRegp();
   }
 }
 
@@ -61,13 +60,18 @@ void scanKey()
 {
   volatile static uint32_t scan_old;
   volatile static uint32_t scan_changes;
-  uint16_t scan = GPIOA->IDR & GPIO_IDR_IDR0;
-  scan_changes = scan_old ^ scan;
-  scan_old = scan;
-  if (scan_changes & ~scan)
+
+  while(1)
   {
-    togleLed();
-    usartPrint("Key\n");
+    uint16_t scan = GPIOA->IDR & GPIO_IDR_IDR0;
+    scan_changes = scan_old ^ scan;
+    scan_old = scan;
+    if (scan_changes & ~scan)
+    {
+      togleLed();
+      usartPrint("Key\n");
+    }
+    delay(20);
   }
 }
 
@@ -90,10 +94,10 @@ int main()
 {
   gpioInit();
   usartInit(115200);
+  usartPrint("Start SRTOS\n");
   rtosInit();
-  addTimer(scanKey,20,20,0);
-  usartPrint("Start\n");
-  addTask(task0);
-  addTask(task1);
+  addTask(scanKey, 20);
+  addTask(task0, 0);
+  addTask(task1, 0);
   rtosStart();
 }
