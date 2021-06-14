@@ -1,12 +1,11 @@
 #ifndef __SRTOS_H__
 #define __SRTOS_H__
-#include "stm32f103xb.h"
+#include "stm32f1xx.h"
 
-#define TSK 8           // count of task + 1 (include idle task)
+#define TSK 8           // count of user task + idle task
 #define POW_MSP 10      // the power of the number 2, size of msp = 2^10 = 1024
 #define POW_PSP 8       // the power of the number 2, size of psp = 2^8  = 256
 #define PSR_RESET_VALUE 0x01000000 // Program status register reset value
-#define LR_RESET_VALUE  0xFFFFFFFF // Link register reset value
 
 typedef struct TASK {
   uint32_t stack_pointer;
@@ -15,9 +14,9 @@ typedef struct TASK {
   uint8_t* wait_flag;
 } TASK;
 
-void rtosStart(void);
+void startRtos(void);
 void delay(uint32_t time_ms);
-uint32_t addTask(void (*addr_task)(), uint32_t timer);
+void addTask(void (*addr_task)(), uint32_t timer);
 
 inline uint32_t __get_MEM(uint32_t addr)
 {

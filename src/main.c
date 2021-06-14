@@ -1,4 +1,4 @@
-#include "stm32f103xb.h"
+#include "stm32f1xx.h"
 #include "usart1.h"
 #include "i2c.h"
 #include "srtos.h"
@@ -11,16 +11,17 @@ char usart_tx_buffer[USART_BUFFER_SIZE];
 
 char i2cbuf[256];
 
+uint8_t led0 = 0;
 uint8_t led2 = 0;
 
 void onLed1(void)
 {
-  GPIOA->ODR &= ~GPIO_ODR_ODR5;
+  GPIOA->BRR = GPIO_BRR_BR5;
 }
 
 void offLed1(void)
 {
-  GPIOA->ODR |= GPIO_ODR_ODR5;
+  GPIOA->BSRR = GPIO_BSRR_BS5;
 }
 
 void timer3Init()
@@ -57,16 +58,26 @@ void togleLed(void)
   GPIOC->ODR ^= GPIO_ODR_ODR13;
 }
 
-void task0(void)
+void taskBlink(void)
 {
-  while(1)
+  while(led0)
   {
     togleLed();
-    delay(1000);
+    delay(300);
+  }
+  GPIOC->BSRR = GPIO_BSRR_BS13;
+}
+
+void onLed0(void)
+{
+  if (!led0)
+  {
+    led0 = 1;
+    addTask(taskBlink, 0);
   }
 }
 
-void task1(void)
+void taskMain(void)
 {
   while(1)
   {
@@ -76,9 +87,10 @@ void task1(void)
     /* Excluding \r and characters after */ 
     char* cr = strchr(usart_rx_buffer,'\r');
     if (cr) *(cr) = 0;
-    void printReg();
     /* Parsing and command execution */
-    if      (!strcmp(usart_rx_buffer, "on led1" )) onLed1();
+    if      (!strcmp(usart_rx_buffer, "on led0" )) onLed0();
+    else if (!strcmp(usart_rx_buffer, "off led0")) led0 = 0;
+    else if (!strcmp(usart_rx_buffer, "on led1" )) onLed1();
     else if (!strcmp(usart_rx_buffer, "off led1")) offLed1(); 
     else if (!strcmp(usart_rx_buffer, "on led2" )) led2 = 1;
     else if (!strcmp(usart_rx_buffer, "off led2")) led2 = 0;
@@ -121,11 +133,12 @@ void gpioInit()
   //PA:6 - Alternate output push-pull 2MHz
                 GPIO_CRL_MODE6_1 | GPIO_CRL_CNF6_1 );
   //PA:0 = 1
-  GPIOA->BSRR = GPIO_ODR_ODR0 |
-  		GPIO_ODR_ODR5 | GPIO_ODR_ODR6;
+  GPIOA->BSRR = GPIO_BSRR_BS0 |
+  		GPIO_BSRR_BS5 | GPIO_BSRR_BS6;
   //PC:13 - LED
   GPIOC->CRH &= ~(GPIO_CRH_CNF13 | GPIO_CRH_MODE13);
   GPIOC->CRH |= GPIO_CRH_MODE13_1;
+  GPIOC->BSRR = GPIO_BSRR_BS13;
 }
 
 int main()
@@ -136,9 +149,8 @@ int main()
   timer3Init();
   i2cInit();
   addTask(scanKey, 20);
-  addTask(task0, 0);
-  addTask(task1, 0);
-  rtosStart();
+  addTask(taskMain, 0);
+  startRtos();
 }
 
 void SysTickCallback(void)

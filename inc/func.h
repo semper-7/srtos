@@ -1,6 +1,6 @@
 #ifndef __FUNC_H__
 #define __FUNC_H__
-#include "stm32f103xb.h"
+#include "stm32f1xx.h"
 
 typedef enum {
   DEC = ((uint8_t) 0), // Decimal output string

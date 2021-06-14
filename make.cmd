@@ -4,7 +4,7 @@ set PN=%cd%& cd ..
 set PN=!PN:%cd%\=!& cd !PN!
 set PATH=%PATH%;D:\ARM-GCC\bin\
 set MCU=cortex-m3
-set DEF=-DSTM32F10X_MD -DSYSCLK_FREQ_72MHz
+set DEF=-DSTM32F103xB
 set SF=stm32f10x.ld
 set AS=arm-none-eabi-as
 set CC=arm-none-eabi-gcc
@@ -22,7 +22,7 @@ echo ******* Make proekt !PN! *******
 
 del /q obj
 
-for /r %%I in (*.asm) do (
+for /r %%I in (*.s) do (
   echo Assembling %%~I ...
   %AS% %AF% -o obj\%%~nI.o %%~I
   if !errorlevel! NEQ 0 goto error

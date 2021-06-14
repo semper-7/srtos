@@ -1,7 +1,7 @@
 #ifndef __USART1_H__
 #define __USART1_H__
 
-#include "stm32f103xb.h"
+#include "stm32f1xx.h"
 #define system_delay delay
 
 void usartInit(uint32_t baud);

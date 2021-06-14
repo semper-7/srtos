@@ -1,5 +1,24 @@
 .syntax unified
 
+.section .text.memcpy,"ax",%progbits
+.global memcpy
+memcpy:
+	cbz	r2,_mcl1
+_mcl0:	ldrb	r3,[r0],#1
+	strb	r3,[r1],#1
+	subs	r2,r2,#1
+	bne	_mcl0
+_mcl1:	bx	lr
+
+.section .text.memset,"ax",%progbits
+.global memset
+memset:	
+	cbz	r2,_msl1
+_msl0:	strb	r1,[r0],#1
+	subs	r2,r2,#1
+	bne	_msl0
+_msl1:	bx	lr
+
 .section .text.strlen,"ax",%progbits
 .global strlen
 strlen:

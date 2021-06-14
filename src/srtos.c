@@ -1,6 +1,5 @@
 #include "srtos.h"
 #include "sysinit.h"
-//#include <string.h>
 
 static volatile TASK task[TSK];
 static volatile uint32_t task_act;
@@ -22,7 +21,15 @@ void delay(uint32_t time_ms)
   while(task[task_act].timer);
 }
 
-uint32_t addTask(void (*addr_task)(), uint32_t timer)
+void removeTask(void)
+{
+  __set_BASEPRI(192);
+  task[task_act].stack_pointer = 0;
+  __set_BASEPRI(0);
+  while(1);
+}
+
+void addTask(void (*addr_task)(), uint32_t timer)
 {
   int i = 0;
   __set_BASEPRI(192);
@@ -33,7 +40,7 @@ uint32_t addTask(void (*addr_task)(), uint32_t timer)
       uint32_t sp = (uint32_t)&__stack_top__ - (1<<POW_MSP) - (i<<POW_PSP);
       *((uint32_t*)sp - 1) = PSR_RESET_VALUE;
       *((uint32_t*)sp - 2) = (uint32_t)addr_task;
-      *((uint32_t*)sp - 3) = LR_RESET_VALUE;
+      *((uint32_t*)sp - 3) = (uint32_t)removeTask;
       task[i].stack_pointer = sp - 64;
       task[i].timer = timer;
       task[i].skip_counter = 0;
@@ -42,7 +49,6 @@ uint32_t addTask(void (*addr_task)(), uint32_t timer)
     }
   }
   __set_BASEPRI(0);
-  return i;
 }
 
 uint32_t selectTask(uint32_t sp)
@@ -51,7 +57,7 @@ uint32_t selectTask(uint32_t sp)
   int tsk = 0;
   int i = 0;
 
-  task[task_act].stack_pointer = sp;
+  if (task[task_act].stack_pointer) task[task_act].stack_pointer = sp;
 
   while (++i < TSK)
   {
@@ -93,32 +99,22 @@ void PendSV_Handler(void)
   );
 }
 
-void SVC_Handler(void)
-{
-  __asm volatile
-  (
-    "	isb			\n"
-    "	mvn	lr, #2		\n"
-    "	bx	lr		\n"
-  );
-}
-
 void SysTick_Handler(void)
 {
   SysTickCallback();
   SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
 }
 
-void rtosStart(void)
+void startRtos(void)
 {
   uint32_t sp = (uint32_t)&__stack_top__ - (1<<POW_MSP);
   *((uint32_t*)sp - 1) = PSR_RESET_VALUE;
   *((uint32_t*)sp - 2) = (uint32_t)idleTask;
-  *((uint32_t*)sp - 3) = LR_RESET_VALUE;
+  *((uint32_t*)sp - 3) = (uint32_t)removeTask;
   __set_PSP(sp - 32);
   task[0].stack_pointer = sp - 64;
-  NVIC_SetPriority (SysTick_IRQn, 255);
-  NVIC_SetPriority (PendSV_IRQn, 255);
+  NVIC_SetPriority(SysTick_IRQn, 255);
+  NVIC_SetPriority(PendSV_IRQn, 255);
   SysTick->LOAD  = SYSCLK/1000 - 1;  
   SysTick->VAL   = 0;
   SysTick->CTRL  = SysTick_CTRL_CLKSOURCE_Msk | 
@@ -126,8 +122,5 @@ void rtosStart(void)
                    SysTick_CTRL_ENABLE_Msk;    
   __enable_irq();
   __enable_fault_irq();
-  __DSB();
-  __ISB();
-  __SVC_0();
-  __NOP();
+  while(1);
 }
