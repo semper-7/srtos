@@ -1,5 +1,5 @@
 # Simple RTOS for STM32F1XX
-	Example of a project using a Simple RTOS for stm32f1xx.
+Example of a project using a Simple RTOS for stm32f1xx.
 Simple RTOS implements preemptive multitasking with a period of 1 ms.
 The priority of the task is determined by a simple high-speed algorithm. The task that has been waiting for a long time is the highest priority. If the waiting periods are equal, the task with the lower number in the task table is given priority.
 To use SRTOS in your projects, copy the following files to your sources: srtos.h, srtos.c and SYSCLK must be defined.
