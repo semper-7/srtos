@@ -37,7 +37,7 @@ void addTask(void (*addr_task)(), uint32_t timer)
   {
     if (!task[i].stack_pointer)
     {
-      uint32_t sp = (uint32_t)&__stack_top__ - (1<<POW_MSP) - (i<<POW_PSP);
+      uint32_t sp = (uint32_t)&__stack_top__ - ((i+1)<<POW_STACK);
       *((uint32_t*)sp - 1) = PSR_RESET_VALUE;
       *((uint32_t*)sp - 2) = (uint32_t)addr_task;
       *((uint32_t*)sp - 3) = (uint32_t)removeTask;
@@ -107,7 +107,7 @@ void SysTick_Handler(void)
 
 void startRtos(void)
 {
-  uint32_t sp = (uint32_t)&__stack_top__ - (1<<POW_MSP);
+  uint32_t sp = (uint32_t)&__stack_top__ - (1<<POW_STACK);
   *((uint32_t*)sp - 1) = PSR_RESET_VALUE;
   *((uint32_t*)sp - 2) = (uint32_t)idleTask;
   *((uint32_t*)sp - 3) = (uint32_t)removeTask;

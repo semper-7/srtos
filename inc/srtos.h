@@ -2,9 +2,8 @@
 #define __SRTOS_H__
 #include "stm32f1xx.h"
 
-#define TSK 8           // count of user task + idle task
-#define POW_MSP 10      // the power of the number 2, size of msp = 2^10 = 1024
-#define POW_PSP 8       // the power of the number 2, size of psp = 2^8  = 256
+#define TSK 8       // count of user task + idle task
+#define POW_STACK 9 // the power of the number 2, size of the task stack = 2^9 = 512
 #define PSR_RESET_VALUE 0x01000000 // Program status register reset value
 
 typedef struct TASK {
