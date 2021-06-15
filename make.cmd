@@ -19,7 +19,8 @@ for /r inc /d %%I in (*) do set I=%%I& set CI=!CI! -I !I:%~dp0=!
 set LF=--gc-sections
 
 echo ******* Make proekt !PN! *******
-
+md lst 2>nul
+md obj 2>nul
 del /q obj
 
 for /r %%I in (*.s) do (
