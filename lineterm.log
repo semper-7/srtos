@@ -1,8 +1,83 @@
 
+> 0	idle	476
+1	scanKey	47
+2	CLI	477
+
+> 0	idle	476
+1	scanKey	48
+2	CLI	476
+
+> 0	idle	476
+1	scanKey	48
+2	CLI	476
+
 > 
+> 0	idle	474
+1	scanKey	47
+2	CLI	476
+3	Blink	3
+
+> 0	idle	473
+1	scanKey	48
+2	CLI	476
+3	Blink	3
+
+> 0	idle	473
+1	scanKey	48
+2	CLI	476
+3	Blink	3
+
+> 0	idle	473
+1	scanKey	48
+2	CLI	476
+3	Blink	3
+
+> 0	idle	490
+1	scanKey	47
+2	CLI	459
+3	Blink	4
+
+> 0	idle	491
+1	scanKey	48
+2	CLI	458
+3	Blink	3
+
+> 0	idle	492
+1	scanKey	47
+2	CLI	458
+3	Blink	3
+
+> 0	idle	474
+1	scanKey	47
+2	CLI	476
+3	Blink	3
+
 > 
+> 0	idle	476
+1	scanKey	48
+2	CLI	476
+
+> 0	idle	477
+1	scanKey	47
+2	CLI	476
+
+> 0	idle	476
+1	scanKey	48
+2	CLI	476
+
+> 0	idle	476
+1	scanKey	48
+2	CLI	476
+
 > 
-> 
-> 
-> 
+> 0	idle	472
+1	scanKey	48
+2	CLI	476
+3	Blink	4
+
+> 0	idle	473
+1	scanKey	47
+2	CLI	477
+3	Blink	3
+
 > 

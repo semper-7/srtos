@@ -70,3 +70,41 @@ uint32_t usartReceive(char *buffer, uint16_t buffer_size)
   buffer[count]=0;
   return count;
 }
+
+char* utoa(uint32_t num, char *buffer)
+{
+  uint32_t quot;
+  uint32_t tmp;
+  uint8_t rem;
+  char* s;
+  s = buffer + 10;
+  *s = 0;
+    do
+    {
+      // "* 0.8"
+      quot = num >> 1;
+      quot += quot >> 1;
+      quot += quot >> 4;
+      quot += quot >> 8;
+      quot += quot >> 16;
+      tmp = quot;
+      // "/ 8"
+      quot >>= 3;
+      rem = (uint8_t)(num - ((quot << 1) + (tmp & ~7ul)));
+      if(rem > 9)
+      {
+        rem -= 10;
+        quot++;
+      }
+      *--s = rem + '0';
+      num = quot;
+    } while (num);
+  return s;
+}
+
+void usartPrintNum(uint32_t n)
+{
+  static char buffer[12];
+  usartPrint(utoa(n, buffer));
+}
+

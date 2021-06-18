@@ -7,6 +7,7 @@
 void usartInit(uint32_t baud);
 void usartWrite(uint8_t c);
 void usartPrint(char *s);
+void usartPrintNum(uint32_t n);
 void usartTransmit(char *buffer, uint16_t buffer_size);
 uint32_t usartReceive(char *buffer, uint16_t buffer_size);
 

@@ -38,6 +38,15 @@ _cpy0:	ldrb	r2,[r1],#1
 	b	_cpy0
 _cpy1:	bx	lr
 
+.section .text.strcpy,"ax",%progbits
+.global strcpy
+strcpy: mov	r3,r0
+_rpy0:	ldrb	r2,[r1],#1
+	cbz	r2,_rpy1
+	strb	r2,[r3],#1
+	b	_rpy0
+_rpy1:	bx	lr
+
 .section .text.strchr,"ax",%progbits
 .global strchr
 strchr:

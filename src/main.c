@@ -2,7 +2,6 @@
 #include "usart1.h"
 #include "i2c.h"
 #include "srtos.h"
-#include "func.h"
 #include <string.h>
 
 #define USART_BUFFER_SIZE 80
@@ -73,11 +72,27 @@ void onLed0(void)
   if (!led0)
   {
     led0 = 1;
-    addTask(taskBlink, 0);
+    addTask("Blink", taskBlink, 0);
   }
 }
 
-void taskMain(void)
+void statTask(void)
+{
+  for (int i=0; i<TSK; i++)
+  {
+    if (isTask(i))
+    {
+      usartPrintNum(i);
+      usartWrite('\t');
+      usartPrint(getTaskName(i));
+      usartWrite('\t');
+      usartPrintNum(getTaskStat(i));
+      usartWrite('\n');
+    }
+  }
+}
+
+void taskCLI(void)
 {
   while(1)
   {
@@ -96,6 +111,7 @@ void taskMain(void)
     else if (!strcmp(usart_rx_buffer, "off led2")) led2 = 0;
     else if (!strcmp(usart_rx_buffer, "read i2c")) readI2c();
     else if (!strcmp(usart_rx_buffer, "write i2c")) writeI2c();
+    else if (!strcmp(usart_rx_buffer, "stat")) statTask();
   }
 }
 
@@ -128,14 +144,14 @@ void gpioInit()
                   GPIO_CRL_CNF6 | GPIO_CRL_MODE6 );
   //PA:0 - KEY input pull-up
   GPIOA->CRL |= (GPIO_CRL_CNF0_1 |
-  //PA:5 - KEY output push-pull 2MHz
+  //PA:5 - LED1, output push-pull 2MHz
                 GPIO_CRL_MODE5_1 |
-  //PA:6 - Alternate output push-pull 2MHz
+  //PA:6 - LED2, alternate output push-pull 2MHz
                 GPIO_CRL_MODE6_1 | GPIO_CRL_CNF6_1 );
   //PA:0 = 1
   GPIOA->BSRR = GPIO_BSRR_BS0 |
   		GPIO_BSRR_BS5 | GPIO_BSRR_BS6;
-  //PC:13 - LED
+  //PC:13 - LED0, output push-pull 2MHz
   GPIOC->CRH &= ~(GPIO_CRH_CNF13 | GPIO_CRH_MODE13);
   GPIOC->CRH |= GPIO_CRH_MODE13_1;
   GPIOC->BSRR = GPIO_BSRR_BS13;
@@ -148,8 +164,8 @@ int main()
   usartPrint("Start SRTOS\n");
   timer3Init();
   i2cInit();
-  addTask(scanKey, 20);
-  addTask(taskMain, 0);
+  addTask("scanKey", scanKey, 20);
+  addTask("CLI", taskCLI, 0);
   startRtos();
 }
 

@@ -1,5 +1,6 @@
 #include "srtos.h"
 #include "sysinit.h"
+#include <string.h>
 
 static volatile TASK task[TSK];
 static volatile uint32_t task_act;
@@ -15,13 +16,28 @@ void __attribute__((weak)) SysTickCallback(void)
 {
 }
 
+char* getTaskName(uint8_t t)
+{
+  return task[t].name;
+}
+
+uint16_t getTaskStat(uint8_t t)
+{
+  return task[t].stat_top;
+}
+
+uint32_t isTask(uint8_t t)
+{
+  return task[t].stack_pointer;
+}
+
 void delay(uint32_t time_ms)
 {
   task[task_act].timer = time_ms;
   while(task[task_act].timer);
 }
 
-void removeTask(void)
+static void removeTask(void)
 {
   __set_BASEPRI(192);
   task[task_act].stack_pointer = 0;
@@ -29,7 +45,7 @@ void removeTask(void)
   while(1);
 }
 
-void addTask(void (*addr_task)(), uint32_t timer)
+void addTask(char* name, void (*addr)(), uint32_t timer)
 {
   int i = 0;
   __set_BASEPRI(192);
@@ -39,12 +55,12 @@ void addTask(void (*addr_task)(), uint32_t timer)
     {
       uint32_t sp = (uint32_t)&__stack_top__ - ((i+1)<<POW_STACK);
       *((uint32_t*)sp - 1) = PSR_RESET_VALUE;
-      *((uint32_t*)sp - 2) = (uint32_t)addr_task;
+      *((uint32_t*)sp - 2) = (uint32_t)addr;
       *((uint32_t*)sp - 3) = (uint32_t)removeTask;
       task[i].stack_pointer = sp - 64;
       task[i].timer = timer;
       task[i].skip_counter = 0;
-      task[i].wait_flag = 0;
+      task[i].name = name;
       break;
     }
   }
@@ -54,7 +70,7 @@ void addTask(void (*addr_task)(), uint32_t timer)
 uint32_t selectTask(uint32_t sp)
 {
   int skip = 0;
-  int tsk = 0;
+  int a = 0;
   int i = 0;
 
   if (task[task_act].stack_pointer) task[task_act].stack_pointer = sp;
@@ -71,16 +87,17 @@ uint32_t selectTask(uint32_t sp)
       {
         if (task[i].skip_counter > skip)
         {
-        tsk = i;
-        skip = task[i].skip_counter;
+          a = i;
+          skip = task[i].skip_counter;
         } 
       }
       task[i].skip_counter++;
     }
   }
-  task[tsk].skip_counter = 0;
-  task_act = tsk;
-  return task[tsk].stack_pointer;
+  task[a].skip_counter = 0;
+  task[a].stat++;
+  task_act = a;
+  return task[a].stack_pointer;
 }
 
 void PendSV_Handler(void)
@@ -101,6 +118,17 @@ void PendSV_Handler(void)
 
 void SysTick_Handler(void)
 {
+  static uint32_t sys_tick_counter;
+  sys_tick_counter++;
+    if (sys_tick_counter == 1000)
+    {
+      sys_tick_counter = 0;
+      for (int i=0; i<TSK; i++)
+      {
+        task[i].stat_top = task[i].stat;
+        task[i].stat = 0;
+      }  
+    }
   SysTickCallback();
   SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
 }
@@ -113,6 +141,7 @@ void startRtos(void)
   *((uint32_t*)sp - 3) = (uint32_t)removeTask;
   __set_PSP(sp - 32);
   task[0].stack_pointer = sp - 64;
+  task[0].name = "idle";
   NVIC_SetPriority(SysTick_IRQn, 255);
   NVIC_SetPriority(PendSV_IRQn, 255);
   SysTick->LOAD  = SYSCLK/1000 - 1;  
