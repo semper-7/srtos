@@ -61,8 +61,7 @@ uint32_t usartReceive(char *buffer, uint16_t buffer_size)
   do
   {
     v = DMA1_Channel5->CNDTR;
-  /* timeout waiting for the next byte in the packet */
-    system_delay(20);
+    system_delay(NEXT_BYTE_TIMEOUT);
   } while (DMA1_Channel5->CNDTR != v);
 
   DMA1_Channel5->CCR = 0;

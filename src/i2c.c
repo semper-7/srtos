@@ -78,4 +78,3 @@ uint8_t i2cWrite(uint8_t i2c_addr, uint8_t addr, char* buf, uint16_t len)
   I2C1->CR1 |= I2C_CR1_STOP;
   return 0;
 }
-

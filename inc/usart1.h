@@ -3,6 +3,7 @@
 
 #include "stm32f1xx.h"
 #define system_delay delay
+#define NEXT_BYTE_TIMEOUT 20 // timeout waiting for the next byte in the packet
 
 void usartInit(uint32_t baud);
 void usartWrite(uint8_t c);

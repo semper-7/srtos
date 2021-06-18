@@ -9,7 +9,7 @@ The stacks size and the maximum number of tasks are defined in srtos.h.
 To use the idle time, insert the idleTask() into your program (note: do not use the delay function in idleTask). To use the SysTick callback function, insert the SysTickCallback() function into your program.
 To add tasks, use addTask(), to complete tasks, just let the task exit (organize the final loop, see main.c in the project).
 The timer parameter in addTask() defines the delay of the task execution and can be used for a single timer task (just don't loop the task).
-It is also possible to view task statistics (see main. c statTask())
+It is also possible to view task statistics (see main.c statTask())
 
 ## Compiling (in Windows)
 1. Install ARM GCC toolchain from https://gnutoolchains.com/arm-eabi/
