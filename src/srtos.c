@@ -16,19 +16,29 @@ void __attribute__((weak)) SysTickCallback(void)
 {
 }
 
-char* getTaskName(uint8_t t)
+uint8_t getTaskId(char* name)
 {
-  return task[t].name;
+  int i;
+  for (i=0; i<TSK; i++)
+  {
+    if (!strcmp(task[i].name, name)) break;
+  }  
+  return i;
 }
 
-uint16_t getTaskStat(uint8_t t)
+char* getTaskName(uint8_t id)
 {
-  return task[t].stat_top;
+  return task[id].name;
 }
 
-uint32_t isTask(uint8_t t)
+uint16_t getTaskStat(uint8_t id)
 {
-  return task[t].stack_pointer;
+  return task[id].stat_top;
+}
+
+uint32_t isTask(uint8_t id)
+{
+  return task[id].stack_pointer;
 }
 
 void delay(uint32_t time_ms)
@@ -37,15 +47,20 @@ void delay(uint32_t time_ms)
   while(task[task_act].timer);
 }
 
-static void removeTask(void)
+void removeTask(uint8_t id)
 {
   __set_BASEPRI(192);
-  task[task_act].stack_pointer = 0;
+  task[id].stack_pointer = 0;
   __set_BASEPRI(0);
+}
+
+static void exitTask(void)
+{
+  removeTask(task_act);
   while(1);
 }
 
-void addTask(char* name, void (*addr)(), uint32_t timer)
+uint8_t addTask(char* name, void (*addr)(), uint32_t timer)
 {
   int i = 0;
   __set_BASEPRI(192);
@@ -56,7 +71,7 @@ void addTask(char* name, void (*addr)(), uint32_t timer)
       uint32_t sp = (uint32_t)&__stack_top__ - ((i+1)<<POW_STACK);
       *((uint32_t*)sp - 1) = PSR_RESET_VALUE;
       *((uint32_t*)sp - 2) = (uint32_t)addr;
-      *((uint32_t*)sp - 3) = (uint32_t)removeTask;
+      *((uint32_t*)sp - 3) = (uint32_t)exitTask;
       task[i].stack_pointer = sp - 64;
       task[i].timer = timer;
       task[i].skip_counter = 0;
@@ -65,6 +80,7 @@ void addTask(char* name, void (*addr)(), uint32_t timer)
     }
   }
   __set_BASEPRI(0);
+  return i;
 }
 
 uint32_t selectTask(uint32_t sp)
@@ -138,7 +154,7 @@ void startRtos(void)
   uint32_t sp = (uint32_t)&__stack_top__ - (1<<POW_STACK);
   *((uint32_t*)sp - 1) = PSR_RESET_VALUE;
   *((uint32_t*)sp - 2) = (uint32_t)idleTask;
-  *((uint32_t*)sp - 3) = (uint32_t)removeTask;
+  *((uint32_t*)sp - 3) = (uint32_t)exitTask;
   __set_PSP(sp - 32);
   task[0].stack_pointer = sp - 64;
   task[0].name = "idle";

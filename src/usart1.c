@@ -1,6 +1,7 @@
 #include "usart1.h"
 #include "sysinit.h"
 #include <string.h>
+#include "gpio.h"
 
 extern void system_delay(uint32_t time_ms);
 
@@ -12,19 +13,16 @@ void usartWrite(uint8_t c)
 
 void usartInit(uint32_t baud)
 {
-// enable PORT_A, USART1
+  // enable PORT_A, USART1
   RCC->APB2ENR |= (RCC_APB2ENR_IOPAEN | RCC_APB2ENR_USART1EN);
-// enable DMA1
+  // enable DMA1
   RCC->AHBENR |= RCC_AHBENR_DMA1EN;
-// --- GPIO setup ---
-//PA:9  - Usart TX alternate output open drain 50MHz
-//PA:10 - Usart RX input pull-up
-  GPIOA->CRH &= ~(GPIO_CRH_CNF9   | GPIO_CRH_MODE9  |
-                  GPIO_CRH_CNF10  | GPIO_CRH_MODE10);
-  GPIOA->CRH |= (GPIO_CRH_CNF9    | GPIO_CRH_MODE9  |
-                 GPIO_CRH_CNF10_1);
-//PA:10 = 1
-  GPIOA->BSRR = GPIO_ODR_ODR10;
+  // --- GPIO setup ---
+  //PA:9  - Usart TX alternate output open drain 50MHz
+  //PA:10 - Usart RX input pull-up
+  GPIOA_CRH( GPCR(9) | GPCR(10), AOD50(9) | I_P(10) );
+  //PA:10 = 1
+  GPIOA->BSRR = GPIO_BSRR_BS10;
 
   USART1->BRR = (uint16_t)(SYSCLK / baud);
   USART1->CR3 |= USART_CR3_DMAT | USART_CR3_DMAR;

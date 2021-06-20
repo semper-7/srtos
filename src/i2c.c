@@ -1,6 +1,7 @@
 #include "i2c.h"
 #include "usart1.h"
 #include "sysinit.h"
+#include "gpio.h"
 
 void i2cInit(void)
 {
@@ -9,8 +10,8 @@ void i2cInit(void)
   RCC->APB2ENR |= RCC_APB2ENR_IOPBEN;
   // --- GPIO setup ---
   //PB:6,7 - Alternate output open-drain 50MHz
-  GPIOB->CRL |= (GPIO_CRL_MODE6 | GPIO_CRL_CNF6 |
-                 GPIO_CRL_MODE7 | GPIO_CRL_CNF7 );
+  GPIOB_CRL( GPCR(6) | GPCR(7), AOD50(6) | AOD50(7) );
+
   I2C1->CR1 = 0;
   I2C1->CR2 = SYSCLK / 2000000;
   I2C1->CCR = SYSCLK / 400000;

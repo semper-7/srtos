@@ -3,36 +3,26 @@
 #include "i2c.h"
 #include "srtos.h"
 #include <string.h>
+#include "asmfunc.h"
+#include "gpio.h"
 
 #define USART_BUFFER_SIZE 80
 char usart_rx_buffer[USART_BUFFER_SIZE];
-char usart_tx_buffer[USART_BUFFER_SIZE];
-
 char i2cbuf[256];
 
 uint8_t led0 = 0;
-uint8_t led2 = 0;
+uint8_t led1 = 0;
 
-void onLed1(void)
+void timer2Init()
 {
-  GPIOA->BRR = GPIO_BRR_BR5;
-}
-
-void offLed1(void)
-{
-  GPIOA->BSRR = GPIO_BSRR_BS5;
-}
-
-void timer3Init()
-{
-  RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;
-  TIM3->CR1 = 0;
-  TIM3->ARR = 65535;
-  /* Channel 1 mode PWM1 */
-  TIM3->CCMR1 = TIM_CCMR1_OC1PE | TIM_CCMR1_OC1M_2 | TIM_CCMR1_OC1M_1;
-  /* Output active low */
-  TIM3->CCER = TIM_CCER_CC1P | TIM_CCER_CC1E;
-  TIM3->CR1 = TIM_CR1_CEN;
+  RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
+  TIM2->CR1 = 0;
+  TIM2->ARR = 65535;
+  /* Mode PWM1 */
+  TIM2->CCMR1 = TIM_CCMR1_OC1PE | TIM_CCMR1_OC1M_2 | TIM_CCMR1_OC1M_1;
+  /* Channel 1 output active low */
+  TIM2->CCER = TIM_CCER_CC1P | TIM_CCER_CC1E;
+  TIM2->CR1 = TIM_CR1_CEN;
 }
 
 void readI2c()
@@ -52,16 +42,11 @@ void writeI2c()
  if (i2cWrite(0xA0, 16, "test!!!", 8)) usartPrint("Error i2c");
 }
 
-void togleLed(void)
-{
-  GPIOC->ODR ^= GPIO_ODR_ODR13;
-}
-
 void taskBlink(void)
 {
   while(led0)
   {
-    togleLed();
+    GPIOC->ODR ^= GPIO_ODR_ODR13;
     delay(300);
   }
   GPIOC->BSRR = GPIO_BSRR_BS13;
@@ -78,6 +63,7 @@ void onLed0(void)
 
 void statTask(void)
 {
+  usartPrint("Id	Name	Stat\n");
   for (int i=0; i<TSK; i++)
   {
     if (isTask(i))
@@ -92,6 +78,27 @@ void statTask(void)
   }
 }
 
+void killTask(void)
+{
+  uint8_t id;
+  if (usart_rx_buffer[5] <= '9')
+  {
+    id = atou(&usart_rx_buffer[5]);
+  }
+  else
+  {
+    id = getTaskId(&usart_rx_buffer[5]);
+  }
+
+  if (id && id<TSK)
+  {
+    removeTask(id);
+    usartPrint("Task ");
+    usartPrint(&usart_rx_buffer[5]);
+    usartPrint(" stopped");
+  }
+}
+
 void taskCLI(void)
 {
   while(1)
@@ -103,15 +110,14 @@ void taskCLI(void)
     char* cr = strchr(usart_rx_buffer,'\r');
     if (cr) *(cr) = 0;
     /* Parsing and command execution */
-    if      (!strcmp(usart_rx_buffer, "on led0" )) onLed0();
-    else if (!strcmp(usart_rx_buffer, "off led0")) led0 = 0;
-    else if (!strcmp(usart_rx_buffer, "on led1" )) onLed1();
-    else if (!strcmp(usart_rx_buffer, "off led1")) offLed1(); 
-    else if (!strcmp(usart_rx_buffer, "on led2" )) led2 = 1;
-    else if (!strcmp(usart_rx_buffer, "off led2")) led2 = 0;
-    else if (!strcmp(usart_rx_buffer, "read i2c")) readI2c();
+    if      (!strcmp(usart_rx_buffer, "ps"       )) statTask();
+    else if (  !ecmp(usart_rx_buffer, "kill "    )) killTask();
+    else if (!strcmp(usart_rx_buffer, "on led0"  )) onLed0();
+    else if (!strcmp(usart_rx_buffer, "off led0" )) led0 = 0;
+    else if (!strcmp(usart_rx_buffer, "on led1"  )) led1 = 1;
+    else if (!strcmp(usart_rx_buffer, "off led1" )) led1 = 0;
+    else if (!strcmp(usart_rx_buffer, "read i2c" )) readI2c();
     else if (!strcmp(usart_rx_buffer, "write i2c")) writeI2c();
-    else if (!strcmp(usart_rx_buffer, "stat")) statTask();
   }
 }
 
@@ -122,15 +128,11 @@ void scanKey()
 
   while(1)
   {
-    uint16_t scan = GPIOA->IDR & GPIO_IDR_IDR0;
+    uint16_t scan = GPIOA->IDR & GPIO_IDR_IDR1;
     scan_changes = scan_old ^ scan;
     scan_old = scan;
-    if (scan_changes & ~scan)
-    {
-      togleLed();
-      usartPrint("Key\n");
-    }
-    delay(20);
+    if (scan_changes & ~scan) led1 ^= 1;
+    delay(40);
   }
 }
 
@@ -139,21 +141,9 @@ void gpioInit()
   // enable PORT_A, PORT_C
   RCC->APB2ENR |= (RCC_APB2ENR_IOPAEN | RCC_APB2ENR_IOPCEN);
   // --- GPIO setup ---
-  GPIOA->CRL &= ~(GPIO_CRL_CNF0 | GPIO_CRL_MODE0 |
-                  GPIO_CRL_CNF5 | GPIO_CRL_MODE5 |
-                  GPIO_CRL_CNF6 | GPIO_CRL_MODE6 );
-  //PA:0 - KEY input pull-up
-  GPIOA->CRL |= (GPIO_CRL_CNF0_1 |
-  //PA:5 - LED1, output push-pull 2MHz
-                GPIO_CRL_MODE5_1 |
-  //PA:6 - LED2, alternate output push-pull 2MHz
-                GPIO_CRL_MODE6_1 | GPIO_CRL_CNF6_1 );
-  //PA:0 = 1
-  GPIOA->BSRR = GPIO_BSRR_BS0 |
-  		GPIO_BSRR_BS5 | GPIO_BSRR_BS6;
-  //PC:13 - LED0, output push-pull 2MHz
-  GPIOC->CRH &= ~(GPIO_CRH_CNF13 | GPIO_CRH_MODE13);
-  GPIOC->CRH |= GPIO_CRH_MODE13_1;
+  GPIOA_CRL( GPCR(0) | GPCR(1), APP2(0) | I_P(1) );
+  GPIOC_CRH( GPCR(13), PP2(13) );
+  GPIOA->BSRR = GPIO_BSRR_BS1;
   GPIOC->BSRR = GPIO_BSRR_BS13;
 }
 
@@ -162,7 +152,7 @@ int main()
   gpioInit();
   usartInit(115200);
   usartPrint("Start SRTOS\n");
-  timer3Init();
+  timer2Init();
   i2cInit();
   addTask("scanKey", scanKey, 20);
   addTask("CLI", taskCLI, 0);
@@ -172,13 +162,13 @@ int main()
 void SysTickCallback(void)
 {
   static volatile uint16_t pwm;
-  if (led2)
+  if (led1)
   {
-    if (pwm<65280) pwm+=((pwm>>8) + 1); /* led2 on */
+    if (pwm<65280) pwm+=((pwm>>8) + 1); /* led1 pwm on */
   }
   else
   {
-    if (pwm>0) pwm-=((pwm>>8) + 1); /* led2 off */
+    if (pwm>0) pwm-=((pwm>>8) + 1); /* led1 pwm off */
   }
-  TIM3->CCR1 = pwm;
+  TIM2->CCR1 = pwm;
 }
