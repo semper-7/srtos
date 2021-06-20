@@ -19,7 +19,7 @@ static void cs_off(void)
 
 static void waitSpi(void)
 {
- while (!(SPI1->SR & (SPI_SR_TXE | SPI_SR_BSY)));
+ while (!(SPI1->SR & SPI_SR_TXE) || (SPI1->SR & SPI_SR_BSY));
 }
 
 uint8_t ENC28J60_ReadOp(uint8_t op,uint8_t address)

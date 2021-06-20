@@ -181,6 +181,7 @@ int main()
   i2cInit();
   usartInit(115200);
   usartPrint("Start SRTOS\n");
+  ENC28J60_Init();
   addTask("scanKey", scanKey, 20);
   addTask("CLI", taskCLI, 0);
   addTask("net", net, 0);

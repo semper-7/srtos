@@ -1,58 +1,10 @@
 
 > Id	Name	Stat
 0	idle	0
-1	scanKey	24
-2	CLI	325
-3	net	326
-4	link	325
-
-> Id	Name	Stat
-0	idle	0
-1	scanKey	24
-2	CLI	326
-3	net	325
-4	link	325
-
-> Id	Name	Stat
-0	idle	0
-1	scanKey	24
-2	CLI	308
-3	net	334
-4	link	334
-
-> Id	Name	Stat
-0	idle	0
-1	scanKey	24
-2	CLI	308
-3	net	334
-4	link	334
-
-> Id	Name	Stat
-0	idle	0
 1	scanKey	25
-2	CLI	319
-3	net	328
-4	link	328
-
-> Id	Name	Stat
-0	idle	0
-1	scanKey	25
-2	CLI	319
-3	net	328
-4	link	328
-
-> Id	Name	Stat
-0	idle	0
-1	scanKey	24
-2	CLI	308
-3	net	334
-4	link	334
-
-> Id	Name	Stat
-0	idle	0
-1	scanKey	24
-2	CLI	308
-3	net	334
-4	link	334
+2	CLI	485
+3	net	485
+4	link	1
+5	Blink	4
 
 > 
