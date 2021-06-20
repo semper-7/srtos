@@ -20,7 +20,7 @@ void usartInit(uint32_t baud)
   // --- GPIO setup ---
   //PA:9  - Usart TX alternate output open drain 50MHz
   //PA:10 - Usart RX input pull-up
-  GPIOA_CRH( GPCR(9) | GPCR(10), AOD50(9) | I_P(10) );
+  GPIOA_CRH( GP_M(9) | GP_M(10), GP_AOD50(9) | GP_IP(10) );
   //PA:10 = 1
   GPIOA->BSRR = GPIO_BSRR_BS10;
 

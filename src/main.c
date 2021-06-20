@@ -141,8 +141,8 @@ void gpioInit()
   // enable PORT_A, PORT_C
   RCC->APB2ENR |= (RCC_APB2ENR_IOPAEN | RCC_APB2ENR_IOPCEN);
   // --- GPIO setup ---
-  GPIOA_CRL( GPCR(0) | GPCR(1), APP2(0) | I_P(1) );
-  GPIOC_CRH( GPCR(13), PP2(13) );
+  GPIOA_CRL( GP_M(0) | GP_M(1), GP_APP2(0) | GP_IP(1) );
+  GPIOC_CRH( GP_M(13), GP_PP2(13) );
   GPIOA->BSRR = GPIO_BSRR_BS1;
   GPIOC->BSRR = GPIO_BSRR_BS13;
 }

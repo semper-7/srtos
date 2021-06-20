@@ -10,7 +10,7 @@ void i2cInit(void)
   RCC->APB2ENR |= RCC_APB2ENR_IOPBEN;
   // --- GPIO setup ---
   //PB:6,7 - Alternate output open-drain 50MHz
-  GPIOB_CRL( GPCR(6) | GPCR(7), AOD50(6) | AOD50(7) );
+  GPIOB_CRL( GP_M(6) | GP_M(7), GP_AOD50(6) | GP_AOD50(7) );
 
   I2C1->CR1 = 0;
   I2C1->CR2 = SYSCLK / 2000000;
