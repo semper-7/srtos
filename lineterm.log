@@ -1,83 +1,58 @@
 
-> 0	idle	476
-1	scanKey	47
-2	CLI	477
+> Id	Name	Stat
+0	idle	0
+1	scanKey	24
+2	CLI	325
+3	net	326
+4	link	325
 
-> 0	idle	476
-1	scanKey	48
-2	CLI	476
+> Id	Name	Stat
+0	idle	0
+1	scanKey	24
+2	CLI	326
+3	net	325
+4	link	325
 
-> 0	idle	476
-1	scanKey	48
-2	CLI	476
+> Id	Name	Stat
+0	idle	0
+1	scanKey	24
+2	CLI	308
+3	net	334
+4	link	334
 
-> 
-> 0	idle	474
-1	scanKey	47
-2	CLI	476
-3	Blink	3
+> Id	Name	Stat
+0	idle	0
+1	scanKey	24
+2	CLI	308
+3	net	334
+4	link	334
 
-> 0	idle	473
-1	scanKey	48
-2	CLI	476
-3	Blink	3
+> Id	Name	Stat
+0	idle	0
+1	scanKey	25
+2	CLI	319
+3	net	328
+4	link	328
 
-> 0	idle	473
-1	scanKey	48
-2	CLI	476
-3	Blink	3
+> Id	Name	Stat
+0	idle	0
+1	scanKey	25
+2	CLI	319
+3	net	328
+4	link	328
 
-> 0	idle	473
-1	scanKey	48
-2	CLI	476
-3	Blink	3
+> Id	Name	Stat
+0	idle	0
+1	scanKey	24
+2	CLI	308
+3	net	334
+4	link	334
 
-> 0	idle	490
-1	scanKey	47
-2	CLI	459
-3	Blink	4
-
-> 0	idle	491
-1	scanKey	48
-2	CLI	458
-3	Blink	3
-
-> 0	idle	492
-1	scanKey	47
-2	CLI	458
-3	Blink	3
-
-> 0	idle	474
-1	scanKey	47
-2	CLI	476
-3	Blink	3
-
-> 
-> 0	idle	476
-1	scanKey	48
-2	CLI	476
-
-> 0	idle	477
-1	scanKey	47
-2	CLI	476
-
-> 0	idle	476
-1	scanKey	48
-2	CLI	476
-
-> 0	idle	476
-1	scanKey	48
-2	CLI	476
-
-> 
-> 0	idle	472
-1	scanKey	48
-2	CLI	476
-3	Blink	4
-
-> 0	idle	473
-1	scanKey	47
-2	CLI	477
-3	Blink	3
+> Id	Name	Stat
+0	idle	0
+1	scanKey	24
+2	CLI	308
+3	net	334
+4	link	334
 
 > 

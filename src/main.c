@@ -5,13 +5,18 @@
 #include <string.h>
 #include "asmfunc.h"
 #include "gpio.h"
+#include "network.h"
 
 #define USART_BUFFER_SIZE 80
 char usart_rx_buffer[USART_BUFFER_SIZE];
 char i2cbuf[256];
 
-uint8_t led0 = 0;
-uint8_t led1 = 0;
+static uint8_t led0;
+static uint8_t led1;
+
+byte ipaddr[4] = {192,168,1,111};
+byte ipgw[4] = {192,168,1,1};
+byte ipdns[4] = {212,94,96,123};
 
 void timer2Init()
 {
@@ -99,6 +104,28 @@ void killTask(void)
   }
 }
 
+void etherLink(void)
+{
+  static uint8_t link;
+  uint8_t tmp;
+  while (1)
+  {
+    tmp = LinkFunc();
+    if (tmp != link) 
+    {
+      link = tmp;
+      if (tmp) usartPrint("Link UP\n");
+      else     usartPrint("Link Down\n");
+    }
+    delay(1000);
+  }
+}
+
+void net(void)
+{
+  while(1) PacketFunc();
+}
+
 void taskCLI(void)
 {
   while(1)
@@ -150,12 +177,14 @@ void gpioInit()
 int main()
 {
   gpioInit();
-  usartInit(115200);
-  usartPrint("Start SRTOS\n");
   timer2Init();
   i2cInit();
+  usartInit(115200);
+  usartPrint("Start SRTOS\n");
   addTask("scanKey", scanKey, 20);
   addTask("CLI", taskCLI, 0);
+  addTask("net", net, 0);
+  addTask("link", etherLink, 0);
   startRtos();
 }
 

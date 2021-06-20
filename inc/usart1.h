@@ -11,5 +11,6 @@ void usartPrint(char *s);
 void usartPrintNum(uint32_t n);
 void usartTransmit(char *buffer, uint16_t buffer_size);
 uint32_t usartReceive(char *buffer, uint16_t buffer_size);
+char* utoa(uint32_t num, char *buffer);
 
 #endif //__USART1_H__

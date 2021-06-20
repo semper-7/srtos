@@ -7,13 +7,13 @@ static volatile uint32_t task_act;
 
 extern void *__stack_top__;
 
-void __attribute__((weak)) idleTask(void)
-{
-  while(1);
-}
+void __attribute__((weak)) SysTickCallback(void) {}
 
-void __attribute__((weak)) SysTickCallback(void)
+void __attribute__((weak)) idleCallback(void) {}
+
+void idleTask(void)
 {
+  while(1) idleCallback();
 }
 
 uint8_t getTaskId(char* name)

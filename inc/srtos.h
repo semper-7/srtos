@@ -17,10 +17,12 @@ typedef struct {
 
 void startRtos(void);
 void delay(uint32_t time_ms);
-void addTask(char* name, void (*addr)(), uint32_t timer);
-char* getTaskName(uint8_t t);
-uint16_t getTaskStat(uint8_t t);
-uint32_t isTask(uint8_t t);
+uint8_t addTask(char* name, void (*addr)(), uint32_t timer);
+void removeTask(uint8_t id);
+char* getTaskName(uint8_t id);
+uint8_t getTaskId(char* name);
+uint16_t getTaskStat(uint8_t id);
+uint32_t isTask(uint8_t id);
 
 #endif  // __SRTOS_H__
 
