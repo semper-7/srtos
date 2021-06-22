@@ -8,13 +8,12 @@ set DEF=-DSTM32F103xB
 set SF=stm32f10x.ld
 set AS=arm-none-eabi-as
 set CC=arm-none-eabi-gcc
-set CP=arm-none-eabi-g++
 set LD=arm-none-eabi-ld
 set LS=arm-none-eabi-objdump
 set OB=arm-none-eabi-objcopy
 set SZ=arm-none-eabi-size
 set AF=-mthumb -mcpu=%MCU%
-set CF=-mthumb -mcpu=%MCU% -O2 -c -g %DEF% -Wall -ffunction-sections
+set CF=-mthumb -mcpu=%MCU% -O2 -c -g %DEF% -Wall -std=gnu99 -ffunction-sections
 set CI= -I inc
 for /r inc /d %%I in (*) do set I=%%I& set CI=!CI! -I !I:%~dp0=!
 set LF=--gc-sections
@@ -33,12 +32,6 @@ for /r %%I in (*.s) do (
 for /r %%I in (*.c) do (
   echo Compiling %%I ...
   %CC% %CF% %CI% -c %%I -o obj\%%~nI.o
-  if !errorlevel! NEQ 0 goto error
-)
-
-for /r %%I in (*.cpp) do (
-  echo Compiling %%I ...
-  %CP% %CF% %CI% -c %%I -o obj\%%~nI.o
   if !errorlevel! NEQ 0 goto error
 )
 

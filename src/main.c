@@ -68,7 +68,7 @@ void onLed0(void)
 
 void statTask(void)
 {
-  usartPrint("Id	Name	Stat\n");
+  usartPrint("\nId	Name	Stat\n");
   for (int i=0; i<TSK; i++)
   {
     if (isTask(i))
@@ -104,20 +104,12 @@ void killTask(void)
   }
 }
 
-void etherLink(void)
+void link(void)
 {
-  static uint8_t link;
-  uint8_t tmp;
   while (1)
   {
-    tmp = LinkFunc();
-    if (tmp != link) 
-    {
-      link = tmp;
-      if (tmp) usartPrint("Link UP\n");
-      else     usartPrint("Link Down\n");
-    }
-    delay(1000);
+  LinkFunc();
+  delay(2000);
   }
 }
 
@@ -181,11 +173,11 @@ int main()
   i2cInit();
   usartInit(115200);
   usartPrint("Start SRTOS\n");
-  ENC28J60_Init();
+  if (!ENC28J60_Init()) usartPrint("ENC28J60 not found!\n");
   addTask("scanKey", scanKey, 20);
   addTask("CLI", taskCLI, 0);
   addTask("net", net, 0);
-  addTask("link", etherLink, 0);
+  addTask("link", link, 0);
   startRtos();
 }
 

@@ -179,17 +179,17 @@ void dns_parse(word len)
 
 void arp_request(byte *ip)
 {
-  memset(buf+ETH_DST_MAC, 0xff, 6);
-  memcpy(buf+ETH_SRC_MAC, macaddr, 6);
+  memset(buf + ETH_DST_MAC, 0xff, 6);
+  memcpy(buf + ETH_SRC_MAC, macaddr, 6);
   buf[ETH_TYPE] = ETH_ARP_H;
   buf[ETH_TYPE + 1] = ETH_ARP_L;
   buf[ARP_OPCODE] = ARP_REQUEST_H;
   buf[ARP_OPCODE + 1] = ARP_REQUEST_L;
-  memcpy(buf+ETH_HEADER_LEN, arphdr, sizeof arphdr);
-  memset(buf+ARP_DST_MAC, 0, 6);
-  memcpy(buf+ARP_SRC_MAC, macaddr, 6);
-  memcpy(buf+ARP_DST_IP, ip, 4);
-  memcpy(buf+ARP_SRC_IP, ipaddr, 4);
+  memcpy(buf + ETH_HEADER_LEN, arphdr, sizeof arphdr);
+  memset(buf + ARP_DST_MAC, 0, 6);
+  memcpy(buf + ARP_SRC_MAC, macaddr, 6);
+  memcpy(buf + ARP_DST_IP, ip, 4);
+  memcpy(buf + ARP_SRC_IP, ipaddr, 4);
   PacketSend(42, buf); 
 }
 
@@ -198,10 +198,10 @@ void arp_reply()
   make_eth_hdr();
   buf[ARP_OPCODE] = ARP_REPLY_H;
   buf[ARP_OPCODE + 1] = ARP_REPLY_L;
-  memcpy(buf+ARP_DST_MAC, buf+ARP_SRC_MAC, 6);
-  memcpy(buf+ARP_SRC_MAC, macaddr, 6);
-  memcpy(buf+ARP_DST_IP, buf+ARP_SRC_IP, 4);
-  memcpy(buf+ARP_SRC_IP, ipaddr, 4);
+  memcpy(buf + ARP_DST_MAC, buf + ARP_SRC_MAC, 6);
+  memcpy(buf + ARP_SRC_MAC, macaddr, 6);
+  memcpy(buf + ARP_DST_IP, buf + ARP_SRC_IP, 4);
+  memcpy(buf + ARP_SRC_IP, ipaddr, 4);
   PacketSend(42, buf); 
 }
 
@@ -210,7 +210,7 @@ void icmp_reply(word len)
   make_eth_hdr();
   make_ip_hdr();
   buf[ICMP_TYPE] = ICMP_REPLY;
-  if (buf[ICMP_CHECKSUM] > (0xFF-0x08)) buf[ICMP_CHECKSUM + 1]++;
+  if (buf[ICMP_CHECKSUM] > (0xFF - 0x08)) buf[ICMP_CHECKSUM + 1]++;
   buf[ICMP_CHECKSUM] += 0x08;
   PacketSend(len, buf);
 }

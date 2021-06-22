@@ -1,6 +1,8 @@
 #include "enc28j60.h"
 #include "gpio.h"
 #include "dwt.h"
+#include "srtos.h"
+#include "usart1.h"
 
 uint8_t macaddr[6] = { 0,1,2,3,4,5 };
 
@@ -10,72 +12,55 @@ static uint16_t gNextPacketPtr;
 static void cs_on(void)
 {
   GPIOA->BRR = GPIO_BRR_BR4;
+  (void) SPI1->DR;
 }
 
 static void cs_off(void)
 {
+  while (SPI1->SR & SPI_SR_BSY);
   GPIOA->BSRR = GPIO_BSRR_BS4;
 }
 
-static void waitSpi(void)
+uint8_t spi_write_read(uint8_t v)
 {
- while (!(SPI1->SR & SPI_SR_TXE) || (SPI1->SR & SPI_SR_BSY));
-}
-
-uint8_t ENC28J60_ReadOp(uint8_t op,uint8_t address)
-{
-  cs_on();
-  SPI1->DR = op | (address & ADDR_MASK);
-  waitSpi();
-  SPI1->DR = 0x00;
-  waitSpi();
-  if(address & 0x80)
-  {
-    SPI1->DR = 0x00;
-    waitSpi();
-  }
-  cs_off();
+  while (!(SPI1->SR & SPI_SR_TXE));
+  SPI1->DR = v;
+  while (!(SPI1->SR & SPI_SR_RXNE));
   return(SPI1->DR);
 }
 
 void ENC28J60_WriteOp(uint8_t op, uint8_t address, uint8_t data)
 {
   cs_on();
-  SPI1->DR = op | (address & ADDR_MASK);
-  waitSpi();
-  SPI1->DR = data;
-  waitSpi();
+  spi_write_read(op | (address & ADDR_MASK));
+  spi_write_read(data);
+  cs_off();
+}
+
+uint8_t ENC28J60_ReadOp(uint8_t op, uint8_t address)
+{
+  int r;
+  cs_on();
+  spi_write_read(op | (address & ADDR_MASK));
+  r = spi_write_read(0);
+  if(address & 0x80) r = spi_write_read(0);
+  cs_off();
+  return(r);
+}
+
+void ENC28J60_WriteBuffer(uint16_t len, uint8_t* data) {
+  cs_on();
+  spi_write_read(WBM);
+  while(len--) spi_write_read(*data++);
   cs_off();
 }
 
 void ENC28J60_ReadBuffer(uint16_t len, uint8_t* data)
 {
   cs_on();
-  SPI1->DR = RBM;
-  waitSpi();
-  while(len)
-  {
-    len--;
-    SPI1->DR = 0x00;
-    waitSpi();
-    *data = SPI1->DR;
-    data++;
-  }
-  *data='\0';
-  cs_off();
-}
-
-void ENC28J60_WriteBuffer(uint16_t len, uint8_t* data) {
-  cs_on();
-  SPI1->DR = WBM;
-  waitSpi();
-  while(len)
-  {
-    len--;
-    SPI1->DR = *data;
-    data++;
-    waitSpi();
-  }
+  spi_write_read(RBM);
+  while(len--) *data++ = spi_write_read(0);
+  *data = '\0';
   cs_off();
 }
 
@@ -83,8 +68,8 @@ void ENC28J60_SetBank(uint8_t address)
 {
   if((address & BANK_MASK) != ENC28J60_Bank)
   {
-    ENC28J60_WriteOp(BFC, ECON1, (BSEL1|BSEL0));
-    ENC28J60_WriteOp(BFS, ECON1, (address & BANK_MASK)>>5);
+    ENC28J60_WriteOp(BFC, ECON1, (BSEL1 | BSEL0));
+    ENC28J60_WriteOp(BFS, ECON1, (address & BANK_MASK) >> 5);
     ENC28J60_Bank = (address & BANK_MASK);
   }
 }
@@ -105,7 +90,7 @@ uint16_t ENC28J60_PhyRead(uint8_t address)
 {
   ENC28J60_Write(MIREGADR,address);
   ENC28J60_Write(MICMD,MIIRD);
-  delay_us(15);
+  delay_us(40);
   while(ENC28J60_Read(MISTAT) & BUSY);
   ENC28J60_Write(MICMD,0x00);
   return(ENC28J60_Read(MIRDH));
@@ -116,20 +101,24 @@ void ENC28J60_PhyWrite(uint8_t address, uint16_t data)
   ENC28J60_Write(MIREGADR, address);
   ENC28J60_Write(MIWRL, data);
   ENC28J60_Write(MIWRH, data >> 8);
-  while(ENC28J60_Read(MISTAT) & BUSY) delay_us(15);
+  while(ENC28J60_Read(MISTAT) & BUSY) delay_us(40);
 }
 
 uint8_t ENC28J60_Init()
 {
   dwtInit();
-  RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
+  RCC->APB2ENR |= (RCC_APB2ENR_IOPAEN | RCC_APB2ENR_SPI1EN);
+
+  SPI1->CR1 = SPI_CR1_SPE | SPI_CR1_MSTR | SPI_CR1_BR_0 | 
+              SPI_CR1_SSM | SPI_CR1_SSI;
+
   /* --- GPIO setup --- */
   GPIOA_CRL( GP_M(4)    | GP_M(5)     | GP_M(6)  | GP_M(7),
              GP_PP50(4) | GP_APP50(5) | GP_IF(6) | GP_APP50(7) );
-  cs_off();
-  SPI1->CR1 = SPI_CR1_SPE | SPI_CR1_MSTR | SPI_CR1_BR_0 | SPI_CR1_SSI | SPI_CR1_SSM;
+  GPIOA->BSRR = GPIO_BSRR_BS4;
+
   ENC28J60_WriteOp(SC, 0, SC);
-  delay_us(40);
+  delay_us(500);
   gNextPacketPtr = RXSTART_INIT;
   ENC28J60_Write(ERXSTL, RXSTART_INIT & 0xFF);
   ENC28J60_Write(ERXSTH, RXSTART_INIT >> 8);
@@ -165,9 +154,9 @@ uint8_t ENC28J60_Init()
   ENC28J60_WriteOp(BFS, EIE, (INTIE|PKTIE));
   ENC28J60_WriteOp(BFS, ECON1,RXEN);
   ENC28J60_Write(ECOCON, 2);
-  delay_us(10);
+  delay_us(20);
   ENC28J60_PhyWrite(PHLCON, 0x0476);
-  delay_us(10);
+  delay_us(20);
   return(ENC28J60_Read(EREVID));
 }
 
@@ -175,7 +164,7 @@ uint16_t ENC28J60_PacketReceive(uint16_t maxlen, uint8_t* packet)
 {
   uint16_t rxstat;
   uint16_t len;
-  if (ENC28J60_Read(EPKTCNT)==0) return(0);
+  if (ENC28J60_Read(EPKTCNT) == 0) return(0);
   ENC28J60_Write(ERDPTL, (gNextPacketPtr & 0xFF));
   ENC28J60_Write(ERDPTH, gNextPacketPtr >> 8);
   gNextPacketPtr  = ENC28J60_ReadOp(RBM, 0);
@@ -190,7 +179,7 @@ uint16_t ENC28J60_PacketReceive(uint16_t maxlen, uint8_t* packet)
     else ENC28J60_ReadBuffer(len, packet);
   ENC28J60_Write(ERXRDPTL, (gNextPacketPtr & 0xFF));
   ENC28J60_Write(ERXRDPTH, gNextPacketPtr >> 8);
-  if ((gNextPacketPtr-1 < RXSTART_INIT) || (gNextPacketPtr-1 > RXSTOP_INIT))
+  if ((gNextPacketPtr - 1 < RXSTART_INIT) || (gNextPacketPtr - 1 > RXSTOP_INIT))
   {
     ENC28J60_Write(ERXRDPTL, RXSTOP_INIT & 0xFF);
     ENC28J60_Write(ERXRDPTH, RXSTOP_INIT >> 8);
@@ -201,11 +190,20 @@ uint16_t ENC28J60_PacketReceive(uint16_t maxlen, uint8_t* packet)
     ENC28J60_Write(ERXRDPTH, (gNextPacketPtr-1) >> 8);
   }
   ENC28J60_WriteOp(BFS, ECON2, PKTDEC);
+ if (len)
+ {
+  usartPrint("READ: ");
+  usartPrintNum(len);
+  usartWrite('\n');
+ }  
   return(len);
 }
 
 void ENC28J60_PacketSend(uint16_t len, uint8_t* packet)
 {
+  usartPrint("SEND: ");
+  usartTransmit((char*)packet, len);
+  usartWrite('\n');
   while (ENC28J60_ReadOp(RCR, ECON1) & TXRTS)
   {
     if(ENC28J60_Read(EIR) & TXERIF)
@@ -218,7 +216,7 @@ void ENC28J60_PacketSend(uint16_t len, uint8_t* packet)
   ENC28J60_Write(EWRPTH, TXSTART_INIT >> 8);
   ENC28J60_Write(ETXNDL, (TXSTART_INIT + len) & 0xFF);
   ENC28J60_Write(ETXNDH, (TXSTART_INIT + len) >> 8);
-  ENC28J60_WriteOp(WBM,0,0x00);
+  ENC28J60_WriteOp(WBM, 0 , 0);
   ENC28J60_WriteBuffer(len, packet);
   ENC28J60_WriteOp(BFS, ECON1, TXRTS);
 }
