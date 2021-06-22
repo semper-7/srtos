@@ -3,23 +3,18 @@
 #include <string.h>
 
 static volatile TASK task[TSK];
-static volatile uint32_t task_act;
+static volatile uint8_t task_act;
+static volatile uint8_t task_max;
+static volatile uint8_t flag_stat;
 
 extern void *__stack_top__;
 
 void __attribute__((weak)) SysTickCallback(void) {}
 
-void __attribute__((weak)) idleCallback(void) {}
-
-void idleTask(void)
-{
-  while(1) idleCallback();
-}
-
 uint8_t getTaskId(char* name)
 {
   int i;
-  for (i=0; i<TSK; i++)
+  for (i = 0; i <= task_max; i++)
   {
     if (!strcmp(task[i].name, name)) break;
   }  
@@ -64,7 +59,7 @@ uint8_t addTask(char* name, void (*addr)(), uint32_t timer)
 {
   int i = 0;
   __set_BASEPRI(192);
-  while (++i < TSK)
+  for (i = 0; i < TSK; i++)
   {
     if (!task[i].stack_pointer)
     {
@@ -76,6 +71,7 @@ uint8_t addTask(char* name, void (*addr)(), uint32_t timer)
       task[i].timer = timer;
       task[i].skip_counter = 0;
       task[i].name = name;
+      if (i > task_max) task_max = i;
       break;
     }
   }
@@ -87,11 +83,10 @@ uint32_t selectTask(uint32_t sp)
 {
   int skip = 0;
   int a = 0;
-  int i = 0;
 
   if (task[task_act].stack_pointer) task[task_act].stack_pointer = sp;
 
-  while (++i < TSK)
+  for (int i = 0; i <= task_max; i++)
   {
     if (task[i].stack_pointer)
     {
@@ -108,8 +103,14 @@ uint32_t selectTask(uint32_t sp)
         } 
       }
       task[i].skip_counter++;
+      if (flag_stat)
+      {
+        task[i].stat_top = task[i].stat;
+        task[i].stat = 0;
+      }
     }
   }
+  flag_stat = 0;
   task[a].skip_counter = 0;
   task[a].stat++;
   task_act = a;
@@ -139,11 +140,7 @@ void SysTick_Handler(void)
     if (sys_tick_counter == 1000)
     {
       sys_tick_counter = 0;
-      for (int i=0; i<TSK; i++)
-      {
-        task[i].stat_top = task[i].stat;
-        task[i].stat = 0;
-      }  
+      flag_stat = 1;
     }
   SysTickCallback();
   SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
@@ -151,13 +148,7 @@ void SysTick_Handler(void)
 
 void startRtos(void)
 {
-  uint32_t sp = (uint32_t)&__stack_top__ - (1<<POW_STACK);
-  *((uint32_t*)sp - 1) = PSR_RESET_VALUE;
-  *((uint32_t*)sp - 2) = (uint32_t)idleTask;
-  *((uint32_t*)sp - 3) = (uint32_t)exitTask;
-  __set_PSP(sp - 32);
-  task[0].stack_pointer = sp - 64;
-  task[0].name = "idle";
+  __set_PSP((uint32_t)&__stack_top__ - (1<<POW_STACK) - 32);
   NVIC_SetPriority(SysTick_IRQn, 255);
   NVIC_SetPriority(PendSV_IRQn, 255);
   SysTick->LOAD  = SYSCLK/1000 - 1;  

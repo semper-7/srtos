@@ -66,7 +66,7 @@ void ENC28J60_ReadBuffer(uint16_t len, uint8_t* data)
 
 void ENC28J60_SetBank(uint8_t address)
 {
-  if((address & BANK_MASK) != ENC28J60_Bank)
+  if ((address & BANK_MASK) != ENC28J60_Bank)
   {
     ENC28J60_WriteOp(BFC, ECON1, (BSEL1 | BSEL0));
     ENC28J60_WriteOp(BFS, ECON1, (address & BANK_MASK) >> 5);
@@ -118,7 +118,7 @@ uint8_t ENC28J60_Init()
   GPIOA->BSRR = GPIO_BSRR_BS4;
 
   ENC28J60_WriteOp(SC, 0, SC);
-  delay_us(500);
+  delay_us(2000);
   gNextPacketPtr = RXSTART_INIT;
   ENC28J60_Write(ERXSTL, RXSTART_INIT & 0xFF);
   ENC28J60_Write(ERXSTH, RXSTART_INIT >> 8);
@@ -164,7 +164,7 @@ uint16_t ENC28J60_PacketReceive(uint16_t maxlen, uint8_t* packet)
 {
   uint16_t rxstat;
   uint16_t len;
-  if (ENC28J60_Read(EPKTCNT) == 0) return(0);
+  if (!ENC28J60_Read(EPKTCNT)) return(0);
   ENC28J60_Write(ERDPTL, (gNextPacketPtr & 0xFF));
   ENC28J60_Write(ERDPTH, gNextPacketPtr >> 8);
   gNextPacketPtr  = ENC28J60_ReadOp(RBM, 0);
