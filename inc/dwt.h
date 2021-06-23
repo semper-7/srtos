@@ -4,9 +4,24 @@
 #include "stm32f1xx.h"
 #include "sysinit.h"
 
-#define TICKS_IN_US (SYSCLK / 1000000u)
+inline void dwtInit(void)
+{
+  CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+  DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+}
 
-void dwtInit(void);
-void delay_us(uint32_t time_us);
+inline void delay_us(uint32_t time_us)
+{
+  uint32_t t = time_us * (SYSCLK / 1000000);
+  DWT->CYCCNT = 0;
+  while(DWT->CYCCNT < t);
+}
+
+inline void delay_ns(uint32_t time_ns)
+{
+  uint32_t t = (time_ns * (SYSCLK / 1000000) / 1000);
+  DWT->CYCCNT = 0;
+  while(DWT->CYCCNT < t);
+}
 
 #endif //__DWT_H__

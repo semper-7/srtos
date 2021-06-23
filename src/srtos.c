@@ -102,6 +102,7 @@ uint32_t selectTask(uint32_t sp)
           skip = task[i].skip_counter;
         } 
       }
+
       task[i].skip_counter++;
       if (flag_stat)
       {

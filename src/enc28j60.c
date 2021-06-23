@@ -11,17 +11,20 @@ static uint16_t gNextPacketPtr;
 
 static void cs_on(void)
 {
+  __disable_irq();
   GPIOA->BRR = GPIO_BRR_BR4;
-  (void) SPI1->DR;
+  delay_ns(600);
 }
 
 static void cs_off(void)
 {
   while (SPI1->SR & SPI_SR_BSY);
+  delay_ns(600);
   GPIOA->BSRR = GPIO_BSRR_BS4;
+  __enable_irq();
 }
 
-uint8_t spi_write_read(uint8_t v)
+static uint8_t spi_write_read(uint8_t v)
 {
   while (!(SPI1->SR & SPI_SR_TXE));
   SPI1->DR = v;
@@ -43,7 +46,7 @@ uint8_t ENC28J60_ReadOp(uint8_t op, uint8_t address)
   cs_on();
   spi_write_read(op | (address & ADDR_MASK));
   r = spi_write_read(0);
-  if(address & 0x80) r = spi_write_read(0);
+  if(address > 0x80) r = spi_write_read(0);
   cs_off();
   return(r);
 }
@@ -90,7 +93,7 @@ uint16_t ENC28J60_PhyRead(uint8_t address)
 {
   ENC28J60_Write(MIREGADR,address);
   ENC28J60_Write(MICMD,MIIRD);
-  delay_us(40);
+  delay_us(10);
   while(ENC28J60_Read(MISTAT) & BUSY);
   ENC28J60_Write(MICMD,0x00);
   return(ENC28J60_Read(MIRDH));
@@ -101,7 +104,7 @@ void ENC28J60_PhyWrite(uint8_t address, uint16_t data)
   ENC28J60_Write(MIREGADR, address);
   ENC28J60_Write(MIWRL, data);
   ENC28J60_Write(MIWRH, data >> 8);
-  while(ENC28J60_Read(MISTAT) & BUSY) delay_us(40);
+  while(ENC28J60_Read(MISTAT) & BUSY) delay_us(10);
 }
 
 uint8_t ENC28J60_Init()
@@ -109,7 +112,7 @@ uint8_t ENC28J60_Init()
   dwtInit();
   RCC->APB2ENR |= (RCC_APB2ENR_IOPAEN | RCC_APB2ENR_SPI1EN);
 
-  SPI1->CR1 = SPI_CR1_SPE | SPI_CR1_MSTR | SPI_CR1_BR_0 | 
+  SPI1->CR1 = SPI_CR1_SPE | SPI_CR1_MSTR | SPI_CR1_BR_1 | 
               SPI_CR1_SSM | SPI_CR1_SSI;
 
   /* --- GPIO setup --- */
@@ -118,7 +121,7 @@ uint8_t ENC28J60_Init()
   GPIOA->BSRR = GPIO_BSRR_BS4;
 
   ENC28J60_WriteOp(SC, 0, SC);
-  delay_us(2000);
+  delay_us(500);
   gNextPacketPtr = RXSTART_INIT;
   ENC28J60_Write(ERXSTL, RXSTART_INIT & 0xFF);
   ENC28J60_Write(ERXSTH, RXSTART_INIT >> 8);
@@ -151,12 +154,10 @@ uint8_t ENC28J60_Init()
   ENC28J60_Write(MAADR0, macaddr[5]);
   ENC28J60_PhyWrite(PHCON2, HDLDIS);
   ENC28J60_SetBank(ECON1);
-  ENC28J60_WriteOp(BFS, EIE, (INTIE|PKTIE));
-  ENC28J60_WriteOp(BFS, ECON1,RXEN);
+  ENC28J60_WriteOp(BFS, EIE, (INTIE | PKTIE));
+  ENC28J60_WriteOp(BFS, ECON1, RXEN);
   ENC28J60_Write(ECOCON, 2);
-  delay_us(20);
   ENC28J60_PhyWrite(PHLCON, 0x0476);
-  delay_us(20);
   return(ENC28J60_Read(EREVID));
 }
 
@@ -164,7 +165,7 @@ uint16_t ENC28J60_PacketReceive(uint16_t maxlen, uint8_t* packet)
 {
   uint16_t rxstat;
   uint16_t len;
-  if (!ENC28J60_Read(EPKTCNT)) return(0);
+  if (ENC28J60_Read(EPKTCNT) == 0) return(0);
   ENC28J60_Write(ERDPTL, (gNextPacketPtr & 0xFF));
   ENC28J60_Write(ERDPTH, gNextPacketPtr >> 8);
   gNextPacketPtr  = ENC28J60_ReadOp(RBM, 0);
@@ -190,20 +191,11 @@ uint16_t ENC28J60_PacketReceive(uint16_t maxlen, uint8_t* packet)
     ENC28J60_Write(ERXRDPTH, (gNextPacketPtr-1) >> 8);
   }
   ENC28J60_WriteOp(BFS, ECON2, PKTDEC);
- if (len)
- {
-  usartPrint("READ: ");
-  usartPrintNum(len);
-  usartWrite('\n');
- }  
   return(len);
 }
 
 void ENC28J60_PacketSend(uint16_t len, uint8_t* packet)
 {
-  usartPrint("SEND: ");
-  usartTransmit((char*)packet, len);
-  usartWrite('\n');
   while (ENC28J60_ReadOp(RCR, ECON1) & TXRTS)
   {
     if(ENC28J60_Read(EIR) & TXERIF)
