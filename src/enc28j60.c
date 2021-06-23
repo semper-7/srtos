@@ -1,6 +1,5 @@
 #include "enc28j60.h"
 #include "gpio.h"
-#include "dwt.h"
 #include "srtos.h"
 #include "usart1.h"
 
@@ -13,13 +12,11 @@ static void cs_on(void)
 {
   __disable_irq();
   GPIOA->BRR = GPIO_BRR_BR4;
-  delay_ns(600);
 }
 
 static void cs_off(void)
 {
   while (SPI1->SR & SPI_SR_BSY);
-  delay_ns(600);
   GPIOA->BSRR = GPIO_BSRR_BS4;
   __enable_irq();
 }
@@ -93,7 +90,6 @@ uint16_t ENC28J60_PhyRead(uint8_t address)
 {
   ENC28J60_Write(MIREGADR,address);
   ENC28J60_Write(MICMD,MIIRD);
-  delay_us(10);
   while(ENC28J60_Read(MISTAT) & BUSY);
   ENC28J60_Write(MICMD,0x00);
   return(ENC28J60_Read(MIRDH));
@@ -104,12 +100,11 @@ void ENC28J60_PhyWrite(uint8_t address, uint16_t data)
   ENC28J60_Write(MIREGADR, address);
   ENC28J60_Write(MIWRL, data);
   ENC28J60_Write(MIWRH, data >> 8);
-  while(ENC28J60_Read(MISTAT) & BUSY) delay_us(10);
+  while(ENC28J60_Read(MISTAT) & BUSY);
 }
 
 uint8_t ENC28J60_Init()
 {
-  dwtInit();
   RCC->APB2ENR |= (RCC_APB2ENR_IOPAEN | RCC_APB2ENR_SPI1EN);
 
   SPI1->CR1 = SPI_CR1_SPE | SPI_CR1_MSTR | SPI_CR1_BR_1 | 
@@ -117,11 +112,12 @@ uint8_t ENC28J60_Init()
 
   /* --- GPIO setup --- */
   GPIOA_CRL( GP_M(4)    | GP_M(5)     | GP_M(6)  | GP_M(7),
-             GP_PP50(4) | GP_APP50(5) | GP_IF(6) | GP_APP50(7) );
+             GP_PP2(4) | GP_APP50(5) | GP_IF(6) | GP_APP50(7) );
   GPIOA->BSRR = GPIO_BSRR_BS4;
 
   ENC28J60_WriteOp(SC, 0, SC);
-  delay_us(500);
+  uint32_t i = 200;
+  while(!ENC28J60_Read(ESTAT) & CLKRDY) if (!(i--)) return(0);
   gNextPacketPtr = RXSTART_INIT;
   ENC28J60_Write(ERXSTL, RXSTART_INIT & 0xFF);
   ENC28J60_Write(ERXSTH, RXSTART_INIT >> 8);
@@ -213,6 +209,7 @@ void ENC28J60_PacketSend(uint16_t len, uint8_t* packet)
   ENC28J60_WriteOp(BFS, ECON1, TXRTS);
 }
 
-uint8_t ENC28J60_LinkUp(void) {
-return((ENC28J60_PhyRead(PHSTAT2) >> 2) & 1);
+uint8_t ENC28J60_LinkUp(void)
+{
+  return(ENC28J60_PhyRead(PHSTAT2) & 4);
 }

@@ -172,12 +172,19 @@ int main()
   timer2Init();
   i2cInit();
   usartInit(115200);
-  if (!ENC28J60_Init()) usartPrint("ENC28J60 not found!\n");
-  usartPrint("Start SRTOS\n");
   addTask("CLI", taskCLI, 0);
+  int eth = ENC28J60_Init();
+  if (eth && eth < 32)
+  {
+    addTask("net", net, 0);
+    addTask("link", link, 0);
+  }
+  else 
+  {
+    usartPrint("ENC28J60 not found!\n");
+  }
   addTask("scanKey", scanKey, 20);
-  addTask("net", net, 0);
-  addTask("link", link, 0);
+  usartPrint("Start SRTOS\n");
   startRtos();
 }
 

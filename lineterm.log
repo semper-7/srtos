@@ -1,34 +1,7 @@
 
 > 
 Id	Name	Stat
-0	CLI	487
+0	CLI	976
 1	scanKey	24
-2	net	488
-3	link	1
-
-> 
-> 
-Id	Name	Stat
-0	CLI	486
-1	scanKey	25
-2	net	486
-3	link	0
-4	Blink	3
-
-> 
-Id	Name	Stat
-0	CLI	486
-1	scanKey	25
-2	net	486
-3	link	0
-4	Blink	3
-
-> 
-> 
-Id	Name	Stat
-0	CLI	488
-1	scanKey	24
-2	net	488
-3	link	0
 
 > 

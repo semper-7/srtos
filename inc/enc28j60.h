@@ -244,18 +244,8 @@
 #define MAX_FRAMELEN 1500
 
 //Functions
-uint8_t ENC28J60_ReadOp(uint8_t op, uint8_t address);
-void ENC28J60_WriteOp(uint8_t op, uint8_t address, uint8_t data);
-void ENC28J60_ReadBuffer(uint16_t len, uint8_t* data);
-void ENC28J60_WriteBuffer(uint16_t len, uint8_t* data);
-void ENC28J60_SetBank(uint8_t address);
-uint8_t ENC28J60_Read(uint8_t address);
-void ENC28J60_Write(uint8_t address, uint8_t data);
-uint16_t ENC28J60_PhyRead(uint8_t address);
-void ENC28J60_PhyWrite(uint8_t address, uint16_t data);
 uint8_t ENC28J60_Init();
 void ENC28J60_PacketSend(uint16_t len, uint8_t* packet);
-uint8_t ENC28J60_HasRxPkt(void);
 uint16_t ENC28J60_PacketReceive(uint16_t maxlen, uint8_t* packet);
 uint8_t ENC28J60_LinkUp(void);
 
