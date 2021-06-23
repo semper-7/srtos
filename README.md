@@ -10,7 +10,8 @@ To use the SysTick callback function, insert the SysTickCallback() function into
 Warning: do not use the delay() SysTickCallback().
 To add tasks, use addTask(), to complete tasks, just let the task exit (organize the final loop, see main.c).
 The timer parameter in addTask() defines the delay of the task execution and can be used for a single timer task (just don't loop the task).
-It is also possible to view task statistics (see main.c statTask())
+It is also possible to view task statistics (see main.c statTask()).
+Application example when working with a network with an adapter on the enc28j60.
 
 ## Compiling (in Windows)
 1. Install ARM GCC toolchain from https://gnutoolchains.com/arm-eabi/
