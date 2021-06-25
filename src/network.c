@@ -76,7 +76,7 @@ void make_eth_hdr()
 void make_ip_checksum()
 {
   buf[IP_CHECKSUM] = 0;
-  buf[IP_CHECKSUM+1] = 0;
+  buf[IP_CHECKSUM + 1] = 0;
   buf[IP_FLAGS] = 0x40;
   buf[IP_FLAGS + 1] = 0;
   buf[IP_TTL] = 64;

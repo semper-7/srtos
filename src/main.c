@@ -125,9 +125,6 @@ void taskCLI(void)
     usartPrint("\n> ");
     /* Waiting receive command from Usart */ 
     usartReceive(usart_rx_buffer,USART_BUFFER_SIZE);
-    /* Excluding \r and characters after */ 
-    char* cr = strchr(usart_rx_buffer,'\r');
-    if (cr) *(cr) = 0;
     /* Parsing and command execution */
     if      (!strcmp(usart_rx_buffer, "ps"       )) statTask();
     else if (  !ecmp(usart_rx_buffer, "kill "    )) killTask();
@@ -173,7 +170,7 @@ int main()
   i2cInit();
   usartInit(115200);
   addTask("CLI", taskCLI, 0);
-  int eth = ENC28J60_Init();
+  uint8_t eth = ENC28J60_Init();
   if (eth && eth < 32)
   {
     addTask("net", net, 0);

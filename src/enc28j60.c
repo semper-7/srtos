@@ -89,9 +89,9 @@ void ENC28J60_Write(uint8_t address ,uint8_t data)
 uint16_t ENC28J60_PhyRead(uint8_t address)
 {
   ENC28J60_Write(MIREGADR,address);
-  ENC28J60_Write(MICMD,MIIRD);
+  ENC28J60_Write(MICMD, MIIRD);
   while(ENC28J60_Read(MISTAT) & BUSY);
-  ENC28J60_Write(MICMD,0x00);
+  ENC28J60_Write(MICMD, 0);
   return(ENC28J60_Read(MIRDH));
 }
 
@@ -115,9 +115,11 @@ uint8_t ENC28J60_Init()
              GP_PP2(4) | GP_APP50(5) | GP_IF(6) | GP_APP50(7) );
   GPIOA->BSRR = GPIO_BSRR_BS4;
 
+  if (GPIOA->IDR & GPIO_IDR_IDR6) return(0);
+
   ENC28J60_WriteOp(SC, 0, SC);
-  uint32_t i = 200;
-  while(!ENC28J60_Read(ESTAT) & CLKRDY) if (!(i--)) return(0);
+  uint32_t i = 30000;
+  while (!i--);
   gNextPacketPtr = RXSTART_INIT;
   ENC28J60_Write(ERXSTL, RXSTART_INIT & 0xFF);
   ENC28J60_Write(ERXSTH, RXSTART_INIT >> 8);

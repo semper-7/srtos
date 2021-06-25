@@ -47,23 +47,31 @@ void usartTransmit(char *buffer, uint16_t buffer_size)
 
 uint32_t usartReceive(char *buffer, uint16_t buffer_size)
 {
-  uint32_t v;
+  uint32_t v = buffer_size;
   uint32_t count;
   DMA1_Channel5->CCR = 0;
   DMA1_Channel5->CPAR = (uint32_t)(&USART1->DR);
   DMA1_Channel5->CMAR = (uint32_t)buffer;
-  DMA1_Channel5->CNDTR = buffer_size;
+  DMA1_Channel5->CNDTR = v;
   DMA1_Channel5->CCR = DMA_CCR_MINC | DMA_CCR_CIRC;
   DMA1_Channel5->CCR |= DMA_CCR_EN;
-  while (DMA1_Channel5->CNDTR == buffer_size);
+#ifdef LINE_TERMINAL
   do
   {
-    v = DMA1_Channel5->CNDTR;
-    system_delay(NEXT_BYTE_TIMEOUT);
-  } while (DMA1_Channel5->CNDTR != v);
-
+#endif
+    while (DMA1_Channel5->CNDTR == v);
+    do
+    {
+      v = DMA1_Channel5->CNDTR;
+      system_delay(NEXT_BYTE_TIMEOUT);
+    } while (DMA1_Channel5->CNDTR != v);
+    count = buffer_size - DMA1_Channel5->CNDTR;
+#ifdef LINE_TERMINAL
+  } while (buffer[count - 1] != '\r' && buffer[count - 1] != '\n');
+  count--;
+  if (count && buffer[count - 1] == '\r') count--;
+#endif
   DMA1_Channel5->CCR = 0;
-  count = buffer_size - DMA1_Channel5->CNDTR;
   buffer[count]=0;
   return count;
 }
