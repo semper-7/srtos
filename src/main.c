@@ -115,7 +115,11 @@ void link(void)
 
 void net(void)
 {
-  while(1) PacketFunc();
+  while(1)
+  {
+   PacketFunc();
+   delay(1);
+  }
 }
 
 void icmp_reply_callback(uint8_t icmp_code)

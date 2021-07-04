@@ -24,21 +24,8 @@ static byte iddns;
 byte arphdr[] = { 0,1,8,0,6,4,0,1 };
 byte iphdr[]  = { 0x45,0,0,0x82,0,0,0x40,0,0x20 };
 
-word checksum(byte *buf, word len, byte type)
+word checksum(byte *buf, word len, uint32_t sum)
 {
-  uint32_t sum = 0;
-  if (type == 1)
-  {
-    sum += IP_UDP;
-    sum += len-8;
-  }
-  
-  if (type == 2)
-  {
-    sum += IP_TCP; 
-    sum += len-8;
-  }
-  
   while (len > 1)
   {
     sum += 0xFFFF & (((uint32_t)*buf << 8) | *(buf + 1));
@@ -141,20 +128,21 @@ void dns_request(char *host)
   *p++ = DNS_TYPE_A;
   *p++ = 0;
   *p++ = DNS_CLASS_IN;
-  byte i = p - buf - UDP_DATA;
+  word i = p - buf - UDP_DATA;
   buf[UDP_DATA] = i;
   buf[UDP_DATA + 1] = iddns;
   buf[UDP_DATA + 2] = 1;
   buf[UDP_DATA + 5] = 1;
-  buf[IP_TOTLEN] = (IP_HEADER_LEN+UDP_HEADER_LEN+i) >> 8;
-  buf[IP_TOTLEN + 1] = IP_HEADER_LEN+UDP_HEADER_LEN+i;
+  i += UDP_HEADER_LEN;
+  buf[IP_TOTLEN] = (IP_HEADER_LEN + i) >> 8;
+  buf[IP_TOTLEN + 1] = (IP_HEADER_LEN + i) & 0xff;
   make_ip_checksum();
-  buf[UDP_LEN] = (UDP_HEADER_LEN + i) >> 8;
-  buf[UDP_LEN + 1] = UDP_HEADER_LEN + i;
-  word ck = checksum(buf + IP_SRC, 8 + UDP_HEADER_LEN + i, 1);
+  buf[UDP_LEN] = i >> 8;
+  buf[UDP_LEN + 1] = i & 0xff;
+  word ck = checksum(buf + IP_SRC, 8 + i, i + IP_UDP);
   buf[UDP_CHECKSUM] = ck >> 8;
-  buf[UDP_CHECKSUM + 1] = ck & 0xFF;
-  PacketSend(ETH_HEADER_LEN + IP_HEADER_LEN + UDP_HEADER_LEN + i, buf);
+  buf[UDP_CHECKSUM + 1] = ck & 0xff;
+  PacketSend(ETH_HEADER_LEN + IP_HEADER_LEN + i, buf);
 }
 
 void dns_parse(word len)
@@ -282,7 +270,7 @@ void tcp_syn(byte *ip, word port)
   buf[TCP_OPTIONS + 1] = 4;
   buf[TCP_OPTIONS + 2] = (CLIENTMSS >> 8);
   buf[TCP_OPTIONS + 3] = (byte) CLIENTMSS;
-  word j = checksum(buf + IP_SRC, 8 + TCP_LEN_PLAIN + 4, 2);
+  word j = checksum(buf + IP_SRC, 8 + TCP_LEN_PLAIN + 4, TCP_LEN_PLAIN + 4 + IP_TCP);
   buf[TCP_CHECKSUM] = j >> 8;
   buf[TCP_CHECKSUM+1] = j & 0xFF;
   PacketSend(ETH_HEADER_LEN + IP_HEADER_LEN + TCP_LEN_PLAIN + 4, buf);
@@ -311,7 +299,7 @@ void tcp_ack(word add_seq)
   buf[TCP_WIN_SIZE] = 0x3;
   buf[TCP_WIN_SIZE + 1] = 0x0;
   *(uint32_t*)(buf + TCP_CHECKSUM) = 0;
-  word j = checksum(buf + IP_SRC, 8 + TCP_LEN_PLAIN, 2);
+  word j = checksum(buf + IP_SRC, 8 + TCP_LEN_PLAIN, TCP_LEN_PLAIN + IP_TCP);
   buf[TCP_CHECKSUM] = j >> 8;
   buf[TCP_CHECKSUM + 1] = j & 0xFF;
   PacketSend(ETH_HEADER_LEN + IP_HEADER_LEN + TCP_LEN_PLAIN, buf);
@@ -323,7 +311,7 @@ void tcp_ack_with_data(word len)
   buf[IP_TOTLEN + 1] = IP_HEADER_LEN + TCP_LEN_PLAIN + len;
   make_ip_checksum();
   *(uint32_t*)(buf + TCP_CHECKSUM) = 0;
-  word j = checksum(buf + IP_SRC, 8 + TCP_LEN_PLAIN + len, 2);
+  word j = checksum(buf + IP_SRC, 8 + TCP_LEN_PLAIN + len, TCP_LEN_PLAIN + IP_TCP + len);
   buf[TCP_CHECKSUM] = j >> 8;
   buf[TCP_CHECKSUM + 1] = j & 0xFF;
   PacketSend(ETH_HEADER_LEN + IP_HEADER_LEN + TCP_LEN_PLAIN + len, buf);
@@ -383,7 +371,7 @@ void PacketFunc()
   {
     if (buf[UDP_SRC_PORT + 1] != DNS_PORT || (buf[UDP_DATA + 3] & 0x0F) != 0) return;
     dns_parse(plen);
-    tcp_syn(iphost, 80);
+//    tcp_syn(iphost, 80);
     return;
   }
 

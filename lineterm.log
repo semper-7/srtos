@@ -1,10 +1,11 @@
 
 > 
 > Id	Name	Stat
-0	CLI	488
-1	net	487
-2	link	1
+0	CLI	486
+1	net	486
+2	link	0
 3	scanKey	24
+4	Blink	4
 
 > Ping ... OK
 Ping ... OK
@@ -16,5 +17,19 @@ Ping ... OK
 Ping ... OK
 Ping ... OK
 
-> 
+> Ping ... OK
+Ping ... OK
+Ping ... OK
+Ping ... OK
+
+> Ping ... OK
+Ping ... OK
+Ping ... OK
+Ping ... OK
+
+> Ping ... OK
+Ping ... OK
+Ping ... OK
+Ping ... OK
+
 > 
