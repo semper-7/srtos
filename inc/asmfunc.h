@@ -5,5 +5,6 @@
 
 int ecmp(const char *s, const char *etalon);
 uint32_t atou(const char *s);
+char* atoip(const char *s, uint8_t *ip);
 
 #endif //__ASMFUNC_H__

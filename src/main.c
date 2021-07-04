@@ -17,6 +17,8 @@ static uint8_t led1;
 byte ipaddr[4] = {192,168,1,111};
 byte ipgw[4] = {192,168,1,1};
 byte ipdns[4] = {212,94,96,123};
+byte ip[4];
+byte icmp;
 
 void timer2Init()
 {
@@ -122,27 +124,29 @@ void net(void)
   }
 }
 
-void icmp_reply_callback(uint8_t icmp_code)
-{
-  if (!icmp_code) usartPrint("OK");
-  else usartPrint("ERROR");
-}
-
 void ping (void)
 {
-  usartPrint("Ping ... ");
-  icmp_request(ipdns);
-  delay(1000);
-  usartPrint("\nPing ... ");
-  icmp_request(ipdns);
-  delay(1000);
-  usartPrint("\nPing ... ");
-  icmp_request(ipdns);
-  delay(1000);
-  usartPrint("\nPing ... ");
-  icmp_request(ipdns);
-  delay(1000);
-  usartWrite('\n');
+  atoip(&usart_rx_buffer[5], ip);
+  int p = 0;
+  for (int i = 0 ; i < 4; i++)
+  {
+    icmp = 0;
+    ping_ip(ip, i);
+    delay(1000);
+    if ( icmp == 0xff)
+    {
+      usartPrint("Reply\n");
+      p++;
+    }
+    else
+    {
+      usartPrint("No reply\n");
+    }
+  }
+  usartPrint("Send 4, received ");
+  usartPrintNum(p);
+  usartPrint(", lost ");
+  usartPrintNum(4 - p);
 }
 
 void taskCLI(void)
@@ -161,7 +165,7 @@ void taskCLI(void)
     else if (!strcmp(usart_rx_buffer, "off led1" )) led1 = 0;
     else if (!strcmp(usart_rx_buffer, "read i2c" )) readI2c();
     else if (!strcmp(usart_rx_buffer, "write i2c")) writeI2c();
-    else if (!strcmp(usart_rx_buffer, "ping"))      ping();
+    else if (  !ecmp(usart_rx_buffer, "ping "))      ping();
   }
 }
 

@@ -7,14 +7,14 @@ word __attribute__((weak)) tcp_send_callback(char* tcp_addr)
 {
   return 0;
 }
-void __attribute__((weak)) icmp_reply_callback(byte icmp_code) {}
 
-extern byte macaddr[];
+extern byte macaddr[6];
 extern byte ipaddr[4];
 extern byte ipgw[4];
 extern byte ipdns[4];
+extern byte icmp;
 
-static byte iphost[4];
+static byte iphttp[4];
 static byte macgw[6];
 static byte link;
 static byte gw;
@@ -168,14 +168,14 @@ void dns_parse(word len)
     if (p + 14 > buf + len) break;
     if (p[1] == DNS_TYPE_A && p[9] == 4)
     {
-      memcpy(iphost, p + 10, 4);
+      memcpy(iphttp, p + 10, 4);
       break;
     }
     p += p[9] + 10;
   }
 }
 
-void arp_request(byte *ip)
+void arp_request(void)
 {
   memset(buf + ETH_DST_MAC, 0xff, 6);
   memcpy(buf + ETH_SRC_MAC, macaddr, 6);
@@ -186,7 +186,7 @@ void arp_request(byte *ip)
   memcpy(buf + ETH_HEADER_LEN, arphdr, sizeof arphdr);
   memset(buf + ARP_DST_MAC, 0, 6);
   memcpy(buf + ARP_SRC_MAC, macaddr, 6);
-  memcpy(buf + ARP_DST_IP, ip, 4);
+  memcpy(buf + ARP_DST_IP, ipgw, 4);
   memcpy(buf + ARP_SRC_IP, ipaddr, 4);
   PacketSend(42, buf); 
 }
@@ -203,22 +203,8 @@ void arp_reply()
   PacketSend(42, buf); 
 }
 
-void icmp_reply(word len)
+void icmp_request(byte *ip, word num)
 {
-  make_eth_hdr();
-  make_ip_hdr();
-  buf[ICMP_TYPE] = ICMP_REPLY;
-  make_icmp_checksum();
-//  if (buf[ICMP_CHECKSUM] > (0xFF - ICMP_REQUEST)) buf[ICMP_CHECKSUM + 1]++;
-//  buf[ICMP_CHECKSUM] += ICMP_REQUEST;
-  PacketSend(len, buf);
-}
-
-void icmp_request(byte *ip)
-{
-  static word icmp_num;
-  static word pid = 1;
-
   memcpy(buf + ETH_DST_MAC, macgw, 6);
   memcpy(buf + ETH_SRC_MAC, macaddr, 6);
   buf[ETH_TYPE] = ETH_IP_H;
@@ -232,13 +218,22 @@ void icmp_request(byte *ip)
   make_ip_checksum();
   buf[ICMP_TYPE] = ICMP_REQUEST;
   buf[ICMP_TYPE + 1] = 0;
-  buf[ICMP_PID] = pid >> 8;
-  buf[ICMP_PID + 1] = pid & 0xff;
-  buf[ICMP_PID] = ++icmp_num >> 8;
-  buf[ICMP_PID + 1] = icmp_num & 0xff;
+  buf[ICMP_PID] = 0;
+  buf[ICMP_PID + 1] = 1;
+  buf[ICMP_NUM] = num >> 8;
+  buf[ICMP_NUM + 1] = num & 0xff;
   for (int i = ICMP_DATA; i < ICMP_DATA + 32; i++) buf[i] = i + 0x37;
   make_icmp_checksum();
   PacketSend(ETH_HEADER_LEN + IP_HEADER_LEN + ICMP_HEADER_LEN + 32, buf);
+}
+
+void icmp_reply(word len)
+{
+  make_eth_hdr();
+  make_ip_hdr();
+  buf[ICMP_TYPE] = ICMP_REPLY;
+  make_icmp_checksum();
+  PacketSend(len, buf);
 }
 
 void tcp_syn(byte *ip, word port)
@@ -321,23 +316,36 @@ uint16_t getTcpLen()
   return ((((int16_t)buf[IP_TOTLEN]) << 8) | buf[IP_TOTLEN + 1]) - IP_HEADER_LEN - TCP_LEN_PLAIN;
 }
 
-void tcp_connect_host(char *host)
+void tcp_connect_http(char *http)
 {
   if (!link || !gw) return;
-  if (*iphost == 0) dns_request(host);
-  else tcp_syn(iphost, 80);
+  if (*iphttp == 0) dns_request(http);
+  else tcp_syn(iphttp, 80);
 }
 
-void tcp_connect(byte *ip, word port)
+void tcp_connect_ip(byte *ip, word port)
 {
   if (!link || !gw) return;
   tcp_syn(ip, port);
 }
 
+void ping_ip(byte *ip, word num)
+{
+  if (!link || !gw) return;
+  icmp_request(ip, num);
+}
+
 byte LinkFunc()
 {
   link = LinkUp();
-  if (link && !gw) arp_request(ipgw);
+  if (link)
+  {
+    if (!gw) arp_request();
+  }
+  else
+  {
+  gw = 0;
+  }
   return link;
 }
 
@@ -351,7 +359,7 @@ void PacketFunc()
     if      (buf[ARP_OPCODE + 1] == ARP_REQUEST_L) arp_reply();
     else if (buf[ARP_OPCODE + 1] == ARP_REPLY_L)
          {
-           memcpy(macgw, buf+ARP_SRC_MAC, 6);
+           memcpy(macgw, buf + ARP_SRC_MAC, 6);
            gw = 1;
          }
     return;
@@ -361,7 +369,7 @@ void PacketFunc()
 
   if (buf[IP_PROTO] == IP_ICMP)
   {
-    if      (buf[ICMP_TYPE] == ICMP_REPLY) icmp_reply_callback(buf[ICMP_TYPE + 1]);
+    if      (buf[ICMP_TYPE] == ICMP_REPLY) icmp = ~(buf[ICMP_TYPE + 1]);
     else if (buf[ICMP_TYPE] == ICMP_REQUEST) icmp_reply(plen);
     return;
   }

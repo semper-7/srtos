@@ -88,10 +88,10 @@ typedef uint16_t word;
 
 void PacketFunc(void);
 byte LinkFunc(void);
-void tcp_connect(byte *ip, word port);
-void tcp_connect_host(char *host);
+void tcp_connect_ip(byte *ip, word port);
+void tcp_connect_http(char *host);
 word tcp_send(char *off);
 void tcp_receive(char *off, word len);
-void icmp_request(byte *ip);
+void ping_ip(byte *ip, word num);
 
 #endif // __NETWORK_H__

@@ -86,10 +86,31 @@ ecmp_:	subs	r2,r3
 .global atou
 atou:	subs	r2,r2
 atou_:	ldrb	r1,[r0],#1
-	cbz	r1,atou__
+	cmp	r1,#48
+	bcc	atou__
+	cmp	r1,#59
+	bcs	atou__
 	and	r1,#15
 	add	r2,r2,r2,lsl #2
 	add	r2,r1,r2,lsl #1
 	b	atou_
 atou__:	mov	r0,r2
 	bx	lr
+
+.section .text.atoip,"ax",%progbits
+.global atoip
+atoip:	subs	r2,r2
+atoi_:	ldrb	r3,[r0],#1
+	cmp	r3,#48
+	bcc	atoi__
+	cmp	r3,#59
+	bcs	atoi__
+	and	r3,#15
+	add	r2,r2,r2,lsl #2
+	add	r2,r3,r2,lsl #1
+	b	atoi_
+atoi__:	strb	r2,[r1],#1
+	cbz	r3,atoip_
+	cmp	r3,#20
+	bne	atoip
+atoip_: bx	lr
