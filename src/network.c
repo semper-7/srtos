@@ -20,7 +20,6 @@ static byte link;
 static byte gw;
 byte buf[BUFFER_SIZE + 1];
 static byte seqnum = 0x0A;
-static byte iddns;
 byte arphdr[] = { 0,1,8,0,6,4,0,1 };
 byte iphdr[]  = { 0x45,0,0,0x82,0,0,0x40,0,0x20 };
 
@@ -92,7 +91,7 @@ void make_icmp_checksum()
 
 void dns_request(char *host)
 {
-  iddns++;
+  static byte iddns;
   memcpy(buf + ETH_DST_MAC, macgw, 6);
   memcpy(buf + ETH_SRC_MAC, macaddr, 6);
   buf[ETH_TYPE] = ETH_IP_H;
@@ -104,7 +103,7 @@ void dns_request(char *host)
   buf[UDP_DST_PORT] = 0;
   buf[UDP_DST_PORT + 1] = DNS_PORT;
   buf[UDP_SRC_PORT] = DNS_SRC_PORT_H;
-  buf[UDP_SRC_PORT + 1] = iddns;
+  buf[UDP_SRC_PORT + 1] = ++iddns;
   buf[UDP_CHECKSUM] = 0;
   buf[UDP_CHECKSUM + 1] = 0;
   memset(buf + UDP_DATA, 0, 12);
