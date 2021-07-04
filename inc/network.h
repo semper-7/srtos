@@ -50,8 +50,12 @@
 #define IP_TCP         0x06
 #define IP_UDP         0x11
 
+#define ICMP_HEADER_LEN   8
 #define ICMP_TYPE      0x22
 #define ICMP_CHECKSUM  0x24
+#define ICMP_PID       0x26
+#define ICMP_NUM       0x28
+#define ICMP_DATA      0x2A
 #define ICMP_REQUEST   0x08
 #define ICMP_REPLY     0x00
 
@@ -88,5 +92,6 @@ void tcp_connect(byte *ip, word port);
 void tcp_connect_host(char *host);
 word tcp_send(char *off);
 void tcp_receive(char *off, word len);
+void icmp_request(byte *ip);
 
 #endif // __NETWORK_H__

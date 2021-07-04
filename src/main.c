@@ -38,13 +38,13 @@ void readI2c()
  }
  else
  {
-   usartPrint("Error i2c");
+   usartPrint("Error i2c\n");
  }
 }
 
 void writeI2c()
 {
- if (i2cWrite(0xA0, 16, "test!!!", 8)) usartPrint("Error i2c");
+ if (i2cWrite(0xA0, 16, "test!!!", 8)) usartPrint("Error i2c\n");
 }
 
 void taskBlink(void)
@@ -68,7 +68,7 @@ void onLed0(void)
 
 void statTask(void)
 {
-  usartPrint("\nId	Name	Stat\n");
+  usartPrint("Id	Name	Stat\n");
   for (int i=0; i<TSK; i++)
   {
     if (isTask(i))
@@ -108,14 +108,37 @@ void link(void)
 {
   while (1)
   {
-  LinkFunc();
-  delay(2000);
+    LinkFunc();
+    delay(2000);
   }
 }
 
 void net(void)
 {
   while(1) PacketFunc();
+}
+
+void icmp_reply_callback(uint8_t icmp_code)
+{
+  if (!icmp_code) usartPrint("OK");
+  else usartPrint("ERROR");
+}
+
+void ping (void)
+{
+  usartPrint("Ping ... ");
+  icmp_request(ipdns);
+  delay(1000);
+  usartPrint("\nPing ... ");
+  icmp_request(ipdns);
+  delay(1000);
+  usartPrint("\nPing ... ");
+  icmp_request(ipdns);
+  delay(1000);
+  usartPrint("\nPing ... ");
+  icmp_request(ipdns);
+  delay(1000);
+  usartWrite('\n');
 }
 
 void taskCLI(void)
@@ -134,6 +157,7 @@ void taskCLI(void)
     else if (!strcmp(usart_rx_buffer, "off led1" )) led1 = 0;
     else if (!strcmp(usart_rx_buffer, "read i2c" )) readI2c();
     else if (!strcmp(usart_rx_buffer, "write i2c")) writeI2c();
+    else if (!strcmp(usart_rx_buffer, "ping"))      ping();
   }
 }
 

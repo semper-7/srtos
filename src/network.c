@@ -1,4 +1,5 @@
 #include <string.h>
+#include "usart1.h"
 #include "network.h"
 
 void __attribute__((weak)) tcp_receive_callback(char* tcp_addr, word tcp_len) {}
@@ -6,6 +7,7 @@ word __attribute__((weak)) tcp_send_callback(char* tcp_addr)
 {
   return 0;
 }
+void __attribute__((weak)) icmp_reply_callback(byte icmp_code) {}
 
 extern byte macaddr[];
 extern byte ipaddr[4];
@@ -90,6 +92,15 @@ void make_ip_hdr()
   memcpy(buf+IP_DST, buf + IP_SRC, 4);
   memcpy(buf+IP_SRC, ipaddr, 4);
   make_ip_checksum();
+}
+
+void make_icmp_checksum()
+{
+  buf[ICMP_CHECKSUM] = 0;
+  buf[ICMP_CHECKSUM + 1] = 0;
+  word ck = checksum(buf + ICMP_TYPE, buf[IP_TOTLEN + 1] - IP_HEADER_LEN, 0);
+  buf[ICMP_CHECKSUM] = ck >> 8;
+  buf[ICMP_CHECKSUM + 1] = ck & 0xFF;
 }
 
 void dns_request(char *host)
@@ -210,9 +221,37 @@ void icmp_reply(word len)
   make_eth_hdr();
   make_ip_hdr();
   buf[ICMP_TYPE] = ICMP_REPLY;
-  if (buf[ICMP_CHECKSUM] > (0xFF - 0x08)) buf[ICMP_CHECKSUM + 1]++;
-  buf[ICMP_CHECKSUM] += 0x08;
+  make_icmp_checksum();
+//  if (buf[ICMP_CHECKSUM] > (0xFF - ICMP_REQUEST)) buf[ICMP_CHECKSUM + 1]++;
+//  buf[ICMP_CHECKSUM] += ICMP_REQUEST;
   PacketSend(len, buf);
+}
+
+void icmp_request(byte *ip)
+{
+  static word icmp_num;
+  static word pid = 1;
+
+  memcpy(buf + ETH_DST_MAC, macgw, 6);
+  memcpy(buf + ETH_SRC_MAC, macaddr, 6);
+  buf[ETH_TYPE] = ETH_IP_H;
+  buf[ETH_TYPE + 1] = ETH_IP_L;
+  memcpy(buf + ETH_HEADER_LEN, iphdr, sizeof iphdr);
+  buf[IP_PROTO] = IP_ICMP;
+  buf[IP_TOTLEN] = 0;
+  buf[IP_TOTLEN + 1] = IP_HEADER_LEN + ICMP_HEADER_LEN + 32;
+  memcpy(buf + IP_DST, ip, 4);
+  memcpy(buf + IP_SRC, ipaddr, 4);
+  make_ip_checksum();
+  buf[ICMP_TYPE] = ICMP_REQUEST;
+  buf[ICMP_TYPE + 1] = 0;
+  buf[ICMP_PID] = pid >> 8;
+  buf[ICMP_PID + 1] = pid & 0xff;
+  buf[ICMP_PID] = ++icmp_num >> 8;
+  buf[ICMP_PID + 1] = icmp_num & 0xff;
+  for (int i = ICMP_DATA; i < ICMP_DATA + 32; i++) buf[i] = i + 0x37;
+  make_icmp_checksum();
+  PacketSend(ETH_HEADER_LEN + IP_HEADER_LEN + ICMP_HEADER_LEN + 32, buf);
 }
 
 void tcp_syn(byte *ip, word port)
@@ -227,8 +266,8 @@ void tcp_syn(byte *ip, word port)
   memcpy(buf + IP_DST, ip, 4);
   memcpy(buf + IP_SRC, ipaddr, 4);
   make_ip_checksum();
-  buf[TCP_DST_PORT] = port>>8;
-  buf[TCP_DST_PORT + 1] = port&0xff;
+  buf[TCP_DST_PORT] = port >> 8;
+  buf[TCP_DST_PORT + 1] = port & 0xff;
   buf[TCP_SRC_PORT] = 0x0b;
   buf[TCP_SRC_PORT + 1] = 0x21;
   memset(buf + TCP_SEQ, 0, 8);
@@ -241,7 +280,7 @@ void tcp_syn(byte *ip, word port)
   *(uint32_t*)(buf + TCP_CHECKSUM) = 0;
   buf[TCP_OPTIONS] = 2;
   buf[TCP_OPTIONS + 1] = 4;
-  buf[TCP_OPTIONS + 2] = (CLIENTMSS>>8);
+  buf[TCP_OPTIONS + 2] = (CLIENTMSS >> 8);
   buf[TCP_OPTIONS + 3] = (byte) CLIENTMSS;
   word j = checksum(buf + IP_SRC, 8 + TCP_LEN_PLAIN + 4, 2);
   buf[TCP_CHECKSUM] = j >> 8;
@@ -322,25 +361,21 @@ void PacketFunc()
 
   if(eth_is_arp(plen))
   {
-    if (buf[ARP_OPCODE + 1] == ARP_REQUEST_L)
-    {
-      arp_reply();
-      return;
-    }
-
-    if (buf[ARP_OPCODE + 1] == ARP_REPLY_L)
-    {
-      memcpy(macgw, buf+ARP_SRC_MAC, 6);
-      gw = 1;
-    }
+    if      (buf[ARP_OPCODE + 1] == ARP_REQUEST_L) arp_reply();
+    else if (buf[ARP_OPCODE + 1] == ARP_REPLY_L)
+         {
+           memcpy(macgw, buf+ARP_SRC_MAC, 6);
+           gw = 1;
+         }
     return;
   }
 
-  if(eth_is_ip(plen)==0) return;
+  if (eth_is_ip(plen) == 0) return;
 
-  if(buf[IP_PROTO]==IP_ICMP && buf[ICMP_TYPE]==ICMP_REQUEST)
+  if (buf[IP_PROTO] == IP_ICMP)
   {
-    icmp_reply(plen);
+    if      (buf[ICMP_TYPE] == ICMP_REPLY) icmp_reply_callback(buf[ICMP_TYPE + 1]);
+    else if (buf[ICMP_TYPE] == ICMP_REQUEST) icmp_reply(plen);
     return;
   }
 
