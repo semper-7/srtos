@@ -110,7 +110,6 @@ atoi_:	ldrb	r3,[r0],#1
 	add	r2,r3,r2,lsl #1
 	b	atoi_
 atoi__:	strb	r2,[r1],#1
-	cbz	r3,atoip_
-	cmp	r3,#20
-	bne	atoip
-atoip_: bx	lr
+	cmp	r3,#33
+	bcs	atoip
+	bx	lr
