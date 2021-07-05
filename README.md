@@ -13,6 +13,19 @@ The timer parameter in addTask() defines the delay of the task execution and can
 It is also possible to view task statistics (see main.c statTask()).
 Application example when working with a network with an adapter on the enc28j60.
 
+## Example command line interface
+The command line interface works by usart1 (PA9, PA10) 115200 8N1
+The CLI supports the following commands :
+1. on led0 - blink led on the pin PC13 and VCC, create new task
+2. off led0 - kill task and off led
+3. on led1 - PWM-on led on the pin PA0 and VCC
+4. off led1 - PWM-off led. The button on the pin PA1 and GND does this too.
+5. read i2c - read 256 bytes from 24C04, connected PB6 and PB7
+6. write i2c - write test-char to 24C04
+7. ps - printing task statistics
+8. kill number_task(or name_task) - stopped task
+9. ping ip_address(or name http) [number_request] - ping host (by default 4 times)
+
 ## Compiling (in Windows)
 1. Install ARM GCC toolchain from https://gnutoolchains.com/arm-eabi/
 2. Edited make.cmd, line: set PATH=%PATH%;D:\ARM-GCC\bin\

@@ -123,13 +123,36 @@ void net(void)
   }
 }
 
+void printIP(byte *ip_addr)
+{
+  for (int i = 0 ; i < 4; i++)
+  {
+    usartPrintNum(ip_addr[i]);
+    if (i < 3) usartWrite('.');
+  }
+}
+
 void ping (void)
 {
   static byte r;
   int n = 4;
   char *s;
-  s = atoip(&usart_rx_buffer[5], ip);
-  if (*(s - 1) == ' ') n = atou(s);
+  if (usart_rx_buffer[5] <= '9')
+  {
+    s = atoip(&usart_rx_buffer[5], ip);
+    if (*(s - 1) == ' ') n = atou(s);
+  }
+  else
+  {
+    ip[0] = 0;
+    dns_request(&usart_rx_buffer[5], ip);
+    delay(500);
+    if (ip[0] == 0)
+    {
+      usartPrint("IP not found");
+      return;
+    }
+  }
   int p = 0;
   for (int i = 0 ; i < n; i++)
   {
@@ -138,7 +161,9 @@ void ping (void)
     delay(1000);
     if ( r == 0xff)
     {
-      usartPrint("Reply\n");
+      usartPrint("Reply from ");
+      printIP(ip);
+      usartWrite('\n');
       p++;
     }
     else

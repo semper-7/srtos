@@ -13,11 +13,11 @@ extern byte ipaddr[4];
 extern byte ipgw[4];
 extern byte ipdns[4];
 
-static byte iphttp[4];
 static byte macgw[6];
 static byte link;
 static byte gw;
 static byte* icmp;
+static byte* iphttp;
 byte buf[BUFFER_SIZE + 1];
 static byte seqnum = 0x0A;
 byte arphdr[] = { 0,1,8,0,6,4,0,1 };
@@ -89,92 +89,6 @@ void make_icmp_checksum()
   buf[ICMP_CHECKSUM + 1] = ck & 0xFF;
 }
 
-void dns_request(char *host)
-{
-  static byte iddns;
-  memcpy(buf + ETH_DST_MAC, macgw, 6);
-  memcpy(buf + ETH_SRC_MAC, macaddr, 6);
-  buf[ETH_TYPE] = ETH_IP_H;
-  buf[ETH_TYPE + 1] = ETH_IP_L;
-  memcpy(buf + ETH_HEADER_LEN, iphdr, sizeof iphdr);
-  buf[IP_PROTO] = IP_UDP;
-  memcpy(buf + IP_DST, ipdns, 4);
-  memcpy(buf + IP_SRC, ipaddr, 4);
-  buf[UDP_DST_PORT] = 0;
-  buf[UDP_DST_PORT + 1] = DNS_PORT;
-  buf[UDP_SRC_PORT] = DNS_SRC_PORT_H;
-  buf[UDP_SRC_PORT + 1] = ++iddns;
-  buf[UDP_CHECKSUM] = 0;
-  buf[UDP_CHECKSUM + 1] = 0;
-  memset(buf + UDP_DATA, 0, 12);
-  byte *p = buf + UDP_DATA + 12;
-  char c;
-  do
-  {
-    byte n = 0;
-    for(;;)
-    {
-      c = *host;
-      ++host;
-      if (c == '.' || c == 0) break;
-      p[++n] = c;
-    }
-    *p++ = n;
-    p += n;
-  } while (c != 0);
-  *p++ = 0;
-  *p++ = 0;
-  *p++ = DNS_TYPE_A;
-  *p++ = 0;
-  *p++ = DNS_CLASS_IN;
-  word i = p - buf - UDP_DATA;
-  buf[UDP_DATA] = i;
-  buf[UDP_DATA + 1] = iddns;
-  buf[UDP_DATA + 2] = 1;
-  buf[UDP_DATA + 5] = 1;
-  i += UDP_HEADER_LEN;
-  buf[IP_TOTLEN] = (IP_HEADER_LEN + i) >> 8;
-  buf[IP_TOTLEN + 1] = (IP_HEADER_LEN + i) & 0xff;
-  make_ip_checksum();
-  buf[UDP_LEN] = i >> 8;
-  buf[UDP_LEN + 1] = i & 0xff;
-  word ck = checksum(buf + IP_SRC, 8 + i, i + IP_UDP);
-  buf[UDP_CHECKSUM] = ck >> 8;
-  buf[UDP_CHECKSUM + 1] = ck & 0xff;
-  PacketSend(ETH_HEADER_LEN + IP_HEADER_LEN + i, buf);
-}
-
-void dns_parse(word len)
-{
-  byte *p = buf + UDP_DATA;
-  p += *p;
-  for (;;)
-  {
-    if (*p & 0xC0)
-    {
-      p += 2;
-    }
-    else
-    {
-      while (++p < buf + len)
-      {
-        if (*p == 0)
-        {
-          ++p;
-          break;
-        }
-      }
-    }
-    if (p + 14 > buf + len) break;
-    if (p[1] == DNS_TYPE_A && p[9] == 4)
-    {
-      memcpy(iphttp, p + 10, 4);
-      break;
-    }
-    p += p[9] + 10;
-  }
-}
-
 void arp_request(void)
 {
   memset(buf + ETH_DST_MAC, 0xff, 6);
@@ -234,6 +148,94 @@ void icmp_reply(word len)
   buf[ICMP_TYPE] = ICMP_REPLY;
   make_icmp_checksum();
   PacketSend(len, buf);
+}
+
+
+void dns_request(char *http, byte *ip)
+{
+  static byte iddns;
+  iphttp = ip;
+  memcpy(buf + ETH_DST_MAC, macgw, 6);
+  memcpy(buf + ETH_SRC_MAC, macaddr, 6);
+  buf[ETH_TYPE] = ETH_IP_H;
+  buf[ETH_TYPE + 1] = ETH_IP_L;
+  memcpy(buf + ETH_HEADER_LEN, iphdr, sizeof iphdr);
+  buf[IP_PROTO] = IP_UDP;
+  memcpy(buf + IP_DST, ipdns, 4);
+  memcpy(buf + IP_SRC, ipaddr, 4);
+  buf[UDP_DST_PORT] = 0;
+  buf[UDP_DST_PORT + 1] = DNS_PORT;
+  buf[UDP_SRC_PORT] = DNS_SRC_PORT_H;
+  buf[UDP_SRC_PORT + 1] = ++iddns;
+  buf[UDP_CHECKSUM] = 0;
+  buf[UDP_CHECKSUM + 1] = 0;
+  memset(buf + UDP_DATA, 0, 12);
+  byte *p = buf + UDP_DATA + 12;
+  char c;
+  do
+  {
+    byte n = 0;
+    for(;;)
+    {
+      c = *http;
+      ++http;
+      if (c == '.' || c == 0) break;
+      p[++n] = c;
+    }
+    *p++ = n;
+    p += n;
+  } while (c != 0);
+  *p++ = 0;
+  *p++ = 0;
+  *p++ = DNS_TYPE_A;
+  *p++ = 0;
+  *p++ = DNS_CLASS_IN;
+  word i = p - buf - UDP_DATA;
+  buf[UDP_DATA] = i;
+  buf[UDP_DATA + 1] = iddns;
+  buf[UDP_DATA + 2] = 1;
+  buf[UDP_DATA + 5] = 1;
+  i += UDP_HEADER_LEN;
+  buf[IP_TOTLEN] = (IP_HEADER_LEN + i) >> 8;
+  buf[IP_TOTLEN + 1] = (IP_HEADER_LEN + i) & 0xff;
+  make_ip_checksum();
+  buf[UDP_LEN] = i >> 8;
+  buf[UDP_LEN + 1] = i & 0xff;
+  word ck = checksum(buf + IP_SRC, 8 + i, i + IP_UDP);
+  buf[UDP_CHECKSUM] = ck >> 8;
+  buf[UDP_CHECKSUM + 1] = ck & 0xff;
+  PacketSend(ETH_HEADER_LEN + IP_HEADER_LEN + i, buf);
+}
+
+void dns_parse(word len)
+{
+  byte *p = buf + UDP_DATA;
+  p += *p;
+  for (;;)
+  {
+    if (*p & 0xC0)
+    {
+      p += 2;
+    }
+    else
+    {
+      while (++p < buf + len)
+      {
+        if (*p == 0)
+        {
+          ++p;
+          break;
+        }
+      }
+    }
+    if (p + 14 > buf + len) break;
+    if (p[1] == DNS_TYPE_A && p[9] == 4)
+    {
+      memcpy(iphttp, p + 10, 4);
+      break;
+    }
+    p += p[9] + 10;
+  }
 }
 
 void tcp_syn(byte *ip, word port)
@@ -316,14 +318,7 @@ uint16_t getTcpLen()
   return ((((int16_t)buf[IP_TOTLEN]) << 8) | buf[IP_TOTLEN + 1]) - IP_HEADER_LEN - TCP_LEN_PLAIN;
 }
 
-void tcp_connect_http(char *http)
-{
-  if (!link || !gw) return;
-  if (*iphttp == 0) dns_request(http);
-  else tcp_syn(iphttp, 80);
-}
-
-void tcp_connect_ip(byte *ip, word port)
+void tcp_connect(byte *ip, word port)
 {
   if (!link || !gw) return;
   tcp_syn(ip, port);
@@ -353,7 +348,7 @@ byte LinkFunc()
 void PacketFunc()
 {
   word plen = PacketReceive(BUFFER_SIZE, buf);
-  if (plen == 0) return;
+  if (!plen) return;
 
   if(eth_is_arp(plen))
   {
@@ -377,9 +372,7 @@ void PacketFunc()
 
   if (buf[IP_PROTO]==IP_UDP)
   {
-    if (buf[UDP_SRC_PORT + 1] != DNS_PORT || (buf[UDP_DATA + 3] & 0x0F) != 0) return;
-    dns_parse(plen);
-//    tcp_syn(iphost, 80);
+    if (buf[UDP_SRC_PORT + 1] == DNS_PORT && !(buf[UDP_DATA + 3] & 0x0F)) dns_parse(plen);
     return;
   }
 
