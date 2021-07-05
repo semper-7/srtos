@@ -1,36 +1,48 @@
 
 > Id	Name	Stat
-0	CLI	487
-1	net	488
-2	link	0
-3	scanKey	25
-
-> Id	Name	Stat
 0	CLI	488
 1	net	488
 2	link	0
 3	scanKey	24
 
-> Id	Name	Stat
-0	CLI	488
-1	net	488
-2	link	0
-3	scanKey	24
-
+> Reply
+Reply
+Reply
+Reply
+Send 4, received 4, lost 0
+> Reply
+Reply
+Reply
+Reply
+Reply
+Reply
+Reply
+Reply
+Reply
+Reply
+Send 10, received 10, lost 0
+> Reply
+Send 1, received 1, lost 0
+> Send 0, received 0, lost 0
+> Send 0, received 0, lost 0
+> Reply
+Reply
+Reply
+Send 3, received 3, lost 0
 > Id	Name	Stat
 0	CLI	487
 1	net	487
 2	link	1
 3	scanKey	25
 
-> Reply
-Reply
-Reply
-Reply
-Send 4, received 4, lost 0
-> Reply
-Reply
-Reply
-Reply
-Send 4, received 4, lost 0
+> 
+> Id	Name	Stat
+0	CLI	486
+1	net	487
+2	link	0
+3	scanKey	24
+4	Blink	3
+
+> 
+> 
 > 
