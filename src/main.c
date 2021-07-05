@@ -18,7 +18,6 @@ byte ipaddr[4] = {192,168,1,111};
 byte ipgw[4] = {192,168,1,1};
 byte ipdns[4] = {212,94,96,123};
 byte ip[4];
-byte icmp;
 
 void timer2Init()
 {
@@ -126,16 +125,18 @@ void net(void)
 
 void ping (void)
 {
+  static byte r;
   int n = 4;
-  char *s = atoip(&usart_rx_buffer[5], ip);
+  char *s;
+  s = atoip(&usart_rx_buffer[5], ip);
   if (*(s - 1) == ' ') n = atou(s);
   int p = 0;
   for (int i = 0 ; i < n; i++)
   {
-    icmp = 0;
-    ping_ip(ip, i);
+    r = 0;
+    ping_ip(ip, i, &r);
     delay(1000);
-    if ( icmp == 0xff)
+    if ( r == 0xff)
     {
       usartPrint("Reply\n");
       p++;

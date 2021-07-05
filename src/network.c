@@ -12,12 +12,12 @@ extern byte macaddr[6];
 extern byte ipaddr[4];
 extern byte ipgw[4];
 extern byte ipdns[4];
-extern byte icmp;
 
 static byte iphttp[4];
 static byte macgw[6];
 static byte link;
 static byte gw;
+static byte* icmp;
 byte buf[BUFFER_SIZE + 1];
 static byte seqnum = 0x0A;
 byte arphdr[] = { 0,1,8,0,6,4,0,1 };
@@ -329,9 +329,10 @@ void tcp_connect_ip(byte *ip, word port)
   tcp_syn(ip, port);
 }
 
-void ping_ip(byte *ip, word num)
+void ping_ip(byte *ip, word num, byte *reply)
 {
   if (!link || !gw) return;
+  icmp = reply;
   icmp_request(ip, num);
 }
 
@@ -369,7 +370,7 @@ void PacketFunc()
 
   if (buf[IP_PROTO] == IP_ICMP)
   {
-    if      (buf[ICMP_TYPE] == ICMP_REPLY) icmp = ~(buf[ICMP_TYPE + 1]);
+    if      (buf[ICMP_TYPE] == ICMP_REPLY) *icmp = ~(buf[ICMP_TYPE + 1]);
     else if (buf[ICMP_TYPE] == ICMP_REQUEST) icmp_reply(plen);
     return;
   }

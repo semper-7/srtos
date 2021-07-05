@@ -92,6 +92,6 @@ void tcp_connect_ip(byte *ip, word port);
 void tcp_connect_http(char *host);
 word tcp_send(char *off);
 void tcp_receive(char *off, word len);
-void ping_ip(byte *ip, word num);
+void ping_ip(byte *ip, word num, byte *reply);
 
 #endif // __NETWORK_H__
